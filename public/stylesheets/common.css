@@ -1,0 +1,10 @@
+#footer {
+    padding: 17px 0;
+    text-align: center;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
