@@ -4,6 +4,7 @@
 <h2 style="text-align: center">Create Admin</h2>
 <form action="/admin/init" method="post" role="form" class="form-horizontal">
     <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="_method" value="PUT">
 
     <div class="form-group">
         <label for="email" class="col-sm-2 control-label">Email</label>

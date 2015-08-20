@@ -1,0 +1,24 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">BatcatStudio</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                {% if hasRole('CustomerService') %}
+                <li class="{{isActive('/service')}}"><a href="/service">Service</a></li>
+                {% endif %}
+                {% if hasRole('Manager') %}
+                <li class="{{isActive('/datas')}}"><a href="/manager">Manager</a></li>
+                {% endif %}
+                {% if hasRole('Admin') %}
+                <li class="{{isActive('/admin')}}"><a href="/admin">Admin</a></li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/user/edit-my-password">{{req.user.email}}</a></li>
+                <li><a href="/user/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

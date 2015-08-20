@@ -1,0 +1,56 @@
+{% extends '../../layouts/admin.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/admin/games/list">Games</a></li>
+    <li class="active">Add Game</li>
+</ol>
+<div class="row">
+    <h4 style="text-align: center">Add Game</h4>
+
+    <form action="/admin/games/create" method="post" role="form" class="form-horizontal">
+        <input type="hidden" name="_csrf" value="{{csrf_token}}">
+
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">Name</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="name" placeholder="Name" value="{{game.name}}" id="name"
+                       class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="ip" class="col-sm-2 control-label">Ip</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="ip" placeholder="Ip" value="{{game.ip}}" id="ip"
+                       class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="port" class="col-sm-2 control-label">Port</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="port" placeholder="Port" value="{{game.port}}" id="port"
+                       class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="servers" class="col-sm-2 control-label">Servers</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="servers" placeholder="Servers" value="{{game.servers}}"
+                       id="servers"
+                       class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+                <button class="btn btn-primary" type="submit">Create</button>
+                &nbsp; or &nbsp;
+                <a href="/admin/games/list" class="show-login">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

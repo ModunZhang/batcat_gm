@@ -3,17 +3,13 @@
  */
 
 module.exports = {
-  UserRights:{
-    Admin:0,
-    ViewGameData:1,
-    SendChat:2,
-    SendAnnouncement:3,
-    ViewPlayerData:4,
-    EditPlayerData:5,
-    KickPlayerOff:6,
-    BanPlayer:7,
-    BanDevice:8,
-    UnbanPlayer:9,
-    UnbanDevice:10
+  UserRoles:{
+    Admin:'Admin',
+    Manager:'Manager',
+    CustomerService:'CustomerService'
+  },
+  NoticeType:{
+    Info:'info',
+    Warning:'warning'
   }
 };

@@ -18,7 +18,7 @@ var UserSchema = new Schema({
   _id:{type:String, required:true, default:shortid.generate},
   email:{type:String, required:'Email cannot be blank', unique:true},
   password:{type:String, required:'Password cannot be blank'},
-  rights:{type:[Number]},
+  roles:{type:[String]},
   createdAt:{type:Number, default:Date.now}
 });
 
@@ -41,15 +41,15 @@ UserSchema.path('email').validate(function(email, fn){
   }else fn(true);
 }, 'Email already exists');
 
-UserSchema.path('rights').validate(function(rights){
-  return _.isArray(rights) && rights.length > 0
-}, 'Rights can not be empty');
+UserSchema.path('roles').validate(function(roles){
+  return _.isArray(roles) && roles.length > 0
+}, 'Roles can not be empty');
 
-UserSchema.path('rights').validate(function(rights){
-  return !_.some(rights, function(right){
-    return !_.contains(consts.UserRights, right)
+UserSchema.path('roles').validate(function(roles){
+  return !_.some(roles, function(role){
+    return !_.contains(consts.UserRoles, role)
   })
-}, 'Rights not legal');
+}, 'Roles not legal');
 
 /**
  * Middleware

@@ -9,8 +9,10 @@ var _ = require('underscore');
 
 var auth = require('../../middlewares/authorization');
 
-var router = express.Router();
 var User = mongoose.model('User');
+
+var router = express.Router();
+module.exports = router;
 
 router.get('/login', auth.requiresNotLogin, function(req, res){
   res.render('user/login');
@@ -46,11 +48,10 @@ router.get('/edit-my-password', auth.requiresLogin, function(req, res){
   res.render('user/edit-my-password');
 });
 
-router.post('/edit-my-password', auth.requiresLogin, function(req, res, next){
+router.put('/edit-my-password', auth.requiresLogin, function(req, res, next){
   if(!req.body.password) return res.render('user/edit-my-password', {errors:['Original Password cannot be empty']});
   if(!req.body.newpassword) return res.render('user/edit-my-password', {errors:['New password cannot be empty']});
-  User.findById(req.user._id, function(e, user){
-    if(!!e) return next(e);
+  User.findById(req.user._id).then(function(user){
     if(!user) return next(new Error('User not exist'));
     user.comparePassword(req.body.password, function(e, isMatch){
       if(!!e) return next(e);
@@ -59,11 +60,11 @@ router.post('/edit-my-password', auth.requiresLogin, function(req, res, next){
       user.save(function(e){
         if(!!e) return next(e);
         req.logout();
-        req.flash('info', 'Edit password successfully');
+        req.flash('info', 'Edit successfully');
         res.redirect('/user/login');
       })
     })
+  }, function(e){
+    next(e);
   });
 });
-
-module.exports = router;

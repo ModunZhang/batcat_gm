@@ -5,8 +5,6 @@
 var _ = require('underscore');
 var mongoose = require('mongoose');
 
-var consts = require('../config/consts');
-
 var User = mongoose.model('User');
 
 exports.requiresLogin = function(req, res, next){
@@ -17,22 +15,20 @@ exports.requiresLogin = function(req, res, next){
 
 exports.requiresNotLogin = function(req, res, next){
   if(req.isUnauthenticated()) return next();
-  res.sendStatus(403);
+  next(new Error('Must be a guest'));
 };
 
-exports.requiresUserRights = function(rights, req, res, next){
-  if(req.isUnauthenticated()) return res.sendStatus(403);
-  for(var i = 0; i < rights.length; i++){
-    var right = rights[i];
-    if(req.user.rights[0] !== consts.UserRights.Admin && !_.contains(req.user.rights, right)) return res.sendStatus(403);
-  }
-  next();
+exports.requiresUserRight = function(right, req, res, next){
+  if(req.isUnauthenticated()) return next(new Error('Login required'));
+  if(_.contains(req.user.roles, right)) return next();
+  next(new Error('No authority'));
 };
 
 exports.requireEmptyUsers = function(req, res, next){
-  User.count({}, function(e, count){
-    if(!!e) next(e);
-    else if(count == 0)next();
-    else res.sendStatus(403);
-  })
+  User.count().then(function(count){
+    if(count == 0) next();
+    else next(new Error('Already has users'));
+  }, function(e){
+    next(e)
+  });
 };

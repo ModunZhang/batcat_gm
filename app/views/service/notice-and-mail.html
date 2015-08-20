@@ -1,0 +1,136 @@
+{%extends '../layouts/service.html'%}
+
+
+{% block content %}
+<div class="row">
+    <h4 style="text-align: center">Send Global Notice</h4>
+
+    <form action="/service/send-global-notice" method="post" role="form" class="form-horizontal">
+        <input type="hidden" name="_csrf" value="{{csrf_token}}">
+
+        <div class="form-group">
+            <label for="game_1" class="col-sm-2 control-label">Game</label>
+
+            <div class="col-sm-9">
+                <select title='Choose a game' name="gameId" id="game_1" class="selectpicker">
+                    {% for game in games %}
+                    <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group" id="genServers_1" hidden>
+            <label class="col-sm-2 control-label">Servers</label>
+
+            <div class="col-sm-9">
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="type" class="col-sm-2 control-label">Type</label>
+
+            <div class="col-sm-9">
+                <select title='Choose a type' name="type" id="type" class="selectpicker">
+                    {% for key,value in types %}
+                    <option value="{{value}}">{{key}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="content" class="col-sm-2 control-label">Content</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="content" placeholder="Content" id="content" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+                <button class="btn btn-primary" type="submit">Send</button>
+                &nbsp; or &nbsp;
+                <a href="/service/notice-and-mail" class="show-login">Cancel</a>
+            </div>
+        </div>
+    </form>
+
+    <br/>
+    <h4 style="text-align: center">Send Global Mail</h4>
+
+    <form action="/service/send-global-mail" method="post" role="form" class="form-horizontal">
+        <input type="hidden" name="_csrf" value="{{csrf_token}}">
+
+        <div class="form-group">
+            <label for="game_2" class="col-sm-2 control-label">Game</label>
+
+            <div class="col-sm-9">
+                <select title='Choose a game' name="gameId" id="game_2" class="selectpicker">
+                    {% for game in games %}
+                    <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group" id="genServers_2" hidden>
+            <label class="col-sm-2 control-label">Servers</label>
+
+            <div class="col-sm-9">
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="title_1" class="col-sm-2 control-label">Title</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="title" placeholder="Title" id="title_1" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="content_1" class="col-sm-2 control-label">Content</label>
+
+            <div class="col-sm-9">
+                <textarea rows="5" name="content" placeholder="Content" id="content_1" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+                <button class="btn btn-primary" type="submit">Send</button>
+                &nbsp; or &nbsp;
+                <a href="/service/notice-and-mail" class="show-login">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    $(function(){
+        $('#game_1').on('change', function(){
+            var selected = $(this).find("option:selected").attr('servers');
+            var servers = selected.split(',');
+            $('#genServers_1 > div').html((function(){
+                var html = '';
+                for(var i = 0; i < servers.length; i++){
+                    var server = servers[i];
+                    html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
+                }
+                return html;
+            })());
+            $('#genServers_1').removeAttr('hidden');
+        });
+        $('#game_2').on('change', function(){
+            var selected = $(this).find("option:selected").attr('servers');
+            var servers = selected.split(',');
+            $('#genServers_2 > div').html((function(){
+                var html = '';
+                for(var i = 0; i < servers.length; i++){
+                    var server = servers[i];
+                    html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
+                }
+                return html;
+            })());
+            $('#genServers_2').removeAttr('hidden');
+        })
+    });
+</script>
+{% endblock %}

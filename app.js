@@ -9,6 +9,7 @@ var csrf = require('csurf');
 var session = require('express-session');
 var mongoStore = require('connect-mongo')(session);
 var swig = require('swig');
+var _ = require('underscore');
 
 var flash = require('connect-flash');
 var helpers = require('view-helpers');
@@ -65,6 +66,9 @@ app.use(function(req, res, next){
     } else {
       return req.originalUrl.indexOf(link) !== -1 ? 'active' : ''
     }
+  };
+  res.locals.hasRole = function(role){
+    return _.contains(req.user.roles, role);
   };
   next();
 });
