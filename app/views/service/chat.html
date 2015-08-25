@@ -51,6 +51,7 @@
         $('#send-system-chat').ajaxForm(function(resp){
             $('#error_messages_container').remove();
             if(resp.code === 500) showErrors(resp.data);
+            else $('#content').val('');
         });
     })
 </script>
