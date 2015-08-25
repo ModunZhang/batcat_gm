@@ -84,18 +84,18 @@ router.post('/send-global-notice', function(req, res, next){
     });
   }
 
-  var postData = {
+  var postData = JSON.stringify({
     servers:notice.servers,
     type:notice.type,
     content:notice.content
-  };
+  });
   var httpOptions = {
     host:game.ip,
     port:game.port,
     path:'/send-global-notice',
     method:"post",
-    headers: {
-      'Content-Type': 'application/json'
+    headers:{
+      'Content-Type':'application/json'
     }
   };
 
@@ -113,11 +113,11 @@ router.post('/send-global-notice', function(req, res, next){
   request.on('error', function(e){
     return next(e);
   });
-  request.write(JSON.stringify(postData));
+  request.write(postData);
   request.end();
 });
 
-router.post('/send-global-mail', function(req, res){
+router.post('/send-global-mail', function(req, res, next){
   var games = req.games;
   var mail = req.body;
   var gameId = mail.gameId;
@@ -164,18 +164,18 @@ router.post('/send-global-mail', function(req, res){
     });
   }
 
-  var postData = {
+  var postData = JSON.stringify({
     servers:mail.servers,
     title:mail.title,
     content:mail.content
-  };
+  });
   var httpOptions = {
     host:game.ip,
     port:game.port,
     path:'/send-global-mail',
     method:"post",
-    headers: {
-      'Content-Type': 'application/json'
+    headers:{
+      'Content-Type':'application/json'
     }
   };
 
@@ -193,10 +193,76 @@ router.post('/send-global-mail', function(req, res){
   request.on('error', function(e){
     return next(e);
   });
-  request.write(JSON.stringify(postData));
+  request.write(postData);
   request.end();
 });
 
-router.post('/send-mail-to-players', function(req, res){
+router.post('/send-mail-to-players', function(req, res, next){
+  var games = req.games;
+  var mail = req.body;
+  var gameId = mail.gameId;
+  var players = _.isString(mail.players) ? mail.players.trim().split(',') : [];
+  var game = _.find(games, function(game){
+    return game._id === gameId;
+  });
+  if(!game){
+    return res.render('service/notice-and-mail', {
+      errors:['Game not selected.'],
+      games:games,
+      mail:mail
+    });
+  }
+  if(players.length === 0){
+    return res.render('service/notice-and-mail', {
+      errors:['Players cannot be empty.'],
+      games:games,
+      mail:mail
+    });
+  }
+  if(!_.isString(mail.title) || mail.title.trim().length == 0){
+    return res.render('service/notice-and-mail', {
+      errors:['Title cannot be blank.'],
+      games:games,
+      mail:mail
+    });
+  }
+  if(!_.isString(mail.content) || mail.content.trim().length == 0){
+    return res.render('service/notice-and-mail', {
+      errors:['Content cannot be blank.'],
+      games:games,
+      mail:mail
+    });
+  }
 
+  var postData = JSON.stringify({
+    players:players,
+    title:mail.title,
+    content:mail.content
+  });
+  var httpOptions = {
+    host:game.ip,
+    port:game.port,
+    path:'/send-mail-to-players',
+    method:"post",
+    headers:{
+      'Content-Type':'application/json'
+    }
+  };
+
+  var request = http.request(httpOptions, function(resp){
+    if(resp.statusCode != 200)
+      return next(new Error('Game server response status code:' + resp.statusCode));
+    resp.on("data", function(data){
+      var jsonObj = JSON.parse(data.toString());
+      if(jsonObj.code !== 200)
+        return next(new Error('Game server response error message:[' + jsonObj.code + ']' + jsonObj.data));
+      req.flash('info', 'Send successfully');
+      res.redirect('/service/notice-and-mail');
+    })
+  });
+  request.on('error', function(e){
+    return next(e);
+  });
+  request.write(postData);
+  request.end();
 });
