@@ -9,7 +9,7 @@
                 <li class="{{isActive('/service')}}"><a href="/service">Service</a></li>
                 {% endif %}
                 {% if hasRole('Manager') %}
-                <li class="{{isActive('/datas')}}"><a href="/manager">Manager</a></li>
+                <li class="{{isActive('/manager')}}"><a href="/manager">Manager</a></li>
                 {% endif %}
                 {% if hasRole('Admin') %}
                 <li class="{{isActive('/admin')}}"><a href="/admin">Admin</a></li>

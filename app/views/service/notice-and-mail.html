@@ -114,7 +114,7 @@
             <div class="col-sm-9">
                 <select title='Choose a game' name="gameId" id="game_3" class="selectpicker">
                     {% for game in games %}
-                    <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
+                    <option value="{{game._id}}">{{game.name}}</option>
                     {% endfor %}
                 </select>
             </div>

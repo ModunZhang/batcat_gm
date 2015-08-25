@@ -266,3 +266,59 @@ router.post('/send-mail-to-players', function(req, res, next){
   request.write(postData);
   request.end();
 });
+
+router.get('/chat', function(req, res){
+  res.render('service/chat', {games:req.games});
+});
+
+router.get('/get-global-chats', function(req, res){
+  http.get('http://127.0.0.1:3001/get-global-chats?time=0', function(resp){
+    resp.on('data', function(data){
+      var jsonObj = JSON.parse(data.toString());
+      res.json(jsonObj);
+    })
+  })
+});
+
+router.post('/send-system-chat', function(req, res){
+  var games = req.games;
+  var chat = req.body;
+  var gameId = chat.gameId;
+  var game = _.find(games, function(game){
+    return game._id === gameId;
+  });
+  if(!game)
+    return res.json({code:500, data:['Game not selected.']});
+
+  if(!_.isString(chat.content) || chat.content.trim().length == 0)
+    return res.json({code:500, data:['Content cannot be blank.']});
+
+  var postData = JSON.stringify({
+    content:chat.content
+  });
+  var httpOptions = {
+    host:game.ip,
+    port:game.port,
+    path:'/send-system-chat',
+    method:"post",
+    headers:{
+      'Content-Type':'application/json'
+    }
+  };
+
+  var request = http.request(httpOptions, function(resp){
+    if(resp.statusCode != 200)
+      return res.json({code:500, data:['Game server response status code:' + resp.statusCode]});
+    resp.on("data", function(data){
+      var jsonObj = JSON.parse(data.toString());
+      if(jsonObj.code !== 200)
+        return res.json({code:500, data:['Game server response error message:[' + jsonObj.code + ']' + jsonObj.data]});
+      res.json({code:200})
+    })
+  });
+  request.on('error', function(e){
+    return res.json({code:500, data:[e.message]});
+  });
+  request.write(postData);
+  request.end();
+});
