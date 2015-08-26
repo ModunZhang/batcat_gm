@@ -272,10 +272,23 @@ router.get('/chat', function(req, res){
 });
 
 router.get('/get-global-chats', function(req, res){
-  http.get('http://127.0.0.1:3001/get-global-chats?time=0', function(resp){
+  var games = req.games;
+  var gameId = req.query.gameId;
+  var time = req.query.time;
+  var game = _.find(games, function(game){
+    return game._id === gameId;
+  });
+  if(!game)
+    return res.json({code:500, data:['Game not selected.']});
+  if(!_.isString(time) || time.trim().length == 0 || Number(time) < 0)
+    return res.json({code:500, data:['Time cannot be blank.']});
+
+  http.get('http://' + game.ip + ':' + game.port + '/get-global-chats?time=' + time, function(resp){
     resp.on('data', function(data){
       var jsonObj = JSON.parse(data.toString());
-      res.json(jsonObj);
+      if(jsonObj.code !== 200)
+        return res.json({code:500, data:['Game server response error message:[' + jsonObj.code + ']' + jsonObj.data]});
+      res.json({code:200, data:jsonObj.data});
     })
   })
 });
