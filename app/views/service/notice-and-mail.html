@@ -5,7 +5,7 @@
 <div class="row">
     <h4 style="text-align: center">Send Global Notice</h4>
 
-    <form action="/service/send-global-notice" method="post" role="form" class="form-horizontal">
+    <form action="/service/send-global-notice" method="post" role="form" class="form-horizontal" id="form_1">
         <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
         <div class="form-group">
@@ -27,10 +27,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="type" class="col-sm-2 control-label">Type</label>
+            <label for="type_1" class="col-sm-2 control-label">Type</label>
 
             <div class="col-sm-9">
-                <select title='Choose a type' name="type" id="type" class="selectpicker">
+                <select title='Choose a type' name="type" id="type_1" class="selectpicker">
                     {% for key,value in types %}
                     <option value="{{value}}">{{key}}</option>
                     {% endfor %}
@@ -38,10 +38,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="content" class="col-sm-2 control-label">Content</label>
+            <label for="content_1" class="col-sm-2 control-label">Content</label>
 
             <div class="col-sm-9">
-                <input type="text" name="content" placeholder="Content" id="content" class="form-control">
+                <input type="text" name="content" placeholder="Content" id="content_1" class="form-control">
             </div>
         </div>
         <div class="form-group">
@@ -57,7 +57,7 @@
     <br/>
     <h4 style="text-align: center">Send Global Mail</h4>
 
-    <form action="/service/send-global-mail" method="post" role="form" class="form-horizontal">
+    <form action="/service/send-global-mail" method="post" role="form" class="form-horizontal" id="form_2">
         <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
         <div class="form-group">
@@ -79,17 +79,17 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="title_1" class="col-sm-2 control-label">Title</label>
+            <label for="title_2" class="col-sm-2 control-label">Title</label>
 
             <div class="col-sm-9">
-                <input type="text" name="title" placeholder="Title" id="title_1" class="form-control">
+                <input type="text" name="title" placeholder="Title" id="title_2" class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label for="content_1" class="col-sm-2 control-label">Content</label>
+            <label for="content_2" class="col-sm-2 control-label">Content</label>
 
             <div class="col-sm-9">
-                <textarea rows="5" name="content" placeholder="Content" id="content_1" class="form-control"></textarea>
+                <textarea rows="5" name="content" placeholder="Content" id="content_2" class="form-control"></textarea>
             </div>
         </div>
         <div class="form-group">
@@ -105,7 +105,7 @@
     <br/>
     <h4 style="text-align: center">Send Mail To Players</h4>
 
-    <form action="/service/send-mail-to-players" method="post" role="form" class="form-horizontal">
+    <form action="/service/send-mail-to-players" method="post" role="form" class="form-horizontal" id="form_3">
         <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
         <div class="form-group">
@@ -120,24 +120,24 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="players" class="col-sm-2 control-label">Players</label>
+            <label for="players_3" class="col-sm-2 control-label">Players</label>
 
             <div class="col-sm-9">
-                <input type="text" name="players" placeholder="Players" id="players" class="form-control">
+                <input type="text" name="players" placeholder="Players" id="players_3" class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label for="title_2" class="col-sm-2 control-label">Title</label>
+            <label for="title_3" class="col-sm-2 control-label">Title</label>
 
             <div class="col-sm-9">
-                <input type="text" name="title" placeholder="Title" id="title_2" class="form-control">
+                <input type="text" name="title" placeholder="Title" id="title_3" class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label for="content_2" class="col-sm-2 control-label">Content</label>
+            <label for="content_3" class="col-sm-2 control-label">Content</label>
 
             <div class="col-sm-9">
-                <textarea rows="5" name="content" placeholder="Content" id="content_2" class="form-control"></textarea>
+                <textarea rows="5" name="content" placeholder="Content" id="content_3" class="form-control"></textarea>
             </div>
         </div>
         <div class="form-group">
@@ -185,7 +185,47 @@
         $('#players').tagsInput({
             width:'auto',
             defaultText:''
-        })
+        });
+
+        $('#form_1').ajaxForm(function(resp){
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                new PNotify({
+                    text:'Send successfully',
+                    type:'success'
+                });
+            }
+        });
+        $('#form_2').ajaxForm(function(resp){
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                new PNotify({
+                    text:'Send successfully',
+                    type:'success'
+                });
+            }
+        });
+        $('#form_3').ajaxForm(function(resp){
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                new PNotify({
+                    text:'Send successfully',
+                    type:'success'
+                });
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -48,30 +48,27 @@
 
 {% block scripts %}
 <script type="text/javascript">
-    var errorTemplate = '<div class="fade in alert alert-danger" id="error_messages_container""><button class="close" type="button" data-dismiss="alert">×</button><ul id="error_messages"></ul></div>';
-    var chatTemplate = '<li><div class="chat-content"><div><strong class="primary-font">^Name^</strong><small class="pull-right text-muted">^Server^  ^Time^</small></div><p>^Content^</p></div></li>';
-    var showErrors = function(errors){
-        $('#body_content').prepend(errorTemplate);
-        for(var i = 0; i < errors.length; i++){
-            $('#error_messages').append('<li>' + errors[i] + '</li>');
-        }
-    };
-    var hideErrors = function(){
-        $('#error_messages_container').remove();
-    };
-
+    var chatOthersTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="primary-font">^Name^</strong><small class="pull-right text-muted">^Server^  ^Time^</small></div><p>^Content^</p></div></li>';
+    var chatMineTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="pull-right primary-font">^Name^</strong><small class="text-muted">^Server^  ^Time^</small></div><p>^Content^</p></div></li>';
     $(function(){
+        var intervalId = null;
         $('#game').on('change', function(){
+            clearInterval(intervalId);
+            $('#chat-ul').empty();
             var gameId = this.value;
             var lastChatTime = 0;
             var getChats = function(){
                 $.get('/service/get-global-chats', {gameId:gameId, time:lastChatTime}, function(resp){
-                    if(resp.code === 500) return showErrors(resp.data);
-
+                    if(resp.code === 500) return;
                     var chats = resp.data;
                     for(var i = 0; i < chats.length; i++){
                         var chat = chats[i];
-                        var content = chatTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        var content = null;
+                        if(chat.name === 'System'){
+                            content = chatMineTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        }else{
+                            content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        }
                         $('#chat-ul').append(content);
                     }
                     if(chats.length > 0){
@@ -81,12 +78,17 @@
                 })
             };
             getChats();
-            setInterval(getChats, 1000);
+            intervalId = setInterval(getChats, 5000);
         });
         $('#send-system-chat').ajaxForm(function(resp){
-            hideErrors();
-            if(resp.code === 500) showErrors(resp.data);
-            else $('#content').val('');
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                $('#content').val('');
+            }
         });
     })
 </script>
