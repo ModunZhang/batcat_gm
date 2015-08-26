@@ -48,8 +48,8 @@
 
 {% block scripts %}
 <script type="text/javascript">
-    var chatOthersTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="primary-font">^Name^</strong><small class="pull-right text-muted">^Server^  ^Time^</small></div><p>^Content^</p></div></li>';
-    var chatMineTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="pull-right primary-font">^Name^</strong><small class="text-muted">^Server^  ^Time^</small></div><p>^Content^</p></div></li>';
+    var chatOthersTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="primary-font">^Name^</strong><small class="pull-right text-muted">^Server^,^Time^</small></div><p>^Content^</p></div></li>';
+    var chatMineTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="pull-right primary-font">^Name^</strong><small class="text-muted">^Time^</small></div><p>^Content^</p></div></li>';
     $(function(){
         var intervalId = null;
         $('#game').on('change', function(){
@@ -65,7 +65,7 @@
                         var chat = chats[i];
                         var content = null;
                         if(chat.name === 'System'){
-                            content = chatMineTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                            content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
                         }else{
                             content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
                         }
