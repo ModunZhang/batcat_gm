@@ -175,3 +175,11 @@ router.post('/send-system-chat', function(req, res){
     return res.json({code:200, data:data});
   });
 });
+
+router.get('/alliance', function(req, res){
+  res.render('service/alliance/index')
+});
+
+router.get('/player', function(req, res){
+  res.render('service/player/index')
+});

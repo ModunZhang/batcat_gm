@@ -1,0 +1,61 @@
+{% extends '../../layouts/service.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/service/alliance">Alliance</a></li>
+    <li class="active">Search Alliance</li>
+</ol>
+<div class="row">
+    <h4 style="text-align: center">Search Alliance</h4>
+
+    <form action="/service/alliance/findById" method="get" role="form" class="form-horizontal">
+        <div class="form-group">
+            <label for="game_1" class="col-sm-2 control-label">Game</label>
+
+            <div class="col-sm-9">
+                <select title='Choose a game' name="gameId" id="game_1" class="selectpicker">
+                    {% for game in req.games %}
+                    <option value="{{game._id}}">{{game.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id" class="col-sm-2 control-label">By Id</label>
+
+            <div class="col-sm-8">
+                <input type="text" name="id" placeholder="Id" value="{{player.id}}" id="id"
+                       class="form-control">
+            </div>
+            <div class="col-sm-1">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+    <h5 style="text-align: center">Or</h5>
+
+    <form action="/service/alliance/findByName" method="get" role="form" class="form-horizontal">
+        <div class="form-group">
+            <label for="game_2" class="col-sm-2 control-label">Game</label>
+
+            <div class="col-sm-9">
+                <select title='Choose a game' name="gameId" id="game_2" class="selectpicker">
+                    {% for game in req.games %}
+                    <option value="{{game._id}}">{{game.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">By Name</label>
+
+            <div class="col-sm-8">
+                <input type="text" name="name" placeholder="Name" value="{{player.name}}" id="name"
+                       class="form-control">
+            </div>
+            <div class="col-sm-1">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
