@@ -35,29 +35,13 @@ router.get('/', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), funct
   res.render('admin/index');
 });
 
-router.get('/users/list', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res, next){
-  User.find({}, 'email roles').then(function(users){
-    res.render('admin/users/list', {users:users});
+router.all('/users/*', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res, next){
+  Game.find().then(function(games){
+    req.games = games;
+    next();
   }, function(e){
     next(e);
-  });
-});
-
-router.get('/users/create', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
-  res.render('admin/users/create', {roles:_.values(consts.UserRoles)});
-});
-
-router.post('/users/create', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
-  var user = new User(req.body);
-  user.save().then(function(){
-    res.redirect('/admin/users/list');
-  }, function(e){
-    res.render('admin/users/create', {
-      errors:utils.mongooseError(e),
-      user:user,
-      roles:_.values(consts.UserRoles)
-    });
-  });
+  })
 });
 
 router.param('userId', function(req, res, next, userId){
@@ -70,17 +54,59 @@ router.param('userId', function(req, res, next, userId){
   })
 });
 
-router.get('/users/edit/:userId', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
+router.get('/users/list', function(req, res, next){
+  res.locals.showGameNames = function(gameIds){
+    var gameNames = [];
+    for(var i = 0; i < gameIds.length; i ++){
+      (function(){
+        var gameId = gameIds[i];
+        var game = _.find(req.games, function(game){
+          return game._id === gameId;
+        });
+        if(!!game) gameNames.push(game.name);
+      })();
+    }
+    return gameNames.length > 0 ? gameNames.join(',') : 'None';
+  };
+  User.find({}, 'email roles games').then(function(users){
+    res.render('admin/users/list', {
+      users:users
+    });
+  }, function(e){
+    next(e);
+  });
+});
+
+router.get('/users/create', function(req, res){
+  res.render('admin/users/create', {roles:_.values(consts.UserRoles), games:req.games});
+});
+
+router.post('/users/create', function(req, res){
+  var user = new User(req.body);
+  user.save().then(function(){
+    res.redirect('/admin/users/list');
+  }, function(e){
+    res.render('admin/users/create', {
+      errors:utils.mongooseError(e),
+      user:user,
+      roles:_.values(consts.UserRoles),
+      games:req.games
+    });
+  });
+});
+
+router.get('/users/edit/:userId', function(req, res){
   res.locals.checkRight = function(right){
     return _.contains(req.member.roles, right) ? 'checked' : ''
   };
-  res.render('admin/users/edit', {user:req.member, roles:_.values(consts.UserRoles)});
+  res.render('admin/users/edit', {user:req.member, roles:_.values(consts.UserRoles), games:req.games});
 });
 
-router.put('/users/edit/:userId', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
+router.put('/users/edit/:userId', function(req, res){
   var member = req.member;
   member.email = req.body.email;
   member.roles = !!req.body.roles ? req.body.roles : [];
+  member.games = !!req.body.games ? req.body.games : [];
   member.save().then(function(){
     req.flash('info', 'Edit successfully');
     if(member._id === req.user._id){
@@ -92,12 +118,13 @@ router.put('/users/edit/:userId', auth.requiresUserRight.bind(auth, consts.UserR
     res.render('admin/users/edit', {
       errors:utils.mongooseError(e),
       user:member,
-      roles:_.values(consts.UserRoles)
+      roles:_.values(consts.UserRoles),
+      games:req.games
     });
   });
 });
 
-router.delete('/users/delete/:userId', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res, next){
+router.delete('/users/delete/:userId', function(req, res, next){
   var member = req.member;
   member.remove().then(function(){
     req.flash('info', 'Deleted successfully');
@@ -108,29 +135,7 @@ router.delete('/users/delete/:userId', auth.requiresUserRight.bind(auth, consts.
 });
 
 
-router.get('/games/list', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res, next){
-  Game.find({}, 'name ip port servers').then(function(games){
-    res.render('admin/games/list', {games:games});
-  }, function(e){
-    next(e);
-  });
-});
-
-router.get('/games/create', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
-  res.render('admin/games/create');
-});
-
-router.post('/games/create', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
-  var game = new Game(req.body);
-  game.save().then(function(){
-    res.redirect('/admin/games/list');
-  }, function(e){
-    res.render('admin/games/create', {
-      errors:utils.mongooseError(e),
-      game:game
-    });
-  });
-});
+router.all('/games/*', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin));
 
 router.param('gameId', function(req, res, next, gameId){
   Game.findById(gameId).then(function(game){
@@ -142,11 +147,35 @@ router.param('gameId', function(req, res, next, gameId){
   })
 });
 
-router.get('/games/edit/:gameId', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
+router.get('/games/list', function(req, res, next){
+  Game.find({}, 'name ip port servers').then(function(games){
+    res.render('admin/games/list', {games:games});
+  }, function(e){
+    next(e);
+  });
+});
+
+router.get('/games/create', function(req, res){
+  res.render('admin/games/create');
+});
+
+router.post('/games/create', function(req, res){
+  var game = new Game(req.body);
+  game.save().then(function(){
+    res.redirect('/admin/games/list');
+  }, function(e){
+    res.render('admin/games/create', {
+      errors:utils.mongooseError(e),
+      game:game
+    });
+  });
+});
+
+router.get('/games/edit/:gameId', function(req, res){
   res.render('admin/games/edit', {game:req.game});
 });
 
-router.put('/games/edit/:gameId', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
+router.put('/games/edit/:gameId', function(req, res){
   var game = req.game;
   game = extend(game, req.body);
   game.save().then(function(){
@@ -160,7 +189,7 @@ router.put('/games/edit/:gameId', auth.requiresUserRight.bind(auth, consts.UserR
   });
 });
 
-router.delete('/games/delete/:gameId', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res, next){
+router.delete('/games/delete/:gameId', function(req, res, next){
   var game = req.game;
   game.remove().then(function(){
     req.flash('info', 'Deleted successfully');

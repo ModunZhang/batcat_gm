@@ -9,7 +9,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var User = mongoose.model('User');
 
 passport.serializeUser(function(user, done){
-  done(null, {_id:user._id, email:user.email, roles:user.roles});
+  done(null, {_id:user._id, email:user.email, roles:user.roles, games:user.games});
 });
 
 passport.deserializeUser(function(user, done){

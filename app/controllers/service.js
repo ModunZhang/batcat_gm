@@ -17,6 +17,9 @@ module.exports = router;
 
 router.all('*', auth.requiresUserRight.bind(auth, consts.UserRoles.CustomerService), function(req, res, next){
   Game.find().then(function(games){
+    games = _.filter(games, function(game){
+      return _.contains(req.user.games, game._id);
+    });
     req.games = games;
     next();
   }, function(e){

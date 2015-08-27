@@ -26,9 +26,22 @@
             <div class="col-sm-9">
                 {% for index, role in roles %}
                 <label class="checkbox-inline">
-                    <input type="checkbox" id="inlineCheckbox_{{index}}" name="roles[{{index}}]" value="{{role}}"
-                           {{checkRight(role)}}>
+                    <input type="checkbox" id="roleCheckbox_{{index}}" name="roles[{{index}}]" value="{{role}}"
+                           {%if contains(user.roles, role) %}checked{% endif %}>
                     {{role}}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Games</label>
+
+            <div class="col-sm-9">
+                {% for index, game in games %}
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="gameCheckbox_{{index}}" name="games[{{index}}]" value="{{game._id}}"
+                           {%if contains(user.games, game._id) %}checked{% endif %}>
+                    {{game.name}}
                 </label>
                 {% endfor %}
             </div>
