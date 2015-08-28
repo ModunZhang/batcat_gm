@@ -31,7 +31,7 @@ Utils.post = function(ip, port, path, postData, callback){
     }catch(e){
       return callback(e);
     }
-    if(jsonObj.code !== 200) return callback(new Error('Game server response error message:[' + jsonObj.code + ']' + jsonObj.data));
+    if(jsonObj.code !== 200) return callback(new Error(jsonObj.data));
     callback(null, jsonObj.data);
   });
 };
@@ -46,7 +46,7 @@ Utils.get = function(ip, port, path, params, callback){
     }catch(e){
       return callback(e);
     }
-    if(jsonObj.code !== 200) return callback(new Error('Game server response error message:[' + jsonObj.code + ']' + jsonObj.data));
+    if(jsonObj.code !== 200) return callback(new Error(jsonObj.data));
     callback(null, jsonObj.data);
   });
 };

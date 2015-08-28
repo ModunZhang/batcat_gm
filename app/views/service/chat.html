@@ -78,7 +78,7 @@
                 })
             };
             getChats();
-            intervalId = setInterval(getChats, 5000);
+            intervalId = setInterval(getChats, 1000);
         });
         $('#send-system-chat').ajaxForm(function(resp){
             if(resp.code === 500){

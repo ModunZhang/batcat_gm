@@ -137,17 +137,17 @@ router.get('/chat', function(req, res){
 router.get('/get-global-chats', function(req, res){
   var games = req.games;
   var gameId = req.query.gameId;
-  var time = req.query.time;
+  var time = Number(req.query.time);
   var game = _.find(games, function(game){
     return game._id === gameId;
   });
   if(!game) return res.json({code:500, data:['Game not selected.']});
-  if(!_.isString(time) || time.trim().length == 0 || Number(time) < 0) return res.json({
+  if(_.isNaN(time)) return res.json({
     code:500,
-    data:['Time cannot be blank.']
+    data:['Time not legal.']
   });
 
-  utils.get(game.ip, game.port, 'get-global-chats', {time:time}, function(e, data){
+  utils.get(game.ip, game.port, 'get-global-chats', {time:Number(time)}, function(e, data){
     if(!!e) return res.json({code:500, data:e.message});
     return res.json({code:200, data:data});
   });
@@ -176,10 +176,87 @@ router.post('/send-system-chat', function(req, res){
   });
 });
 
+
 router.get('/alliance', function(req, res){
   res.render('service/alliance/index')
 });
 
 router.get('/player', function(req, res){
   res.render('service/player/index')
+});
+
+router.get('/player/find-by-id', function(req, res){
+  var gameId = req.query.gameId;
+  var playerId = req.query.playerId;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  if(!game){
+    req.flash('error', 'Game not selected.');
+    return res.redirect('/service/player');
+  }
+  if(!_.isString(playerId) || playerId.trim().length == 0){
+    req.flash('error', 'Id cannot be blank.');
+    return res.redirect('/service/player');
+  }
+
+  utils.get(game.ip, game.port, 'player/find-by-id', {playerId:playerId}, function(e, data){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/service/player');
+    }
+    return res.json({code:200, data:data});
+  });
+});
+
+router.get('/player/find-by-name', function(req, res){
+  var gameId = req.query.gameId;
+  var playerName = req.query.playerName;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  if(!game){
+    req.flash('error', 'Game not selected.');
+    return res.redirect('/service/player');
+  }
+  if(!_.isString(playerName) || playerName.trim().length == 0){
+    req.flash('error', 'Name cannot be blank.');
+    return res.redirect('/service/player');
+  }
+
+  utils.get(game.ip, game.port, 'player/find-by-name', {playerName:playerName}, function(e, data){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/service/player');
+    }
+    return res.json({code:200, data:data});
+  });
+});
+
+router.get('/player/temp-add-player-gem', function(req, res){
+  var gameId = req.query.gameId;
+  var playerId = req.query.playerId;
+  var gem = Number(req.query.gem);
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  if(!game){
+    req.flash('error', 'Game not selected.');
+    return res.redirect('/service/player');
+  }
+  if(!_.isString(playerId) || playerId.trim().length == 0){
+    req.flash('error', 'Id cannot be blank.');
+    return res.redirect('/service/player');
+  }
+  if(_.isNaN(gem)){
+    req.flash('error', 'Gem not legal.');
+    return res.redirect('/service/player');
+  }
+  utils.post(game.ip, game.port, 'player/temp-add-player-gem', {playerId:playerId, gem:gem}, function(e, data){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/service/player');
+    }
+    return res.json({code:200, data:data});
+  });
 });
