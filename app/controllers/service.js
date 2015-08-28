@@ -257,6 +257,8 @@ router.get('/player/temp-add-player-gem', function(req, res){
       req.flash('error', e.message);
       return res.redirect('/service/player');
     }
-    return res.json({code:200, data:data});
+
+    req.flash('success', 'Gem add success.');
+    return res.redirect('/service/player');
   });
 });
