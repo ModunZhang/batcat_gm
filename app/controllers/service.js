@@ -71,6 +71,7 @@ router.post('/send-global-mail', function(req, res){
   var mail = req.body;
   var gameId = mail.gameId;
   var servers = mail.servers;
+  var rewards = mail.rewards;
   var game = _.find(games, function(game){
     return game._id === gameId;
   });
@@ -92,7 +93,8 @@ router.post('/send-global-mail', function(req, res){
   var postData = {
     servers:mail.servers,
     title:mail.title,
-    content:mail.content
+    content:mail.content,
+    rewards:rewards
   };
   utils.post(game.ip, game.port, 'send-global-mail', postData, function(e, data){
     if(!!e) return res.json({code:500, data:e.message});
@@ -104,6 +106,7 @@ router.post('/send-mail-to-players', function(req, res){
   var games = req.games;
   var mail = req.body;
   var gameId = mail.gameId;
+  var rewards = mail.rewards;
   var players = _.isString(mail.players) ? mail.players.trim().split(',') : [];
   var game = _.find(games, function(game){
     return game._id === gameId;
@@ -122,7 +125,8 @@ router.post('/send-mail-to-players', function(req, res){
   var postData = {
     players:players,
     title:mail.title,
-    content:mail.content
+    content:mail.content,
+    rewards:rewards
   };
   utils.post(game.ip, game.port, 'send-mail-to-players', postData, function(e, data){
     if(!!e) return res.json({code:500, data:e.message});
@@ -181,6 +185,55 @@ router.get('/alliance', function(req, res){
   res.render('service/alliance/index')
 });
 
+router.get('/alliance/find-by-id', function(req, res){
+  var gameId = req.query.gameId;
+  var allianceId = req.query.allianceId;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  if(!game){
+    req.flash('error', 'Game not selected.');
+    return res.redirect('/service/alliance');
+  }
+  if(!_.isString(allianceId) || allianceId.trim().length == 0){
+    req.flash('error', 'Id cannot be blank.');
+    return res.redirect('/service/alliance');
+  }
+
+  utils.get(game.ip, game.port, 'alliance/find-by-id', {allianceId:allianceId}, function(e, data){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/service/alliance');
+    }
+    res.render('service/alliance/alliance', {alliance:data, allianceString:JSON.stringify(data)})
+  });
+});
+
+router.get('/alliance/find-by-tag', function(req, res){
+  var gameId = req.query.gameId;
+  var allianceTag = req.query.allianceTag;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  if(!game){
+    req.flash('error', 'Game not selected.');
+    return res.redirect('/service/alliance');
+  }
+  if(!_.isString(allianceTag) || allianceTag.trim().length == 0){
+    req.flash('error', 'Tag cannot be blank.');
+    return res.redirect('/service/alliance');
+  }
+
+  utils.get(game.ip, game.port, 'alliance/find-by-tag', {allianceTag:allianceTag}, function(e, data){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/service/alliance');
+    }
+    res.render('service/alliance/alliance', {alliance:data, allianceString:JSON.stringify(data)})
+  });
+});
+
+
 router.get('/player', function(req, res){
   res.render('service/player/index')
 });
@@ -205,7 +258,7 @@ router.get('/player/find-by-id', function(req, res){
       req.flash('error', e.message);
       return res.redirect('/service/player');
     }
-    return res.json({code:200, data:data});
+    res.render('service/player/player', {player:data, playerString:JSON.stringify(data)})
   });
 });
 
@@ -229,36 +282,6 @@ router.get('/player/find-by-name', function(req, res){
       req.flash('error', e.message);
       return res.redirect('/service/player');
     }
-    return res.json({code:200, data:data});
-  });
-});
-
-router.get('/player/temp-add-player-gem', function(req, res){
-  var gameId = req.query.gameId;
-  var playerId = req.query.playerId;
-  var gem = Number(req.query.gem);
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
-  if(!game){
-    req.flash('error', 'Game not selected.');
-    return res.redirect('/service/player');
-  }
-  if(!_.isString(playerId) || playerId.trim().length == 0){
-    req.flash('error', 'Id cannot be blank.');
-    return res.redirect('/service/player');
-  }
-  if(_.isNaN(gem)){
-    req.flash('error', 'Gem not legal.');
-    return res.redirect('/service/player');
-  }
-  utils.post(game.ip, game.port, 'player/temp-add-player-gem', {playerId:playerId, gem:gem}, function(e, data){
-    if(!!e){
-      req.flash('error', e.message);
-      return res.redirect('/service/player');
-    }
-
-    req.flash('success', 'Gem add success.');
-    return res.redirect('/service/player');
+    res.render('service/player/player', {player:data, playerString:JSON.stringify(data)})
   });
 });

@@ -1,43 +1,32 @@
-{% if (info && info.length) %}
-<div class="fade in alert alert-info">
-    <button class="close" type="button" data-dismiss="alert">×</button>
-    <ul>
-        {% for inf in info %}
-        <li>{{ inf }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+<script type="text/javascript">
+    var infos = [];
+</script>
 
-{% if (errors && errors.length) %}
-<div class="fade in alert alert-danger">
-    <button class="close" type="button" data-dismiss="alert">×</button>
-    <ul>
-        {% for error in errors %}
-        <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
 
-{% if (success && success.length) %}
-<div class="fade in alert alert-success">
-    <button class="close" type="button" data-dismiss="alert">×</button>
-    <ul>
-        {% for succ in success %}
-        <li>{{ succ }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+{% for inf in info %}
+<script type="text/javascript">infos.push({type:'info', message:'{{inf}}'});</script>
+{% endfor %}
 
-{% if (warning && warning.length) %}
-<div class="fade in alert alert-warning">
-    <button class="close" type="button" data-dismiss="alert">×</button>
-    <ul>
-        {% for warn in warning %}
-        <li>{{ warn }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+{% for error in errors %}
+<script type="text/javascript">infos.push({type:'error', message:'{{error}}'});</script>
+{% endfor %}
+
+{% for succ in success %}
+<script type="text/javascript">infos.push({type:'success', message:'{{succ}}'});</script>
+{% endfor %}
+
+{% for warn in warning %}
+<script type="text/javascript">infos.push({type:'notice', message:'{{warn}}'});</script>
+{% endfor %}
+
+<script type="text/javascript">
+    $(function(){
+        for(var i = 0; i < infos.length; i++){
+            var info = infos[i];
+            new PNotify({
+                text:info.message,
+                type:info.type
+            });
+        }
+    });
+</script>

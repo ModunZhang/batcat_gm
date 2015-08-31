@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-{% include '../includes/head.html' %}
+<head>
+    {% include '../includes/head.html' %}
+    {% block head %}{% endblock %}
+</head>
 <body>
 {% include '../includes/navbar.html' %}
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li class="{{isActive('/service/notice-and-mail')}}"><a href="/service/notice-and-mail">Notice&Mail</a></li>
+                <li class="{{isActive('/service/notice-and-mail')}}"><a href="/service/notice-and-mail">Notice&Mail</a>
+                </li>
             </ul>
         </div>
         <div class="col-md-10 col-md-offset-2 content">
-            {% include '../includes/messages.html' %}
             {% block content %}{% endblock %}
         </div>
     </div>
 </div>
 <!-- /container -->
 {% include '../includes/foot.html' %}
-{% block scripts %}{% endblock %}
+{% block foot %}{% endblock %}
+{% include '../includes/messages.html' %}
 </body>
 </html>
