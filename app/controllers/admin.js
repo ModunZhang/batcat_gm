@@ -31,11 +31,13 @@ router.put('/init', auth.requireEmptyUsers, function(req, res){
   });
 });
 
-router.get('/', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res){
+router.all('*', auth.requiresLogin, auth.requiresUserRight.bind(auth, consts.UserRoles.Admin));
+
+router.get('/', function(req, res){
   res.render('admin/index');
 });
 
-router.all('/users/*', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin), function(req, res, next){
+router.all('/users/*', function(req, res, next){
   Game.find().then(function(games){
     req.games = games;
     next();
@@ -108,7 +110,7 @@ router.put('/users/edit/:userId', function(req, res){
   member.roles = !!req.body.roles ? req.body.roles : [];
   member.games = !!req.body.games ? req.body.games : [];
   member.save().then(function(){
-    req.flash('info', 'Edit successfully');
+    req.flash('success', 'Edit successfully');
     if(member._id === req.user._id){
       req.logout();
       res.redirect('/user/login');
@@ -127,15 +129,13 @@ router.put('/users/edit/:userId', function(req, res){
 router.delete('/users/delete/:userId', function(req, res, next){
   var member = req.member;
   member.remove().then(function(){
-    req.flash('info', 'Deleted successfully');
+    req.flash('success', 'Deleted successfully');
     res.redirect('/admin/users/list');
   }, function(e){
     next(e);
   })
 });
 
-
-router.all('/games/*', auth.requiresUserRight.bind(auth, consts.UserRoles.Admin));
 
 router.param('gameId', function(req, res, next, gameId){
   Game.findById(gameId).then(function(game){
@@ -179,7 +179,7 @@ router.put('/games/edit/:gameId', function(req, res){
   var game = req.game;
   game = extend(game, req.body);
   game.save().then(function(){
-    req.flash('info', 'Edit successfully');
+    req.flash('success', 'Edit successfully');
     res.redirect('/admin/games/list');
   }, function(e){
     res.render('admin/games/edit', {
@@ -192,7 +192,7 @@ router.put('/games/edit/:gameId', function(req, res){
 router.delete('/games/delete/:gameId', function(req, res, next){
   var game = req.game;
   game.remove().then(function(){
-    req.flash('info', 'Deleted successfully');
+    req.flash('success', 'Deleted successfully');
     res.redirect('/admin/games/list');
   }, function(e){
     next(e);

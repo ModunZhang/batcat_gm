@@ -38,17 +38,19 @@ router.post('/login', auth.requiresNotLogin, function(req, res, next){
   })(req, res, next)
 });
 
-router.get('/logout', auth.requiresLogin, function(req, res){
+router.all('*', auth.requiresLogin);
+
+router.get('/logout', function(req, res){
   req.logout();
-  req.flash('info', 'Logout successfully');
+  req.flash('success', 'Logout successfully');
   res.redirect('/user/login');
 });
 
-router.get('/edit-my-password', auth.requiresLogin, function(req, res){
+router.get('/edit-my-password', function(req, res){
   res.render('user/edit-my-password');
 });
 
-router.put('/edit-my-password', auth.requiresLogin, function(req, res, next){
+router.put('/edit-my-password', function(req, res, next){
   if(!req.body.password) return res.render('user/edit-my-password', {errors:['Original Password cannot be empty']});
   if(!req.body.newpassword) return res.render('user/edit-my-password', {errors:['New password cannot be empty']});
   User.findById(req.user._id).then(function(user){
@@ -60,7 +62,7 @@ router.put('/edit-my-password', auth.requiresLogin, function(req, res, next){
       user.save(function(e){
         if(!!e) return next(e);
         req.logout();
-        req.flash('info', 'Edit successfully');
+        req.flash('success', 'Edit successfully');
         res.redirect('/user/login');
       })
     })

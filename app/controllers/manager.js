@@ -11,6 +11,8 @@ var consts = require('../../config/consts');
 var router = express.Router();
 module.exports = router;
 
-router.get('/', auth.requiresUserRight.bind(auth, consts.UserRoles.Manager), function(req, res){
+router.all('*', auth.requiresLogin, auth.requiresUserRight.bind(auth, consts.UserRoles.Manager));
+
+router.get('/', function(req, res){
   res.render('manager/index');
 });
