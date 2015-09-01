@@ -44,9 +44,15 @@
     font-weight: bold;
 }
 
-.CodeContainer{
+pre.CodeContainer{
     border: none;
     background:none;
+}
+
+pre.CodeContainer img{
+    cursor:pointer;
+    border:none;
+    margin-bottom:-1px;
 }
 
 #CollapsibleViewDetail a {

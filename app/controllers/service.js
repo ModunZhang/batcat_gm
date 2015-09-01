@@ -258,3 +258,16 @@ router.get('/player/find-by-name', function(req, res){
     return res.json({code:200, data:{player:data, playerString:JSON.stringify(data)}});
   });
 });
+
+router.get('/get-mail-reward-types', function(req, res){
+  var games = req.games;
+  var gameId = req.query.gameId;
+  var game = _.find(games, function(game){
+    return game._id === gameId;
+  });
+
+  utils.get(game.ip, game.port, 'get-mail-reward-types', null, function(e, data){
+    if(!!e) return res.render('service/get-mail-reward-types', {data:{}});
+    return res.render('service/get-mail-reward-types', {data:JSON.stringify(data)});
+  });
+});

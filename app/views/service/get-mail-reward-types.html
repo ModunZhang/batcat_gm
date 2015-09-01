@@ -1,0 +1,53 @@
+{% extends '../layouts/basic.html' %}
+
+{% block head %}
+<script src='/javascripts/json-format.js'></script>
+<link href="/stylesheets/json-format.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <h4 style="text-align: center">Mail reward types and sub types</h4>
+
+    <div class="col-sm-12" id="searchResult">
+        <textarea id="RawJson" hidden>{{data}}</textarea>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div hidden>
+                    <select id="TabSize" onchange="TabSizeChanged()">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                    <input type="checkbox" id="QuoteKeys" onclick="QuoteKeysClicked()"/>
+                    <input type="checkbox" id="CollapsibleView" onclick="CollapsibleViewClicked()" checked/>
+                </div>
+                <div id="CollapsibleViewDetail">
+                    <a href="javascript:void(0);" onclick="ExpandAllClicked()">展开</a>
+                    <a href="javascript:void(0);" onclick="CollapseAllClicked()">叠起</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(3)">2级</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(4)">3级</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(5)">4级</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(6)">5级</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(7)">6级</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(8)">7级</a>
+                    <a href="javascript:void(0);" onclick="CollapseLevel(9)">8级</a>
+                </div>
+            </div>
+            <div class="panel-body" id="Canvas"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block foot %}
+<script type="text/javascript">
+    $(function(){
+        CollapseLevel(3);
+    })
+</script>
+{% endblock %}

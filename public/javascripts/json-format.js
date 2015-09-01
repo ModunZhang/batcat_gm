@@ -19,7 +19,7 @@ function Process(){
     if(json == "") json = "\"\"";
     var obj = eval("["+json+"]");
     html = ProcessObject(obj[0], 0, false, false, false);
-    $id("Canvas").innerHTML = "<PRE class='CodeContainer'>"+html+"</PRE>";
+    $id("Canvas").innerHTML = "<pre class='CodeContainer'>"+html+"</pre>";
   }catch(e){
     alert("JSON数据格式不正确:\n"+e.message);
     $id("Canvas").innerHTML = "";

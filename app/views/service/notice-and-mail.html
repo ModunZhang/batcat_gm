@@ -97,6 +97,7 @@
         <div class="col-sm-9">
             <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
                    id="rewards_2" class="form-control">
+            <p><a href="javascript:showMailRewardHelp('game_2')">Need Help?</a></p>
         </div>
     </div>
     <div class="form-group">
@@ -153,6 +154,7 @@
         <div class="col-sm-9">
             <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
                    id="rewards_3" class="form-control">
+            <p><a href="javascript:showMailRewardHelp('game_3')">Need Help?</a></p>
         </div>
     </div>
     <div class="form-group">
@@ -241,5 +243,17 @@
             }
         });
     });
+
+    function showMailRewardHelp(gameId){
+        gameId = $('#' + gameId).val();
+        if(gameId.trim().length == 0){
+            new PNotify({
+                type:'error',
+                text:'Game not selected'
+            })
+        }else{
+            window.open('/service/get-mail-reward-types?gameId=' + gameId);
+        }
+    }
 </script>
 {% endblock %}
