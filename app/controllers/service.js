@@ -191,21 +191,15 @@ router.get('/alliance/find-by-id', function(req, res){
   var game = _.find(req.games, function(game){
     return game._id === gameId;
   });
-  if(!game){
-    req.flash('error', 'Game not selected.');
-    return res.redirect('/service/alliance');
-  }
-  if(!_.isString(allianceId) || allianceId.trim().length == 0){
-    req.flash('error', 'Id cannot be blank.');
-    return res.redirect('/service/alliance');
-  }
+  if(!game) return res.json({code:500, data:['Game not selected.']});
+  if(!_.isString(allianceId) || allianceId.trim().length == 0) return res.json({
+    code:500,
+    data:['Id cannot be blank.']
+  });
 
   utils.get(game.ip, game.port, 'alliance/find-by-id', {allianceId:allianceId}, function(e, data){
-    if(!!e){
-      req.flash('error', e.message);
-      return res.redirect('/service/alliance');
-    }
-    res.render('service/alliance/alliance', {alliance:data, allianceString:JSON.stringify(data)})
+    if(!!e) return res.json({code:500, data:[e.message]});
+    return res.json({code:200, data:{alliance:data, allianceString:JSON.stringify(data)}})
   });
 });
 
@@ -215,21 +209,15 @@ router.get('/alliance/find-by-tag', function(req, res){
   var game = _.find(req.games, function(game){
     return game._id === gameId;
   });
-  if(!game){
-    req.flash('error', 'Game not selected.');
-    return res.redirect('/service/alliance');
-  }
-  if(!_.isString(allianceTag) || allianceTag.trim().length == 0){
-    req.flash('error', 'Tag cannot be blank.');
-    return res.redirect('/service/alliance');
-  }
+  if(!game) return res.json({code:500, data:['Game not selected.']});
+  if(!_.isString(allianceTag) || allianceTag.trim().length == 0) return res.json({
+    code:500,
+    data:['Tag cannot be blank.']
+  });
 
   utils.get(game.ip, game.port, 'alliance/find-by-tag', {allianceTag:allianceTag}, function(e, data){
-    if(!!e){
-      req.flash('error', e.message);
-      return res.redirect('/service/alliance');
-    }
-    res.render('service/alliance/alliance', {alliance:data, allianceString:JSON.stringify(data)})
+    if(!!e) return res.json({code:500, data:[e.message]});
+    return res.json({code:200, data:{alliance:data, allianceString:JSON.stringify(data)}})
   });
 });
 
@@ -244,21 +232,12 @@ router.get('/player/find-by-id', function(req, res){
   var game = _.find(req.games, function(game){
     return game._id === gameId;
   });
-  if(!game){
-    req.flash('error', 'Game not selected.');
-    return res.redirect('/service/player');
-  }
-  if(!_.isString(playerId) || playerId.trim().length == 0){
-    req.flash('error', 'Id cannot be blank.');
-    return res.redirect('/service/player');
-  }
+  if(!game) return res.json({code:500, data:['Game not selected.']});
+  if(!_.isString(playerId) || playerId.trim().length == 0) return res.json({code:500, data:['Id cannot be blank.']});
 
   utils.get(game.ip, game.port, 'player/find-by-id', {playerId:playerId}, function(e, data){
-    if(!!e){
-      req.flash('error', e.message);
-      return res.redirect('/service/player');
-    }
-    res.render('service/player/player', {player:data, playerString:JSON.stringify(data)})
+    if(!!e) return res.json({code:500, data:[e.message]});
+    return res.json({code:200, data:{player:data, playerString:JSON.stringify(data)}});
   });
 });
 
@@ -268,20 +247,14 @@ router.get('/player/find-by-name', function(req, res){
   var game = _.find(req.games, function(game){
     return game._id === gameId;
   });
-  if(!game){
-    req.flash('error', 'Game not selected.');
-    return res.redirect('/service/player');
-  }
-  if(!_.isString(playerName) || playerName.trim().length == 0){
-    req.flash('error', 'Name cannot be blank.');
-    return res.redirect('/service/player');
-  }
+  if(!game) return res.json({code:500, data:['Game not selected.']});
+  if(!_.isString(playerName) || playerName.trim().length == 0) return res.json({
+    code:500,
+    data:['Name cannot be blank.']
+  });
 
   utils.get(game.ip, game.port, 'player/find-by-name', {playerName:playerName}, function(e, data){
-    if(!!e){
-      req.flash('error', e.message);
-      return res.redirect('/service/player');
-    }
-    res.render('service/player/player', {player:data, playerString:JSON.stringify(data)})
+    if(!!e) return res.json({code:500, data:[e.message]});
+    return res.json({code:200, data:{player:data, playerString:JSON.stringify(data)}});
   });
 });
