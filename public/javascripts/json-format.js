@@ -2,12 +2,13 @@
 window.ImgCollapsed = "/images/Collapsed.gif";
 window.ImgExpanded = "/images/Expanded.gif";
 window.QuoteKeys = true;
-function $id(id){ return document.getElementById(id); }
-function IsArray(obj) {
-  return  obj && 
-          typeof obj === 'object' && 
-          typeof obj.length === 'number' &&
-          !(obj.propertyIsEnumerable('length'));
+function $id(id){
+  return document.getElementById(id);
+}
+function IsArray(obj){
+  return obj &&
+    typeof obj === 'object' &&
+    typeof obj.length === 'number' && !(obj.propertyIsEnumerable('length'));
 }
 
 function Process(){
@@ -17,11 +18,11 @@ function Process(){
   var html = "";
   try{
     if(json == "") json = "\"\"";
-    var obj = eval("["+json+"]");
+    var obj = eval("[" + json + "]");
     html = ProcessObject(obj[0], 0, false, false, false);
-    $id("Canvas").innerHTML = "<pre class='CodeContainer'>"+html+"</pre>";
+    $id("Canvas").innerHTML = "<pre class='CodeContainer'>" + html + "</pre>";
   }catch(e){
-    alert("JSON数据格式不正确:\n"+e.message);
+    alert("JSON数据格式不正确:\n" + e.message);
     $id("Canvas").innerHTML = "";
   }
 }
@@ -29,36 +30,36 @@ window._dateObj = new Date();
 window._regexpObj = new RegExp();
 function ProcessObject(obj, indent, addComma, isArray, isPropertyContent){
   var html = "";
-  var comma = (addComma) ? "<span class='Comma'>,</span> " : ""; 
+  var comma = (addComma) ? "<span class='Comma'>,</span> " : "";
   var type = typeof obj;
-  var clpsHtml ="";
+  var clpsHtml = "";
   if(IsArray(obj)){
     if(obj.length == 0){
-      html += GetRow(indent, "<span class='ArrayBrace'>[ ]</span>"+comma, isPropertyContent);
+      html += GetRow(indent, "<span class='ArrayBrace'>[ ]</span>" + comma, isPropertyContent);
     }else{
-      clpsHtml = window.IsCollapsible ? "<span><img src=\""+window.ImgExpanded+"\" onClick=\"ExpImgClicked(this)\" /></span><span class='collapsible'>" : "";
-      html += GetRow(indent, "<span class='ArrayBrace'>[</span>"+clpsHtml, isPropertyContent);
+      clpsHtml = window.IsCollapsible ? "<span><img src=\"" + window.ImgExpanded + "\" onClick=\"ExpImgClicked(this)\" /></span><span class='collapsible'>" : "";
+      html += GetRow(indent, "<span class='ArrayBrace'>[</span>" + clpsHtml, isPropertyContent);
       for(var i = 0; i < obj.length; i++){
         html += ProcessObject(obj[i], indent + 1, i < (obj.length - 1), true, false);
       }
       clpsHtml = window.IsCollapsible ? "</span>" : "";
-      html += GetRow(indent, clpsHtml+"<span class='ArrayBrace'>]</span>"+comma);
+      html += GetRow(indent, clpsHtml + "<span class='ArrayBrace'>]</span>" + comma);
     }
   }else if(type == 'object'){
-    if (obj == null){
-        html += FormatLiteral("null", "", comma, indent, isArray, "Null");
-    }else if (obj.constructor == window._dateObj.constructor) { 
-        html += FormatLiteral("new Date(" + obj.getTime() + ") /*" + obj.toLocaleString()+"*/", "", comma, indent, isArray, "Date"); 
-    }else if (obj.constructor == window._regexpObj.constructor) {
-        html += FormatLiteral("new RegExp(" + obj + ")", "", comma, indent, isArray, "RegExp"); 
+    if(obj == null){
+      html += FormatLiteral("null", "", comma, indent, isArray, "Null");
+    }else if(obj.constructor == window._dateObj.constructor){
+      html += FormatLiteral("new Date(" + obj.getTime() + ") /*" + obj.toLocaleString() + "*/", "", comma, indent, isArray, "Date");
+    }else if(obj.constructor == window._regexpObj.constructor){
+      html += FormatLiteral("new RegExp(" + obj + ")", "", comma, indent, isArray, "RegExp");
     }else{
       var numProps = 0;
       for(var prop in obj) numProps++;
       if(numProps == 0){
-        html += GetRow(indent, "<span class='ObjectBrace'>{ }</span>"+comma, isPropertyContent);
+        html += GetRow(indent, "<span class='ObjectBrace'>{ }</span>" + comma, isPropertyContent);
       }else{
-        clpsHtml = window.IsCollapsible ? "<span><img src=\""+window.ImgExpanded+"\" onClick=\"ExpImgClicked(this)\" /></span><span class='collapsible'>" : "";
-        html += GetRow(indent, "<span class='ObjectBrace'>{</span>"+clpsHtml, isPropertyContent);
+        clpsHtml = window.IsCollapsible ? "<span><img src=\"" + window.ImgExpanded + "\" onClick=\"ExpImgClicked(this)\" /></span><span class='collapsible'>" : "";
+        html += GetRow(indent, "<span class='ObjectBrace'>{</span>" + clpsHtml, isPropertyContent);
 
         var j = 0;
 
@@ -66,13 +67,13 @@ function ProcessObject(obj, indent, addComma, isArray, isPropertyContent){
 
           var quote = window.QuoteKeys ? "\"" : "";
 
-          html += GetRow(indent + 1, "<span class='PropertyName'>"+quote+prop+quote+"</span>: "+ProcessObject(obj[prop], indent + 1, ++j < numProps, false, true));
+          html += GetRow(indent + 1, "<span class='PropertyName'>" + quote + prop + quote + "</span>: " + ProcessObject(obj[prop], indent + 1, ++j < numProps, false, true));
 
         }
 
         clpsHtml = window.IsCollapsible ? "</span>" : "";
 
-        html += GetRow(indent, clpsHtml+"<span class='ObjectBrace'>}</span>"+comma);
+        html += GetRow(indent, clpsHtml + "<span class='ObjectBrace'>}</span>" + comma);
 
       }
 
@@ -88,15 +89,15 @@ function ProcessObject(obj, indent, addComma, isArray, isPropertyContent){
 
   }else if(type == 'function'){
 
-    if (obj.constructor == window._regexpObj.constructor) {
+    if(obj.constructor == window._regexpObj.constructor){
 
-        html += FormatLiteral("new RegExp(" + obj + ")", "", comma, indent, isArray, "RegExp"); 
+      html += FormatLiteral("new RegExp(" + obj + ")", "", comma, indent, isArray, "RegExp");
 
     }else{
 
-        obj = FormatFunction(indent, obj);
+      obj = FormatFunction(indent, obj);
 
-        html += FormatLiteral(obj, "", comma, indent, isArray, "Function");
+      html += FormatLiteral(obj, "", comma, indent, isArray, "Function");
 
     }
 
@@ -120,7 +121,7 @@ function FormatLiteral(literal, quote, comma, indent, isArray, style){
 
     literal = literal.split("<").join("&lt;").split(">").join("&gt;");
 
-  var str = "<span class='"+style+"'>"+quote+literal+quote+comma+"</span>";
+  var str = "<span class='" + style + "'>" + quote + literal + quote + comma + "</span>";
 
   if(isArray) str = GetRow(indent, str);
 
@@ -140,7 +141,7 @@ function FormatFunction(indent, obj){
 
   for(var i = 0; i < funcStrArray.length; i++){
 
-    str += ((i==0)?"":tabs) + funcStrArray[i] + "\n";
+    str += ((i == 0) ? "" : tabs) + funcStrArray[i] + "\n";
 
   }
 
@@ -154,11 +155,11 @@ function GetRow(indent, data, isPropertyContent){
 
   for(var i = 0; i < indent && !isPropertyContent; i++) tabs += window.TAB;
 
-  if(data != null && data.length > 0 && data.charAt(data.length-1) != "\n")
+  if(data != null && data.length > 0 && data.charAt(data.length - 1) != "\n")
 
-    data = data+"\n";
+    data = data + "\n";
 
-  return tabs+data;                       
+  return tabs + data;
 
 }
 
@@ -171,7 +172,6 @@ function CollapsibleViewClicked(){
 }
 
 
-
 function QuoteKeysClicked(){
 
   window.QuoteKeys = $id("QuoteKeys").checked;
@@ -179,7 +179,6 @@ function QuoteKeysClicked(){
   Process();
 
 }
-
 
 
 function CollapseAllClicked(){
@@ -252,9 +251,9 @@ function ExpImgClicked(img){
 
   if(container.style.display == "none"){
 
-      disp = "inline";
+    disp = "inline";
 
-      src = window.ImgExpanded;
+    src = window.ImgExpanded;
 
   }
 
@@ -278,7 +277,7 @@ function CollapseLevel(level){
 
       }else{
 
-        MakeContentVisible(element, true);  
+        MakeContentVisible(element, true);
 
       }
 
@@ -310,7 +309,7 @@ function EnsureIsPopulated(){
 
 function MultiplyString(num, str){
 
-  var sb =[];
+  var sb = [];
 
   for(var i = 0; i < num; i++){
 
@@ -325,16 +324,15 @@ function MultiplyString(num, str){
 function SelectAllClicked(){
 
 
-
-  if(!!document.selection && !!document.selection.empty) {
+  if(!!document.selection && !!document.selection.empty){
 
     document.selection.empty();
 
-  } else if(window.getSelection) {
+  }else if(window.getSelection){
 
     var sel = window.getSelection();
 
-    if(sel.removeAllRanges) {
+    if(sel.removeAllRanges){
 
       window.getSelection().removeAllRanges();
 
@@ -343,16 +341,14 @@ function SelectAllClicked(){
   }
 
 
+  var range =
 
-  var range = 
+    (!!document.body && !!document.body.createTextRange)
 
-      (!!document.body && !!document.body.createTextRange)
+      ? document.body.createTextRange()
 
-          ? document.body.createTextRange()
+      : document.createRange();
 
-          : document.createRange();
-
-  
 
   if(!!range.selectNode)
 
@@ -362,7 +358,6 @@ function SelectAllClicked(){
 
     range.moveToElementText($id("Canvas"));
 
-  
 
   if(!!range.select)
 
