@@ -31,7 +31,7 @@ router.post('/login', auth.requiresNotLogin, function(req, res, next){
     req.login(user, function(e){
       if(!!e) return next(e);
       if(req.body.rememberme){
-        req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+        req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;//7days
       }else req.session.cookie.maxAge = false;
       return res.redirect('/');
     })

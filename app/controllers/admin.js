@@ -59,7 +59,7 @@ router.param('userId', function(req, res, next, userId){
 router.get('/users/list', function(req, res, next){
   res.locals.showGameNames = function(gameIds){
     var gameNames = [];
-    for(var i = 0; i < gameIds.length; i ++){
+    for(var i = 0; i < gameIds.length; i++){
       (function(){
         var gameId = gameIds[i];
         var game = _.find(req.games, function(game){
@@ -110,12 +110,14 @@ router.put('/users/edit/:userId', function(req, res){
   member.roles = !!req.body.roles ? req.body.roles : [];
   member.games = !!req.body.games ? req.body.games : [];
   member.save().then(function(){
-    req.flash('success', 'Edit successfully');
-    if(member._id === req.user._id){
-      req.logout();
-      res.redirect('/user/login');
-    }else
-      res.redirect('/admin/users/list');
+    mongoose.connection.collection('sessions').deleteMany({session:{$regex:member._id}}, function(){
+      req.flash('success', 'Edit successfully');
+      if(member._id === req.user._id){
+        req.logout();
+        res.redirect('/user/login');
+      }else
+        res.redirect('/admin/users/list');
+    });
   }, function(e){
     res.render('admin/users/edit', {
       errors:utils.mongooseError(e),
@@ -128,12 +130,18 @@ router.put('/users/edit/:userId', function(req, res){
 
 router.delete('/users/delete/:userId', function(req, res, next){
   var member = req.member;
+  if(member._id === req.user._id){
+    req.flash('error', 'Can not delete your self');
+    return res.redirect('/admin/users/list');
+  }
   member.remove().then(function(){
-    req.flash('success', 'Deleted successfully');
-    res.redirect('/admin/users/list');
+    mongoose.connection.collection('sessions').deleteMany({session:{$regex:member._id}}, function(){
+      req.flash('success', 'Deleted successfully');
+      res.redirect('/admin/users/list');
+    });
   }, function(e){
     next(e);
-  })
+  });
 });
 
 

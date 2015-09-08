@@ -2,7 +2,6 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var csrf = require('csurf');
@@ -39,16 +38,17 @@ app.use(methodOverride(function(req){
     return method;
   }
 }));
-app.use(cookieParser());
 app.use(session({
-  saveUninitialized:true,
+  saveUninitialized:false,
   resave:false,
   secret:config.sessionSecret,
   store:new mongoStore({
     url:config.mongoHost,
-    collection:'sessions'
+    collection:'sessions',
+    ttl:60 * 60 * 24 * 10,
+    touchAfter: 60 * 60 * 24
   }),
-  cookie:{httpOnly:true, maxAge:2419200000}
+  cookie:{path: '/', httpOnly: true, secure: false, maxAge: null}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
