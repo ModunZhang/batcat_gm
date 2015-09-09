@@ -172,9 +172,22 @@
                     });
                 }else{
                     clearInterval(intervalId_2);
+
                     var gameId = $('#game_2').val();
                     var allianceId = $('#alliance_2').val();
                     var lastChatTime = 0;
+                    var chats = resp.data;
+                    for(var i = 0; i < chats.length; i++){
+                        var chat = chats[i];
+                        var content = null;
+                        content = chatOthersTemplate.replace('^Name^', "[" + chat.allianceTag + "]" + chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        $('#chat_ul_2').append(content);
+                    }
+                    if(chats.length > 0){
+                        lastChatTime = chats[chats.length - 1].time;
+                        chat_body_2.scrollTop(chat_body_2[0].scrollHeight);
+                    }
+
                     var getAllianceChats = function(){
                         $.get('/service/get-alliance-chats', {
                             gameId:gameId,
