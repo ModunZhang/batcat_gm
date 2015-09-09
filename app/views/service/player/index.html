@@ -100,42 +100,53 @@
 
 {% block foot %}
 <script type="text/javascript">
+    var beforeSubmit = function(){
+        waitingDialog.show();
+        return true;
+    };
+
     var searchResult = $('#searchResult');
-    $('#findById').ajaxForm(function(resp){
-        searchResult.hide();
-        if(resp.code === 500){
-            new PNotify({
-                text:resp.data,
-                type:'error'
-            });
-        }else{
-            new PNotify({
-                text:'Search successfully',
-                type:'success'
-            });
-            $('#RawJson').val(resp.data.playerString);
-            Process();
-            CollapseLevel(3);
-            searchResult.show();
+    $('#findById').ajaxForm({
+        beforeSubmit:beforeSubmit,
+        success:function(resp){
+            waitingDialog.hide();
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                new PNotify({
+                    text:'Search successfully',
+                    type:'success'
+                });
+                $('#RawJson').val(resp.data.playerString);
+                Process();
+                CollapseLevel(3);
+                searchResult.show();
+            }
         }
     });
 
-    $('#findByName').ajaxForm(function(resp){
-        searchResult.hide();
-        if(resp.code === 500){
-            new PNotify({
-                text:resp.data,
-                type:'error'
-            });
-        }else{
-            new PNotify({
-                text:'Search successfully',
-                type:'success'
-            });
-            $('#RawJson').val(resp.data.playerString);
-            Process();
-            CollapseLevel(3);
-            searchResult.show();
+    $('#findByName').ajaxForm({
+        beforeSubmit:beforeSubmit,
+        success:function(resp){
+            waitingDialog.hide();
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                new PNotify({
+                    text:'Search successfully',
+                    type:'success'
+                });
+                $('#RawJson').val(resp.data.playerString);
+                Process();
+                CollapseLevel(3);
+                searchResult.show();
+            }
         }
     });
 </script>

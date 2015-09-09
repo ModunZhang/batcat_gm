@@ -78,6 +78,7 @@
             getChats();
             intervalId = setInterval(getChats, 1000);
         });
+
         $('#send-system-chat').ajaxForm(function(resp){
             if(resp.code === 500){
                 new PNotify({

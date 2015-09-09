@@ -206,3 +206,6 @@ router.delete('/games/delete/:gameId', function(req, res, next){
     next(e);
   })
 });
+
+
+

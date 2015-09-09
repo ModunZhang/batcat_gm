@@ -97,6 +97,7 @@
         <div class="col-sm-9">
             <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
                    id="rewards_2" class="form-control">
+
             <p><a href="javascript:showMailRewardHelp('game_2')">Need Help?</a></p>
         </div>
     </div>
@@ -154,6 +155,7 @@
         <div class="col-sm-9">
             <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
                    id="rewards_3" class="form-control">
+
             <p><a href="javascript:showMailRewardHelp('game_3')">Need Help?</a></p>
         </div>
     </div>
@@ -203,45 +205,62 @@
             defaultText:''
         });
 
-        $('#form_1').ajaxForm(function(resp){
-            if(resp.code === 500){
-                new PNotify({
-                    text:resp.data,
-                    type:'error'
-                });
-            }else{
-                new PNotify({
-                    text:'Send successfully',
-                    type:'success'
-                });
+        var beforeSubmit = function(){
+            waitingDialog.show();
+            return true;
+        };
+
+        $('#form_1').ajaxForm({
+            beforeSubmit:beforeSubmit,
+            success:function(resp){
+                waitingDialog.hide();
+                if(resp.code === 500){
+                    new PNotify({
+                        text:resp.data,
+                        type:'error'
+                    });
+                }else{
+                    new PNotify({
+                        text:'Send successfully',
+                        type:'success'
+                    });
+                }
             }
         });
-        $('#form_2').ajaxForm(function(resp){
-            if(resp.code === 500){
-                new PNotify({
-                    text:resp.data,
-                    type:'error'
-                });
-            }else{
-                new PNotify({
-                    text:'Send successfully',
-                    type:'success'
-                });
+        $('#form_2').ajaxForm({
+            beforeSubmit:beforeSubmit,
+            success:function(resp){
+                waitingDialog.hide();
+                if(resp.code === 500){
+                    new PNotify({
+                        text:resp.data,
+                        type:'error'
+                    });
+                }else{
+                    new PNotify({
+                        text:'Send successfully',
+                        type:'success'
+                    });
+                }
             }
         });
-        $('#form_3').ajaxForm(function(resp){
-            if(resp.code === 500){
-                new PNotify({
-                    text:resp.data,
-                    type:'error'
-                });
-            }else{
-                new PNotify({
-                    text:'Send successfully',
-                    type:'success'
-                });
+        $('#form_3').ajaxForm({
+            beforeSubmit:beforeSubmit,
+            success:function(resp){
+                waitingDialog.hide();
+                if(resp.code === 500){
+                    new PNotify({
+                        text:resp.data,
+                        type:'error'
+                    });
+                }else{
+                    new PNotify({
+                        text:'Send successfully',
+                        type:'success'
+                    });
+                }
             }
-        });
+        })
     });
 
     function showMailRewardHelp(gameId){
