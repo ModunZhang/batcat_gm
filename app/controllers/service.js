@@ -180,6 +180,26 @@ router.post('/send-system-chat', function(req, res){
   });
 });
 
+router.get('/get-alliance-chats', function(req, res){
+  var games = req.games;
+  var gameId = req.query.gameId;
+  var time = Number(req.query.time);
+  var allianceId = req.query.allianceId;
+  var game = _.find(games, function(game){
+    return game._id === gameId;
+  });
+  if(!game) return res.json({code:500, data:['Game not selected.']});
+  if(_.isNaN(time)) return res.json({
+    code:500,
+    data:['Time not legal.']
+  });
+
+  utils.get(game.ip, game.port, 'get-alliance-chats', {allianceId:allianceId, time:Number(time)}, function(e, data){
+    if(!!e) return res.json({code:500, data:e.message});
+    return res.json({code:200, data:data});
+  });
+});
+
 
 router.get('/alliance', function(req, res){
   res.render('service/alliance/index')
