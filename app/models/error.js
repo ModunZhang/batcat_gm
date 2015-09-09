@@ -13,9 +13,9 @@ var Schema = mongoose.Schema;
  */
 var ErrorSchema = new Schema({
   _id:{type:String, required:true, default:shortid.generate},
-  deviceId:{type:String, required:true},
-  stack:{type:String, required:true},
-  createdAt:{type:Number, default:Date.now}
+  deviceId:{type:String},
+  stack:{type:String},
+  createdAt:{type:Number, required:true, default:Date.now, expires:60 * 60 * 24 * 7}
 });
 
 
@@ -32,7 +32,6 @@ var ErrorSchema = new Schema({
 /**
  * Middleware
  */
-
 
 
 /**

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include '../includes/head.html' %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+{% include '../includes/navbar.html' %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="{{isActive('/errors/create')}}">
+                    <a href="/errors/create">TempCreate</a>
+                </li>
+                <li class="{{isActive('/errors/list')}}">
+                    <a href="/errors/list">ClientErrors</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-10 col-md-offset-2 content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+<!-- /container -->
+{% include '../includes/foot.html' %}
+{% block foot %}{% endblock %}
+{% include '../includes/messages.html' %}
+</body>
+</html>

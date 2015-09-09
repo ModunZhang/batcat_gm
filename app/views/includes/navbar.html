@@ -11,6 +11,9 @@
                 {% if hasRole('Manager') %}
                 <li class="{{isActive('/manager')}}"><a href="/manager">Manager</a></li>
                 {% endif %}
+                {% if hasRole('Errors') %}
+                <li class="{{isActive('/errors')}}"><a href="/errors">Errors</a></li>
+                {% endif %}
                 {% if hasRole('Admin') %}
                 <li class="{{isActive('/admin')}}"><a href="/admin">Admin</a></li>
                 {% endif %}

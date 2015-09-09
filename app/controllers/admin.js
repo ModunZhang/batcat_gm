@@ -13,6 +13,7 @@ var consts = require('../../config/consts');
 
 var User = mongoose.model('User');
 var Game = mongoose.model('Game');
+var Error = mongoose.model('Error');
 
 var router = express.Router();
 module.exports = router;
@@ -206,6 +207,3 @@ router.delete('/games/delete/:gameId', function(req, res, next){
     next(e);
   })
 });
-
-
-

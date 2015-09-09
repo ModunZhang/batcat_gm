@@ -6,7 +6,8 @@ module.exports = {
   UserRoles:{
     Admin:'Admin',
     Manager:'Manager',
-    CustomerService:'CustomerService'
+    CustomerService:'CustomerService',
+    Errors:'Errors'
   },
   NoticeType:{
     Info:'info',
