@@ -18,7 +18,7 @@ module.exports = router;
 
 
 router.get('/create', function(req, res){
-  res.render('errors/create');
+  res.json({token: res.locals.csrf_token})
 });
 
 router.post('/create', function(req, res){

@@ -68,7 +68,7 @@ app.use(function(req, res, next){
     }
   };
   res.locals.hasRole = function(role){
-    return _.contains(req.user.roles, role);
+    return !!req.user && _.contains(req.user.roles, role);
   };
   res.locals.contains = function(objects, object){
     return _.contains(objects, object);

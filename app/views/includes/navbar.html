@@ -19,8 +19,10 @@
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                {% if req.user %}
                 <li><a href="/user/edit-my-password">{{req.user.email}}</a></li>
                 <li><a href="/user/logout">Logout</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
