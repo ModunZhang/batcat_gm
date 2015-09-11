@@ -5,15 +5,15 @@
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
-            <th>DeviceId</th>
             <th>Stack</th>
+            <th>DeviceId</th>
         </tr>
         </thead>
         <tbody>
         {% for error in clientErrors%}
         <tr>
-            <td>{{error.deviceId}}</td>
             <td><pre>{{error.stack}}</pre></td>
+            <td>{{error.deviceId}}<br/>{{error.createdAt|date('Y-m-d H:m:s', -60 * 8)}}</td>
         </tr>
         {% endfor %}
         </tbody>
