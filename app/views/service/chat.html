@@ -16,7 +16,8 @@
                             <label for="game_1" class="col-sm-2 control-label">Game</label>
 
                             <div class="col-sm-9">
-                                <select title='Choose a game' name="gameId" id="game_1" class="selectpicker">
+                                <select name="gameId" id="game_1" class="form-control">
+                                    <option value="">Choose a game</option>
                                     {% for game in games %}
                                     <option value="{{game._id}}">{{game.name}}</option>
                                     {% endfor %}
@@ -61,7 +62,8 @@
                             <label for="game_2" class="col-sm-2 control-label">Game</label>
 
                             <div class="col-sm-9">
-                                <select title='Choose a game' name="gameId" id="game_2" class="selectpicker">
+                                <select name="gameId" id="game_2" class="form-control">
+                                    <option value="">Choose a game</option>
                                     {% for game in games %}
                                     <option value="{{game._id}}">{{game.name}}</option>
                                     {% endfor %}

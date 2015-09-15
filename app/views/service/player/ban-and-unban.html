@@ -1,0 +1,70 @@
+{% extends '../../layouts/service.html' %}
+
+{% block content %}
+<table class="table table-striped table-bordered table-hover">
+    <tr>
+        <td><strong>Id</strong></td>
+        <td>{{player._id}}</td>
+    </tr>
+    <tr>
+        <td><strong>Name</strong></td>
+        <td>{{player.basicInfo.name}}</td>
+    </tr>
+    <tr>
+        <td><strong>Status</strong></td>
+        <td>{% if !!player.logicServerId %}Online {% else %} OffLine {% endif %}</td>
+    </tr>
+    <tr>
+        <td><strong>Server Id</strong></td>
+        <td>{{player.serverId}}</td>
+    </tr>
+    <tr>
+        <td><strong>Lock Time</strong></td>
+        <td>
+            {% if player.countInfo.lockTime - Date.now() > 0 %} {{player.countInfo.lockTime|date('Y-m-d H:i:s',
+            -60 * 8)}}
+            {% else %} None {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="row">
+                <div class="col-sm-6">
+                    <form action="/service/player/ban" method="post" role="form" id="ban">
+                        <input type="hidden" name="_csrf" value="{{csrf_token}}">
+                        <input type="hidden" name="gameId" value="{{gameId}}">
+                        <input type="hidden" name="playerId" value="{{player._id}}">
+                        <input type="hidden" name="serverId" value="{{player.serverId}}">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <select name="time" id="time" class="form-control">
+                                    <option value="30">30Minutes</option>
+                                    <option value="60">1Hour</option>
+                                    <option value="360">6Hours</option>
+                                    <option value="1440">24Hours</option>
+                                    <option value="525600">1Year</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-primary" type="submit">Ban</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% if player.countInfo.lockTime - Date.now() > 0 %}
+                <div class="col-sm-6">
+                    <form action="/service/player/ban" method="post" role="form" id="unban">
+                        <input type="hidden" name="_csrf" value="{{csrf_token}}">
+                        <input type="hidden" name="gameId" value="{{gameId}}">
+                        <input type="hidden" name="playerId" value="{{player._id}}">
+                        <input type="hidden" name="serverId" value="{{player.serverId}}">
+                        <input type="hidden" name="time" value="0">
+                        <button class="btn btn-primary" type="submit">UnBan</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+</table>
+{% endblock %}

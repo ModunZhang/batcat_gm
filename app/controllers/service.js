@@ -201,81 +201,62 @@ router.get('/get-alliance-chats', function(req, res){
 });
 
 
-router.get('/alliance', function(req, res){
-  res.render('service/alliance/index')
+router.get('/alliance/data', function(req, res){
+  res.render('service/alliance/search', {action:'/service/alliance/data'})
 });
 
-router.get('/alliance/find-by-id', function(req, res){
-  var gameId = req.query.gameId;
-  var allianceId = req.query.allianceId;
+router.post('/alliance/data', function(req, res){
+  var gameId = req.body.gameId;
+  var type = req.body.type;
+  var value = req.body.value;
   var game = _.find(req.games, function(game){
     return game._id === gameId;
   });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
-  if(!_.isString(allianceId) || allianceId.trim().length == 0) return res.json({
-    code:500,
-    data:['Id cannot be blank.']
-  });
+  if(!game){
+    return res.render('service/alliance/search', {
+      action:'/service/alliance/data',
+      errors:['Game not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+  if(type !== 'id' && type !== 'tag'){
+    return res.render('service/alliance/search', {
+      action:'/service/alliance/data',
+      errors:['Type not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
 
-  utils.get(game.ip, game.port, 'alliance/find-by-id', {allianceId:allianceId}, function(e, data){
-    if(!!e) return res.json({code:500, data:[e.message]});
-    return res.json({code:200, data:{alliance:data, allianceString:JSON.stringify(data)}})
-  });
-});
+  if(!_.isString(value) || value.trim().length == 0){
+    return res.render('service/alliance/search', {
+      action:'/service/alliance/data',
+      errors:['Value cannot be blank.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
 
-router.get('/alliance/find-by-tag', function(req, res){
-  var gameId = req.query.gameId;
-  var allianceTag = req.query.allianceTag;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
-  if(!_.isString(allianceTag) || allianceTag.trim().length == 0) return res.json({
-    code:500,
-    data:['Tag cannot be blank.']
-  });
-
-  utils.get(game.ip, game.port, 'alliance/find-by-tag', {allianceTag:allianceTag}, function(e, data){
-    if(!!e) return res.json({code:500, data:[e.message]});
-    return res.json({code:200, data:{alliance:data, allianceString:JSON.stringify(data)}})
-  });
-});
-
-
-router.get('/player', function(req, res){
-  res.render('service/player/index')
-});
-
-router.get('/player/find-by-id', function(req, res){
-  var gameId = req.query.gameId;
-  var playerId = req.query.playerId;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
-  if(!_.isString(playerId) || playerId.trim().length == 0) return res.json({code:500, data:['Id cannot be blank.']});
-
-  utils.get(game.ip, game.port, 'player/find-by-id', {playerId:playerId}, function(e, data){
-    if(!!e) return res.json({code:500, data:[e.message]});
-    return res.json({code:200, data:{player:data, playerString:JSON.stringify(data)}});
-  });
-});
-
-router.get('/player/find-by-name', function(req, res){
-  var gameId = req.query.gameId;
-  var playerName = req.query.playerName;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
-  if(!_.isString(playerName) || playerName.trim().length == 0) return res.json({
-    code:500,
-    data:['Name cannot be blank.']
-  });
-
-  utils.get(game.ip, game.port, 'player/find-by-name', {playerName:playerName}, function(e, data){
-    if(!!e) return res.json({code:500, data:[e.message]});
-    return res.json({code:200, data:{player:data, playerString:JSON.stringify(data)}});
+  var url = type === 'id' ? 'alliance/find-by-id' : 'alliance/find-by-tag';
+  var params = type === 'id' ? {allianceId:value} : {allianceTag:value};
+  utils.get(game.ip, game.port, url, params, function(e, data){
+    if(!!e){
+      return res.render('service/alliance/search', {
+        action:'/service/alliance/data',
+        errors:[e.message],
+        gameId:gameId,
+        type:type,
+        value:value
+      });
+    }
+    return res.render('service/alliance/data', {
+      alliance:data,
+      allianceString:JSON.stringify(data)
+    });
   });
 });
 
@@ -289,5 +270,242 @@ router.get('/get-mail-reward-types', function(req, res){
   utils.get(game.ip, game.port, 'get-mail-reward-types', null, function(e, data){
     if(!!e) return res.render('service/get-mail-reward-types', {data:{}});
     return res.render('service/get-mail-reward-types', {data:JSON.stringify(data)});
+  });
+});
+
+router.get('/player/data', function(req, res){
+  res.render('service/player/search', {action:'/service/player/data'})
+});
+
+router.post('/player/data', function(req, res){
+  var gameId = req.body.gameId;
+  var type = req.body.type;
+  var value = req.body.value;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+
+  if(!game){
+    return res.render('service/player/search', {
+      action:'/service/player/data',
+      errors:['Game not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+  if(type !== 'id' && type !== 'name'){
+    return res.render('service/player/search', {
+      action:'/service/player/data',
+      errors:['Type not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+
+  if(!_.isString(value) || value.trim().length == 0){
+    return res.render('service/player/search', {
+      action:'/service/player/data',
+      errors:['Value cannot be blank.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+
+  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
+  var params = type === 'id' ? {playerId:value} : {playerName:value};
+  utils.get(game.ip, game.port, url, params, function(e, data){
+    if(!!e){
+      return res.render('service/player/search', {
+        action:'/service/player/data',
+        errors:[e.message],
+        gameId:gameId,
+        type:type,
+        value:value
+      });
+    }
+    return res.render('service/player/data', {
+      player:data,
+      playerString:JSON.stringify(data)
+    });
+  });
+});
+
+
+router.get('/player/ban-and-unban', function(req, res){
+  res.render('service/player/search', {action:'/service/player/ban-and-unban'})
+});
+
+router.post('/player/ban-and-unban', function(req, res){
+  var gameId = req.body.gameId;
+  var type = req.body.type;
+  var value = req.body.value;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+
+  if(!game){
+    return res.render('service/player/search', {
+      action:'/service/player/ban-and-unban',
+      errors:['Game not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+  if(type !== 'id' && type !== 'name'){
+    return res.render('service/player/search', {
+      action:'/service/player/ban-and-unban',
+      errors:['Type not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+
+  if(!_.isString(value) || value.trim().length == 0){
+    return res.render('service/player/search', {
+      action:'/service/player/ban-and-unban',
+      errors:['Value cannot be blank.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+
+  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
+  var params = type === 'id' ? {playerId:value} : {playerName:value};
+  utils.get(game.ip, game.port, url, params, function(e, data){
+    if(!!e){
+      return res.render('service/player/search', {
+        action:'/service/player/ban-and-unban',
+        errors:[e.message],
+        gameId:gameId,
+        type:type,
+        value:value
+      });
+    }
+    return res.render('service/player/ban-and-unban', {
+      gameId:gameId,
+      player:data,
+      playerString:JSON.stringify(data)
+    });
+  });
+});
+
+router.get('/player/mute-and-unmute', function(req, res){
+  res.render('service/player/search', {action:'/service/player/mute-and-unmute'})
+});
+
+router.post('/player/ban', function(req, res, next){
+  var gameId = req.body.gameId;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  var playerId = req.body.playerId;
+  var serverId = req.body.serverId;
+  var time = Number(req.body.time);
+
+  if(!game) return next(new Error('gameId 不合法'));
+  if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
+  if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
+  if(_.isNaN(time) || time < 0) return next(new Error('time 不合法'));
+  time = time * 60 * 1000;
+
+  var postData = {
+    serverId:serverId,
+    playerId:playerId,
+    time:time
+  };
+  utils.post(game.ip, game.port, 'player/ban', postData, function(e){
+    if(!!e) return next(e);
+    req.flash('success', 'Edit successfully');
+    return res.redirect('/service/player/ban-and-unban');
+  });
+});
+
+router.post('/player/mute-and-unmute', function(req, res){
+  var gameId = req.body.gameId;
+  var type = req.body.type;
+  var value = req.body.value;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+
+  if(!game){
+    return res.render('service/player/search', {
+      action:'/service/player/mute-and-unmute',
+      errors:['Game not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+  if(type !== 'id' && type !== 'name'){
+    return res.render('service/player/search', {
+      action:'/service/player/mute-and-unmute',
+      errors:['Type not selected.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+
+  if(!_.isString(value) || value.trim().length == 0){
+    return res.render('service/player/search', {
+      action:'/service/player/mute-and-unmute',
+      errors:['Value cannot be blank.'],
+      gameId:gameId,
+      type:type,
+      value:value
+    });
+  }
+
+  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
+  var params = type === 'id' ? {playerId:value} : {playerName:value};
+  utils.get(game.ip, game.port, url, params, function(e, data){
+    if(!!e){
+      return res.render('service/player/search', {
+        action:'/service/player/mute-and-unmute',
+        errors:[e.message],
+        gameId:gameId,
+        type:type,
+        value:value
+      });
+    }
+    return res.render('service/player/mute-and-unmute', {
+      gameId:gameId,
+      player:data,
+      playerString:JSON.stringify(data)
+    });
+  });
+});
+
+router.post('/player/mute', function(req, res, next){
+  var gameId = req.body.gameId;
+  var game = _.find(req.games, function(game){
+    return game._id === gameId;
+  });
+  var playerId = req.body.playerId;
+  var serverId = req.body.serverId;
+  var time = Number(req.body.time);
+
+  if(!game) return next(new Error('gameId 不合法'));
+  if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
+  if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
+  if(_.isNaN(time) || time < 0) return next(new Error('time 不合法'));
+  time = time * 60 * 1000;
+
+  var postData = {
+    serverId:serverId,
+    playerId:playerId,
+    time:time
+  };
+  utils.post(game.ip, game.port, 'player/mute', postData, function(e){
+    if(!!e) return next(e);
+    req.flash('success', 'Edit successfully');
+    return res.redirect('/service/player/mute-and-unmute');
   });
 });

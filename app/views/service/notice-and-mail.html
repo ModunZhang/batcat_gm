@@ -11,7 +11,7 @@
         <label for="game_1" class="col-sm-2 control-label">Game</label>
 
         <div class="col-sm-9">
-            <select title='Choose a game' name="gameId" id="game_1" class="selectpicker">
+            <select name="gameId" id="game_1" class="form-control">
                 {% for game in games %}
                 <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
                 {% endfor %}
@@ -29,7 +29,7 @@
         <label for="type_1" class="col-sm-2 control-label">Type</label>
 
         <div class="col-sm-9">
-            <select title='Choose a type' name="type" id="type_1" class="selectpicker">
+            <select name="type" id="type_1" class="form-control">
                 {% for key,value in types %}
                 <option value="{{value}}">{{key}}</option>
                 {% endfor %}
@@ -61,7 +61,7 @@
         <label for="game_2" class="col-sm-2 control-label">Game</label>
 
         <div class="col-sm-9">
-            <select title='Choose a game' name="gameId" id="game_2" class="selectpicker">
+            <select name="gameId" id="game_2" class="form-control">
                 {% for game in games %}
                 <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
                 {% endfor %}
@@ -117,7 +117,7 @@
         <label for="game_3" class="col-sm-2 control-label">Game</label>
 
         <div class="col-sm-9">
-            <select title='Choose a game' name="gameId" id="game_3" class="selectpicker">
+            <select name="gameId" id="game_3" class="form-control">
                 {% for game in games %}
                 <option value="{{game._id}}">{{game.name}}</option>
                 {% endfor %}

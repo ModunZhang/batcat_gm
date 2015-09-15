@@ -1,0 +1,44 @@
+{% extends '../../layouts/service.html' %}
+
+{% block content %}
+<h4 style="text-align: center">Search Alliance</h4>
+
+<form action="{{action}}" method="post" role="form" class="form-horizontal" id="findById">
+    <input type="hidden" name="_csrf" value="{{csrf_token}}">
+
+    <div class="form-group">
+        <label for="game" class="col-sm-2 control-label">Game</label>
+
+        <div class="col-sm-9">
+            <select name="gameId" id="game" class="form-control">
+                {% for game in req.games %}
+                <option value="{{game._id}}" {% if gameId===game._id %}selected{% endif %}>{{game.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="type" class="col-sm-2 control-label">By Type</label>
+
+        <div class="col-sm-9">
+            <select title='Choose a type' name="type" id="type" class="form-control">
+                <option value="tag" {% if type==='tag' %}selected{% endif %}>Tag</option>
+                <option value="id" {% if type==='id' %}selected{% endif %}>Id</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="value" class="col-sm-2 control-label">By Value</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="value" placeholder="Value" id="value"
+                   class="form-control" value="{{value}}">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
