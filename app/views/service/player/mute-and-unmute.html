@@ -51,7 +51,7 @@
                         </div>
                     </form>
                 </div>
-                {% if  player.countInfo.lockTime - Date.now() > 0 %}
+                {% if  player.countInfo.muteTime - Date.now() > 0 %}
                 <div class="col-sm-6">
                     <form action="/service/player/mute" method="post" role="form" id="unban">
                         <input type="hidden" name="_csrf" value="{{csrf_token}}">
