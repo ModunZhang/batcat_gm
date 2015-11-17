@@ -12,6 +12,7 @@
 
         <div class="col-sm-9">
             <select name="gameId" id="game_1" class="form-control">
+                <option value="">Choose a game</option>
                 {% for game in games %}
                 <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
                 {% endfor %}
@@ -30,6 +31,7 @@
 
         <div class="col-sm-9">
             <select name="type" id="type_1" class="form-control">
+                <option value="">Choose a type</option>
                 {% for key,value in types %}
                 <option value="{{value}}">{{key}}</option>
                 {% endfor %}
@@ -62,6 +64,7 @@
 
         <div class="col-sm-9">
             <select name="gameId" id="game_2" class="form-control">
+                <option value="">Choose a game</option>
                 {% for game in games %}
                 <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
                 {% endfor %}
@@ -118,6 +121,7 @@
 
         <div class="col-sm-9">
             <select name="gameId" id="game_3" class="form-control">
+                <option value="">Choose a game</option>
                 {% for game in games %}
                 <option value="{{game._id}}">{{game.name}}</option>
                 {% endfor %}
@@ -168,30 +172,38 @@
     $(function(){
         $('#game_1').on('change', function(){
             var selected = $(this).find("option:selected").attr('servers');
-            var servers = selected.split(',');
-            $('#genServers_1 > div').html((function(){
-                var html = '';
-                for(var i = 0; i < servers.length; i++){
-                    var server = servers[i];
-                    html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
-                }
-                return html;
-            })());
-            $('#genServers_1').removeAttr('hidden');
+            var servers = !!selected ? selected.split(',') : [];
+            if(servers.length > 0){
+                $('#genServers_1 > div').html((function(){
+                    var html = '';
+                    for(var i = 0; i < servers.length; i++){
+                        var server = servers[i];
+                        html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
+                    }
+                    return html;
+                })());
+                $('#genServers_1').removeAttr('hidden');
+            }else{
+                $('#genServers_1').attr('hidden', 'hidden');
+            }
         });
 
         $('#game_2').on('change', function(){
             var selected = $(this).find("option:selected").attr('servers');
-            var servers = selected.split(',');
-            $('#genServers_2 > div').html((function(){
-                var html = '';
-                for(var i = 0; i < servers.length; i++){
-                    var server = servers[i];
-                    html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
-                }
-                return html;
-            })());
-            $('#genServers_2').removeAttr('hidden');
+            var servers = !!selected ? selected.split(',') : [];
+            if(servers.length > 0){
+                $('#genServers_2 > div').html((function(){
+                    var html = '';
+                    for(var i = 0; i < servers.length; i++){
+                        var server = servers[i];
+                        html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
+                    }
+                    return html;
+                })());
+                $('#genServers_2').removeAttr('hidden');
+            }else{
+                $('#genServers_2').attr('hidden', 'hidden');
+            }
         });
 
         $('#players_3').tagsInput({

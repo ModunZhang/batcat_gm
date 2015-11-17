@@ -11,6 +11,7 @@
 
         <div class="col-sm-9">
             <select name="gameId" id="game" class="form-control">
+                <option value="">Choose a game</option>
                 {% for game in req.games %}
                 <option value="{{game._id}}" {% if gameId===game._id %}selected{% endif %}>{{game.name}}</option>
                 {% endfor %}
@@ -22,6 +23,7 @@
 
         <div class="col-sm-9">
             <select title='Choose a type' name="type" id="type" class="form-control">
+                <option value="">Choose a type</option>
                 <option value="tag" {% if type==='tag' %}selected{% endif %}>Tag</option>
                 <option value="id" {% if type==='id' %}selected{% endif %}>Id</option>
             </select>
