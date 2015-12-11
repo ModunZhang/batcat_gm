@@ -42,7 +42,7 @@ router.get('/games/list', function(req, res, next){
 router.get('/games/get-server-info/:gameId', function(req, res, next){
   var game = req.game;
   utils.get(game.ip, game.port, 'get-servers-info', {}, function(e, data){
-    if(!!e) next(e);
+    if(!!e) return next(e);
     var serverNames = _.sortBy(_.keys(data), function(serverName){
       return serverName;
     });
