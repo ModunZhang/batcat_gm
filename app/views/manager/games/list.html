@@ -1,0 +1,30 @@
+{% extends '../../layouts/manager.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">Games</li>
+</ol>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Ip</th>
+            <th>Port</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for game in games%}
+        <tr>
+            <td><a href="{{'/manager/games/get-server-info/' + game._id}}" class="btn btn-link link-button">{{game.name}}</a></td>
+            <td>{{game.ip}}</td>
+            <td>{{game.port}}</td>
+            <td>
+                <a href="{{'/manager/games/get-server-info/' + game._id}}" class="btn btn-link link-button">Info</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

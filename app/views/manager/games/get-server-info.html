@@ -1,0 +1,41 @@
+{% extends '../../layouts/manager.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/manager/games/list">Games</a></li>
+    <li class="active">{{game.name}}</li>
+</ol>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Server</th>
+            <th>TotalCount</th>
+            <th>ActiveCount</th>
+            <th>OnlineCount</th>
+            <th>CpuUsage(%)</th>
+            <th>MemoryUsage(M)</th>
+            <th>HeapUsage(M)</th>
+            <th>UpTime(m)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for server in servers%}
+        <tr>
+            <td>{{ server.name }}</td>
+            {% if server.code !== 200 %}
+            <td colspan="7">{{server.data}}</td>
+            {% else %}
+            <td>{{ server.data.gameInfo.totalCount }}</td>
+            <td>{{ server.data.gameInfo.activeCount }}</td>
+            <td>{{ server.data.gameInfo.onlineCount }}</td>
+            <td>{{ server.data.sysInfo.cpu }}</td>
+            <td>{{ server.data.sysInfo.rss }}</td>
+            <td>{{ server.data.sysInfo.heapUsed }}</td>
+            <td>{{ server.data.sysInfo.uptime }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
