@@ -12,10 +12,10 @@
             <th>TotalCount</th>
             <th>ActiveCount</th>
             <th>OnlineCount</th>
-            <th>CpuUsage(%)</th>
-            <th>MemoryUsage(M)</th>
-            <th>HeapUsage(M)</th>
-            <th>UpTime(m)</th>
+            <th>CpuUsage</th>
+            <th>MemoryUsage</th>
+            <th>HeapUsage</th>
+            <th>UpTime</th>
         </tr>
         </thead>
         <tbody>
@@ -28,10 +28,10 @@
             <td>{{ server.data.gameInfo.totalCount }}</td>
             <td>{{ server.data.gameInfo.activeCount }}</td>
             <td>{{ server.data.gameInfo.onlineCount }}</td>
-            <td>{{ server.data.sysInfo.cpu }}</td>
-            <td>{{ server.data.sysInfo.rss }}</td>
-            <td>{{ server.data.sysInfo.heapUsed }}</td>
-            <td>{{ server.data.sysInfo.uptime }}</td>
+            <td>%{{ server.data.sysInfo.cpu }}</td>
+            <td>{{ server.data.sysInfo.rss }}M | %{{(server.data.sysInfo.rss / server.data.sysInfo.memoryTotal * 100).toFixed(2)}}</td>
+            <td>{{ server.data.sysInfo.heapUsed }}M</td>
+            <td>{{ server.data.sysInfo.uptime }}m</td>
             {% endif %}
         </tr>
         {% endfor %}
