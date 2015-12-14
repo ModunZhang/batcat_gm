@@ -28,8 +28,8 @@
             <td>{{ server.data.gameInfo.totalCount }}</td>
             <td>{{ server.data.gameInfo.activeCount }}</td>
             <td>{{ server.data.gameInfo.onlineCount }}</td>
-            <td>%{{ server.data.sysInfo.cpu }}</td>
-            <td>{{ server.data.sysInfo.rss }}M | %{{(server.data.sysInfo.rss / server.data.sysInfo.memoryTotal * 100).toFixed(2)}}</td>
+            <td>{{ server.data.sysInfo.cpu }}%</td>
+            <td>{{ server.data.sysInfo.rss }}M | {{(server.data.sysInfo.rss / server.data.sysInfo.memoryTotal * 100).toFixed(2)}}%</td>
             <td>{{ server.data.sysInfo.heapUsed }}M</td>
             <td>{{ server.data.sysInfo.uptime }}m</td>
             {% endif %}
