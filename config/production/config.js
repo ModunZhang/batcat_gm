@@ -4,5 +4,5 @@
 
 module.exports = {
   sessionSecret:'wzuqbNlhSFNjv0RUSTLZ',
-  mongoHost: 'mongodb://172.31.2.115:27017/batcat_gm'
+  mongoHost: 'mongodb://172.31.12.9:27017/batcat_gm'
 }
