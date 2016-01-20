@@ -14,9 +14,9 @@
         <tbody>
         {% for game in games%}
         <tr>
-            <td><a href="{{'/manager/games/get-server-info/' + game._id}}" class="btn btn-link link-button">{{game.name}}</a></td>
+            <td><a href="{{'/manager/revenue/get-revenue-data/' + game._id}}" class="btn btn-link link-button">{{game.name}}</a></td>
             <td>
-                <a href="{{'/manager/games/get-server-info/' + game._id}}" class="btn btn-link link-button">Info</a>
+                <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}" class="btn btn-link link-button">Info</a>
             </td>
         </tr>
         {% endfor %}

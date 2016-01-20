@@ -32,7 +32,7 @@ router.param('gameId', function(req, res, next, gameId){
 });
 
 router.get('/games/list', function(req, res, next){
-  Game.find({}, 'name ip port').then(function(games){
+  Game.find({}, 'name').then(function(games){
     res.render('manager/games/list', {games:games});
   }, function(e){
     next(e);
@@ -53,5 +53,31 @@ router.get('/games/get-server-info/:gameId', function(req, res, next){
       servers.push(server);
     });
     res.render('manager/games/get-server-info', {game:game, servers:servers});
+  });
+});
+
+router.get('/revenue/list', function(req, res, next){
+  Game.find({}, 'name').then(function(games){
+    res.render('manager/revenue/list', {games:games});
+  }, function(e){
+    next(e);
+  });
+});
+
+router.get('/revenue/get-revenue-data/:gameId', function(req, res, next){
+  var game = req.game;
+  var playerId = req.query.playerId;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'revenue/get-revenue-data', {
+    playerId:playerId,
+    dateFrom:dateFrom,
+    dateTo:dateTo,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('manager/revenue/get-revenue-data', {game:game, data:data});
   });
 });
