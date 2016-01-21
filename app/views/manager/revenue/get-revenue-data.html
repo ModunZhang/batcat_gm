@@ -42,8 +42,8 @@
 <table class="table table-striped table-bordered table-hover">
     <thead>
     <tr>
-        <th>type</th>
         <th>playerId</th>
+        <th>playerName</th>
         <th>transactionId</th>
         <th>productId</th>
         <th>price</th>
@@ -53,8 +53,8 @@
     <tbody>
     {% for data in data.datas%}
     <tr>
-        <td>{{data.type}}</td>
         <td>{{data.playerId}}</td>
+        <td>{{data.playerName|default('Unknown')}}</td>
         <td>{{data.transactionId}}</td>
         <td>{{data.productId}}</td>
         <td>${{data.price}}</td>
@@ -65,18 +65,27 @@
 </table>
 <nav>
     <ul class="pagination">
+        {% if data.query.skip === 0 %}
+        <li class="disabled">
+            <span aria-hidden="true">&laquo;&nbsp;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d', -60 * 8)}}&dateTo={{data.query.dateTo|date('Y-m-d', -60 * 8)}}&skip=0"
+               aria-label="First">
+                <span aria-hidden="true">&laquo;&nbsp;</span>
+            </a>
+        </li>
+        {%endif%}
         {% if data.query.skip < data.query.limit %}
         <li class="disabled">
-            <a href="#"
-               aria-label="Previous">
-                <span aria-hidden="true">Previous</span>
-            </a>
+            <span aria-hidden="true">&lsaquo;&nbsp;</span>
         </li>
         {%else%}
         <li>
             <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d', -60 * 8)}}&dateTo={{data.query.dateTo|date('Y-m-d', -60 * 8)}}&skip={{data.query.skip - data.query.limit}}"
                aria-label="Previous">
-                <span aria-hidden="true">Previous</span>
+                <span aria-hidden="true">&lsaquo;&nbsp;</span>
             </a>
         </li>
         {%endif%}
@@ -96,23 +105,38 @@
 
 
         {%for i,v in Array(maxPage - minPage + 1)%}
-            <li class="{%if i + minPage === curPage %}active{%endif%}"><a href="{{'/manager/revenue/get-revenue-data/' + game._id}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d', -60 * 8)}}&dateTo={{data.query.dateTo|date('Y-m-d', -60 * 8)}}&skip={{data.query.limit * (i + minPage)}}">{{i + minPage + 1}}</a></li>
+            <li class="{%if i + minPage === curPage %}active{%endif%}">
+                {%if i + minPage === curPage %}
+                    <a href="#">{{i + minPage + 1}}</a>
+                {%else%}
+                    <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d', -60 * 8)}}&dateTo={{data.query.dateTo|date('Y-m-d', -60 * 8)}}&skip={{data.query.limit * (i + minPage)}}">{{i + minPage + 1}}</a>
+                {%endif%}
+            </li>
         {%endfor%}
         {% if data.query.skip >= data.totalCount - data.query.limit %}
         <li class="disabled">
-            <a href="#" aria-label="Next">
-                <span aria-hidden="true">Next</span>
-            </a>
+            <span aria-hidden="true">&nbsp;&rsaquo;</span>
         </li>
         {%else%}
         <li>
             <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d', -60 * 8)}}&dateTo={{data.query.dateTo|date('Y-m-d', -60 * 8)}}&skip={{data.query.skip + data.query.limit}}"
                aria-label="Next">
-                <span aria-hidden="true">Next</span>
+                <span aria-hidden="true">&nbsp;&rsaquo;</span>
             </a>
         </li>
         {%endif%}
-
+        {% if data.query.skip + data.datas.length >= data.totalCount%}
+        <li class="disabled">
+            <span aria-hidden="true">&nbsp;&raquo;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d', -60 * 8)}}&dateTo={{data.query.dateTo|date('Y-m-d', -60 * 8)}}&skip={{data.query.limit * (pages - 1)}}"
+               aria-label="Next">
+                <span aria-hidden="true">&nbsp;&raquo;</span>
+            </a>
+        </li>
+        {%endif%}
     </ul>
 </nav>
 {% endblock %}
