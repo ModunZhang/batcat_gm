@@ -294,7 +294,7 @@ router.post('/player/data', function(req, res){
       value:value
     });
   }
-  if(type !== 'id' && type !== 'name'){
+  if(type !== 'id' && type !== 'name' && type !== 'device'){
     return res.render('service/player/search', {
       action:'/service/player/data',
       errors:['Type not selected.'],
@@ -314,8 +314,8 @@ router.post('/player/data', function(req, res){
     });
   }
 
-  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
-  var params = type === 'id' ? {playerId:value} : {playerName:value};
+  var url = type === 'id' ? 'player/find-by-id' : type === 'name' ? 'player/find-by-name' : 'player/find-by-device-id';
+  var params = type === 'id' ? {playerId:value} : type === 'name' ? {playerName:value} : {deviceId:value};
   utils.get(game.ip, game.port, url, params, function(e, data){
     if(!!e){
       return res.render('service/player/search', {

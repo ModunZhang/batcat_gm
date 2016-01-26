@@ -24,6 +24,7 @@
         <div class="col-sm-9">
             <select title='Choose a type' name="type" id="type" class="form-control">
                 <option value="">Choose a type</option>
+                <option value="device" {% if type==='device' %}selected{% endif %}>Device</option>
                 <option value="name" {% if type==='name' %}selected{% endif %}>Name</option>
                 <option value="id" {% if type==='id' %}selected{% endif %}>Id</option>
             </select>
