@@ -31,6 +31,16 @@ router.get('/', function(req, res){
   res.render('service/index');
 });
 
+router.param('gameId', function(req, res, next, gameId){
+  Game.findById(gameId).then(function(game){
+    if(!game) return next(new Error('Game not exist'));
+    req.game = game;
+    next();
+  }, function(e){
+    next(e);
+  })
+});
+
 router.get('/notice-and-mail', function(req, res){
   res.render('service/notice-and-mail', {games:req.games, types:consts.NoticeType});
 });
@@ -507,5 +517,31 @@ router.post('/player/mute', function(req, res, next){
     if(!!e) return next(e);
     req.flash('success', 'Edit successfully');
     return res.redirect('/service/player/mute-and-unmute');
+  });
+});
+
+router.get('/gemuse/list', function(req, res, next){
+  Game.find({}, 'name').then(function(games){
+    res.render('service/gemuse/list', {games:games});
+  }, function(e){
+    next(e);
+  });
+});
+
+router.get('/gemuse/get-gemuse-data/:gameId', function(req, res, next){
+  var game = req.game;
+  var playerId = req.query.playerId;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'get-gemuse-data', {
+    playerId:playerId,
+    dateFrom:dateFrom,
+    dateTo:dateTo,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('service/gemuse/get-gemuse-data', {game:game, data:data});
   });
 });

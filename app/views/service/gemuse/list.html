@@ -1,7 +1,7 @@
-{% extends '../../layouts/manager.html' %}
+{% extends '../../layouts/service.html' %}
 {% block content %}
 <ol class="breadcrumb">
-    <li class="active">Revenue</li>
+    <li class="active">GemUse</li>
 </ol>
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
@@ -14,9 +14,9 @@
         <tbody>
         {% for game in games%}
         <tr>
-            <td><a href="{{'/manager/revenue/get-revenue-data/' + game._id}}" class="btn btn-link link-button">{{game.name}}</a></td>
+            <td><a href="{{'/service/gemuse/get-gemuse-data/' + game._id}}" class="btn btn-link link-button">{{game.name}}</a></td>
             <td>
-                <a href="{{'/manager/revenue/get-revenue-data/' + game._id}}" class="btn btn-link link-button">Info</a>
+                <a href="{{'/service/gemuse/get-gemuse-data/' + game._id}}" class="btn btn-link link-button">Info</a>
             </td>
         </tr>
         {% endfor %}

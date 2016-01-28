@@ -71,7 +71,7 @@ router.get('/revenue/get-revenue-data/:gameId', function(req, res, next){
   var dateTo = req.query.dateTo;
   var skip = req.query.skip;
 
-  utils.get(game.ip, game.port, 'revenue/get-revenue-data', {
+  utils.get(game.ip, game.port, 'get-revenue-data', {
     playerId:playerId,
     dateFrom:dateFrom,
     dateTo:dateTo,
