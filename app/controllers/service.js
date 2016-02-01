@@ -15,7 +15,7 @@ var Game = mongoose.model('Game');
 var router = express.Router();
 module.exports = router;
 
-router.all('*', auth.requiresLogin, auth.requiresUserRight.bind(auth, consts.UserRoles.CustomerService), function(req, res, next){
+router.all('*', auth.requiresLogin, auth.requiresUserRight.bind(auth, consts.UserRoles.CustomerService), auth.requireDefaultGameSelected, function(req, res, next){
   Game.find().then(function(games){
     games = _.filter(games, function(game){
       return _.contains(req.user.games, game._id);
@@ -31,8 +31,8 @@ router.get('/', function(req, res){
   res.render('service/index');
 });
 
-router.param('gameId', function(req, res, next, gameId){
-  Game.findById(gameId).then(function(game){
+router.all('*', function(req, res, next){
+  Game.findById(req.user.defaultGame).then(function(game){
     if(!game) return next(new Error('Game not exist'));
     req.game = game;
     next();
@@ -46,14 +46,10 @@ router.get('/notice-and-mail', function(req, res){
 });
 
 router.post('/send-global-notice', function(req, res){
-  var games = req.games;
   var notice = req.body;
-  var gameId = notice.gameId;
   var servers = notice.servers;
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
+  var game = req.game;
+
   if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['Server not selected.']});
   for(var i = 0; i < servers.length; i++){
     var server = servers[i];
@@ -77,15 +73,11 @@ router.post('/send-global-notice', function(req, res){
 });
 
 router.post('/send-global-mail', function(req, res){
-  var games = req.games;
   var mail = req.body;
-  var gameId = mail.gameId;
   var servers = mail.servers;
   var rewards = mail.rewards;
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
+  var game = req.game;
+
   if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['Server not selected.']});
   for(var i = 0; i < servers.length; i++){
     var server = servers[i];
@@ -113,15 +105,11 @@ router.post('/send-global-mail', function(req, res){
 });
 
 router.post('/send-mail-to-players', function(req, res){
-  var games = req.games;
   var mail = req.body;
-  var gameId = mail.gameId;
   var rewards = mail.rewards;
   var players = _.isString(mail.players) ? mail.players.trim().split(',') : [];
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
+  var game = req.game;
+
   if(players.length === 0) return res.json({code:500, data:['Players cannot be empty.']});
   if(!_.isString(mail.title) || mail.title.trim().length == 0) return res.json({
     code:500,
@@ -149,13 +137,9 @@ router.get('/chat', function(req, res){
 });
 
 router.get('/get-global-chats', function(req, res){
-  var games = req.games;
-  var gameId = req.query.gameId;
   var time = Number(req.query.time);
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
+  var game = req.game;
+
   if(_.isNaN(time)) return res.json({
     code:500,
     data:['Time not legal.']
@@ -168,13 +152,8 @@ router.get('/get-global-chats', function(req, res){
 });
 
 router.post('/send-system-chat', function(req, res){
-  var games = req.games;
   var chat = req.body;
-  var gameId = chat.gameId;
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
+  var game = req.game;
 
   if(!_.isString(chat.content) || chat.content.trim().length == 0) return res.json({
     code:500,
@@ -191,14 +170,10 @@ router.post('/send-system-chat', function(req, res){
 });
 
 router.get('/get-alliance-chats', function(req, res){
-  var games = req.games;
-  var gameId = req.query.gameId;
   var time = Number(req.query.time);
   var allianceId = req.query.allianceId;
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
-  if(!game) return res.json({code:500, data:['Game not selected.']});
+  var game = req.game;
+
   if(_.isNaN(time)) return res.json({
     code:500,
     data:['Time not legal.']
@@ -210,32 +185,19 @@ router.get('/get-alliance-chats', function(req, res){
   });
 });
 
-
 router.get('/alliance/data', function(req, res){
   res.render('service/alliance/search', {action:'/service/alliance/data'})
 });
 
 router.post('/alliance/data', function(req, res){
-  var gameId = req.body.gameId;
   var type = req.body.type;
   var value = req.body.value;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
-  if(!game){
-    return res.render('service/alliance/search', {
-      action:'/service/alliance/data',
-      errors:['Game not selected.'],
-      gameId:gameId,
-      type:type,
-      value:value
-    });
-  }
+  var game = req.game;
+
   if(type !== 'id' && type !== 'tag'){
     return res.render('service/alliance/search', {
       action:'/service/alliance/data',
       errors:['Type not selected.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -245,7 +207,6 @@ router.post('/alliance/data', function(req, res){
     return res.render('service/alliance/search', {
       action:'/service/alliance/data',
       errors:['Value cannot be blank.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -258,7 +219,6 @@ router.post('/alliance/data', function(req, res){
       return res.render('service/alliance/search', {
         action:'/service/alliance/data',
         errors:[e.message],
-        gameId:gameId,
         type:type,
         value:value
       });
@@ -271,11 +231,7 @@ router.post('/alliance/data', function(req, res){
 });
 
 router.get('/get-mail-reward-types', function(req, res){
-  var games = req.games;
-  var gameId = req.query.gameId;
-  var game = _.find(games, function(game){
-    return game._id === gameId;
-  });
+  var game = req.game;
 
   utils.get(game.ip, game.port, 'get-mail-reward-types', null, function(e, data){
     if(!!e) return res.render('service/get-mail-reward-types', {data:{}});
@@ -288,27 +244,14 @@ router.get('/player/data', function(req, res){
 });
 
 router.post('/player/data', function(req, res){
-  var gameId = req.body.gameId;
   var type = req.body.type;
   var value = req.body.value;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
+  var game = req.game;
 
-  if(!game){
-    return res.render('service/player/search', {
-      action:'/service/player/data',
-      errors:['Game not selected.'],
-      gameId:gameId,
-      type:type,
-      value:value
-    });
-  }
   if(type !== 'id' && type !== 'name' && type !== 'device'){
     return res.render('service/player/search', {
       action:'/service/player/data',
       errors:['Type not selected.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -318,7 +261,6 @@ router.post('/player/data', function(req, res){
     return res.render('service/player/search', {
       action:'/service/player/data',
       errors:['Value cannot be blank.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -331,7 +273,6 @@ router.post('/player/data', function(req, res){
       return res.render('service/player/search', {
         action:'/service/player/data',
         errors:[e.message],
-        gameId:gameId,
         type:type,
         value:value
       });
@@ -349,27 +290,14 @@ router.get('/player/ban-and-unban', function(req, res){
 });
 
 router.post('/player/ban-and-unban', function(req, res){
-  var gameId = req.body.gameId;
   var type = req.body.type;
   var value = req.body.value;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
+  var game = req.game;
 
-  if(!game){
-    return res.render('service/player/search', {
-      action:'/service/player/ban-and-unban',
-      errors:['Game not selected.'],
-      gameId:gameId,
-      type:type,
-      value:value
-    });
-  }
   if(type !== 'id' && type !== 'name'){
     return res.render('service/player/search', {
       action:'/service/player/ban-and-unban',
       errors:['Type not selected.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -379,7 +307,6 @@ router.post('/player/ban-and-unban', function(req, res){
     return res.render('service/player/search', {
       action:'/service/player/ban-and-unban',
       errors:['Value cannot be blank.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -392,13 +319,11 @@ router.post('/player/ban-and-unban', function(req, res){
       return res.render('service/player/search', {
         action:'/service/player/ban-and-unban',
         errors:[e.message],
-        gameId:gameId,
         type:type,
         value:value
       });
     }
     return res.render('service/player/ban-and-unban', {
-      gameId:gameId,
       player:data,
       playerString:JSON.stringify(data)
     });
@@ -410,15 +335,11 @@ router.get('/player/mute-and-unmute', function(req, res){
 });
 
 router.post('/player/ban', function(req, res, next){
-  var gameId = req.body.gameId;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
+  var game = req.game;
   var playerId = req.body.playerId;
   var serverId = req.body.serverId;
   var time = Number(req.body.time);
 
-  if(!game) return next(new Error('gameId 不合法'));
   if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
   if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
   if(_.isNaN(time) || time < 0) return next(new Error('time 不合法'));
@@ -437,27 +358,14 @@ router.post('/player/ban', function(req, res, next){
 });
 
 router.post('/player/mute-and-unmute', function(req, res){
-  var gameId = req.body.gameId;
   var type = req.body.type;
   var value = req.body.value;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
+  var game = req.game;
 
-  if(!game){
-    return res.render('service/player/search', {
-      action:'/service/player/mute-and-unmute',
-      errors:['Game not selected.'],
-      gameId:gameId,
-      type:type,
-      value:value
-    });
-  }
   if(type !== 'id' && type !== 'name'){
     return res.render('service/player/search', {
       action:'/service/player/mute-and-unmute',
       errors:['Type not selected.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -467,7 +375,6 @@ router.post('/player/mute-and-unmute', function(req, res){
     return res.render('service/player/search', {
       action:'/service/player/mute-and-unmute',
       errors:['Value cannot be blank.'],
-      gameId:gameId,
       type:type,
       value:value
     });
@@ -480,13 +387,11 @@ router.post('/player/mute-and-unmute', function(req, res){
       return res.render('service/player/search', {
         action:'/service/player/mute-and-unmute',
         errors:[e.message],
-        gameId:gameId,
         type:type,
         value:value
       });
     }
     return res.render('service/player/mute-and-unmute', {
-      gameId:gameId,
       player:data,
       playerString:JSON.stringify(data)
     });
@@ -494,15 +399,11 @@ router.post('/player/mute-and-unmute', function(req, res){
 });
 
 router.post('/player/mute', function(req, res, next){
-  var gameId = req.body.gameId;
-  var game = _.find(req.games, function(game){
-    return game._id === gameId;
-  });
+  var game = req.game;
   var playerId = req.body.playerId;
   var serverId = req.body.serverId;
   var time = Number(req.body.time);
 
-  if(!game) return next(new Error('gameId 不合法'));
   if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
   if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
   if(_.isNaN(time) || time < 0) return next(new Error('time 不合法'));
@@ -520,15 +421,7 @@ router.post('/player/mute', function(req, res, next){
   });
 });
 
-router.get('/gemuse/list', function(req, res, next){
-  Game.find({}, 'name').then(function(games){
-    res.render('service/gemuse/list', {games:games});
-  }, function(e){
-    next(e);
-  });
-});
-
-router.get('/gemuse/get-gemuse-data/:gameId', function(req, res, next){
+router.get('/gemuse/get-gemuse-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;
   var dateFrom = req.query.dateFrom;

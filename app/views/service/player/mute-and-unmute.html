@@ -32,7 +32,6 @@
                 <div class="col-sm-6">
                     <form action="/service/player/mute" method="post" role="form" id="ban">
                         <input type="hidden" name="_csrf" value="{{csrf_token}}">
-                        <input type="hidden" name="gameId" value="{{gameId}}">
                         <input type="hidden" name="playerId" value="{{player._id}}">
                         <input type="hidden" name="serverId" value="{{player.serverId}}">
                         <div class="row">
@@ -55,7 +54,6 @@
                 <div class="col-sm-6">
                     <form action="/service/player/mute" method="post" role="form" id="unban">
                         <input type="hidden" name="_csrf" value="{{csrf_token}}">
-                        <input type="hidden" name="gameId" value="{{gameId}}">
                         <input type="hidden" name="playerId" value="{{player._id}}">
                         <input type="hidden" name="serverId" value="{{player.serverId}}">
                         <input type="hidden" name="time" value="0">

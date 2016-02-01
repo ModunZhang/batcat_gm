@@ -15,14 +15,14 @@ var Game = mongoose.model('Game');
 var router = express.Router();
 module.exports = router;
 
-router.all('*', auth.requiresLogin, auth.requiresUserRight.bind(auth, consts.UserRoles.Manager));
+router.all('*', auth.requiresLogin, auth.requiresUserRight.bind(auth, consts.UserRoles.Manager), auth.requireDefaultGameSelected);
 
 router.get('/', function(req, res){
   res.render('manager/index');
 });
 
-router.param('gameId', function(req, res, next, gameId){
-  Game.findById(gameId).then(function(game){
+router.all('*', function(req, res, next){
+  Game.findById(req.user.defaultGame).then(function(game){
     if(!game) return next(new Error('Game not exist'));
     req.game = game;
     next();
@@ -31,15 +31,7 @@ router.param('gameId', function(req, res, next, gameId){
   })
 });
 
-router.get('/games/list', function(req, res, next){
-  Game.find({}, 'name').then(function(games){
-    res.render('manager/games/list', {games:games});
-  }, function(e){
-    next(e);
-  });
-});
-
-router.get('/games/get-server-info/:gameId', function(req, res, next){
+router.get('/games/get-server-info', function(req, res, next){
   var game = req.game;
   utils.get(game.ip, game.port, 'get-servers-info', {}, function(e, data){
     if(!!e) return next(e);
@@ -56,15 +48,7 @@ router.get('/games/get-server-info/:gameId', function(req, res, next){
   });
 });
 
-router.get('/revenue/list', function(req, res, next){
-  Game.find({}, 'name').then(function(games){
-    res.render('manager/revenue/list', {games:games});
-  }, function(e){
-    next(e);
-  });
-});
-
-router.get('/revenue/get-revenue-data/:gameId', function(req, res, next){
+router.get('/revenue/get-revenue-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;
   var dateFrom = req.query.dateFrom;

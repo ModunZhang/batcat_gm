@@ -32,3 +32,12 @@ exports.requireEmptyUsers = function(req, res, next){
     next(e)
   });
 };
+
+exports.requireDefaultGameSelected = function(req, res, next){
+  if(req.user.defaultGame === 'none'){
+    var backURL=req.header('Referer') || '/';
+    req.flash('error', 'Please select a game first');
+    return res.redirect(backURL);
+  }
+  next();
+};

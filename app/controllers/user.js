@@ -54,7 +54,6 @@ router.put('/edit-my-password', function(req, res, next){
   if(!req.body.password) return res.render('user/edit-my-password', {errors:['Original Password cannot be empty']});
   if(!req.body.newpassword) return res.render('user/edit-my-password', {errors:['New password cannot be empty']});
   User.findById(req.user._id).then(function(user){
-    if(!user) return next(new Error('User not exist'));
     user.comparePassword(req.body.password, function(e, isMatch){
       if(!!e) return next(e);
       if(!isMatch) return res.render('user/edit-my-password', {errors:['Original Password not correct']});
@@ -68,5 +67,24 @@ router.put('/edit-my-password', function(req, res, next){
     })
   }, function(e){
     next(e);
+  });
+});
+
+router.get('/set-default-game', function(req, res){
+  res.json({token:res.locals.csrf_token})
+});
+
+router.put('/set-default-game', function(req, res){
+  var gameId = req.body.gameId;
+  if(!gameId || !_.contains(req.user.games, gameId)) return res.json({code:500, data:['Game not selected.']});
+  User.findById(req.user._id).then(function(user){
+    user.defaultGame = gameId;
+    user.save(function(e){
+      if(!!e)return res.json({code:500, data:[e.message]});
+      req.session.passport.user.defaultGame = gameId;
+      res.json({code:200});
+    })
+  }, function(e){
+    res.json({code:500, data:[e.message]});
   });
 });

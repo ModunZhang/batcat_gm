@@ -9,6 +9,7 @@ var session = require('express-session');
 var mongoStore = require('connect-mongo')(session);
 var swig = require('swig');
 var _ = require('underscore');
+var mongoose = require('mongoose');
 
 var flash = require('connect-flash');
 var helpers = require('view-helpers');
@@ -17,6 +18,8 @@ var passport = require('./config/passport');
 var config = require('./config/config');
 var pkg = require('./package.json');
 var env = process.env.NODE_ENV || 'development';
+
+var Game = mongoose.model('Game');
 
 var app = express();
 app.engine('html', swig.renderFile);
@@ -74,6 +77,18 @@ app.use(function(req, res, next){
     return _.contains(objects, object);
   };
   next();
+});
+app.use(function(req, res, next){
+  if(req.isAuthenticated()){
+    Game.find({}, 'name').then(function(games){
+      req.games = games;
+      next();
+    }, function(e){
+      next(e);
+    });
+  }else{
+    next();
+  }
 });
 
 require('./config/routes')(app);

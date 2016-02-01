@@ -13,18 +13,6 @@
                         <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
                         <div class="form-group">
-                            <label for="game_1" class="col-sm-2 control-label">Game</label>
-
-                            <div class="col-sm-9">
-                                <select name="gameId" id="game_1" class="form-control">
-                                    <option value="">Choose a game</option>
-                                    {% for game in games %}
-                                    <option value="{{game._id}}">{{game.name}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <label class="col-sm-2 control-label">Chats</label>
 
                             <div class="col-sm-10 chat-body" id="chat_body_1">
@@ -58,18 +46,6 @@
                           id="get_alliance_chat">
                         <input type="hidden" name="time" value="0">
 
-                        <div class="form-group">
-                            <label for="game_2" class="col-sm-2 control-label">Game</label>
-
-                            <div class="col-sm-9">
-                                <select name="gameId" id="game_2" class="form-control">
-                                    <option value="">Choose a game</option>
-                                    {% for game in games %}
-                                    <option value="{{game._id}}">{{game.name}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
                         <div class="form-group">
                             <label for="alliance_2" class="col-sm-2 control-label">Alliance</label>
 
@@ -106,36 +82,30 @@
     var chatOthersTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="primary-font">^Name^</strong><small class="pull-right text-muted">^Server^,^Time^</small></div><p>^Content^</p></div></li>';
     var chatMineTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="pull-right primary-font">^Name^</strong><small class="text-muted">^Time^</small></div><p>^Content^</p></div></li>';
     $(function(){
-        var intervalId_1 = null;
         var chat_body_1 = $('#chat_body_1');
-        $('#game_1').on('change', function(){
-            clearInterval(intervalId_1);
-            $('#chat_ul_1').empty();
-            var gameId = this.value;
-            var lastChatTime = 0;
-            var getGlobalChats = function(){
-                $.get('/service/get-global-chats', {gameId:gameId, time:lastChatTime}, function(resp){
-                    if(resp.code === 500) return;
-                    var chats = resp.data;
-                    for(var i = 0; i < chats.length; i++){
-                        var chat = chats[i];
-                        var content = null;
-                        if(chat.name === 'System'){
-                            content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
-                        }else{
-                            content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
-                        }
-                        $('#chat_ul_1').append(content);
+        var lastChatTime = 0;
+        var getGlobalChats = function(){
+            $.get('/service/get-global-chats', {time:lastChatTime}, function(resp){
+                if(resp.code === 500) return;
+                var chats = resp.data;
+                for(var i = 0; i < chats.length; i++){
+                    var chat = chats[i];
+                    var content = null;
+                    if(chat.name === 'System'){
+                        content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                    }else{
+                        content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
                     }
-                    if(chats.length > 0){
-                        lastChatTime = chats[chats.length - 1].time;
-                        chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
-                    }
-                })
-            };
-            getGlobalChats();
-            intervalId_1 = setInterval(getGlobalChats, 2000);
-        });
+                    $('#chat_ul_1').append(content);
+                }
+                if(chats.length > 0){
+                    lastChatTime = chats[chats.length - 1].time;
+                    chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                }
+            })
+        };
+        getGlobalChats();
+        setInterval(getGlobalChats, 2000);
 
         $('#send_system_chat').ajaxForm(function(resp){
             if(resp.code === 500){
@@ -152,11 +122,6 @@
         var intervalId_2 = null;
         var chat_body_2 = $('#chat_body_2');
         var submit_button_2 = $('#submit_button_2');
-        $('#game_2').on('change', function(){
-            clearInterval(intervalId_2);
-            $('#chat_ul_2').empty();
-            submit_button_2.show();
-        });
 
         $('#get_alliance_chat').ajaxForm({
             beforeSubmit:function(){
@@ -174,8 +139,6 @@
                     });
                 }else{
                     clearInterval(intervalId_2);
-
-                    var gameId = $('#game_2').val();
                     var allianceId = $('#alliance_2').val();
                     var lastChatTime = 0;
                     var chats = resp.data;
@@ -192,7 +155,6 @@
 
                     var getAllianceChats = function(){
                         $.get('/service/get-alliance-chats', {
-                            gameId:gameId,
                             allianceId:allianceId,
                             time:lastChatTime
                         }, function(resp){

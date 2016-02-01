@@ -18,6 +18,7 @@ var UserSchema = new Schema({
   _id:{type:String, required:true, default:shortid.generate},
   email:{type:String, required:'Email cannot be blank', unique:true},
   password:{type:String, required:'Password cannot be blank'},
+  defaultGame:{type:String, required:true, default:'none'},
   roles:[String],
   games:[String],
   createdAt:{type:Number, default:Date.now}

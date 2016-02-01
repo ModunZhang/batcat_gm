@@ -1,7 +1,7 @@
 /**
  * Created by modun on 15/6/26.
  */
-
+var _ = require('underscore');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -9,10 +9,16 @@ var LocalStrategy = require('passport-local').Strategy;
 var User = mongoose.model('User');
 
 passport.serializeUser(function(user, done){
-  done(null, {_id:user._id, email:user.email, roles:user.roles, games:user.games});
+  if(user.defaultGame !== 'none' && !_.contains(user.games, user.defaultGame)){
+    user.defaultGame = 'none';
+  }
+  done(null, {_id:user._id, email:user.email, roles:user.roles, games:user.games, defaultGame:user.defaultGame});
 });
 
 passport.deserializeUser(function(user, done){
+  if(user.defaultGame !== 'none' && !_.contains(user.games, user.defaultGame)){
+    user.defaultGame = 'none';
+  }
   return done(null, user);
 });
 
