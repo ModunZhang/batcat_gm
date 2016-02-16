@@ -8,22 +8,13 @@
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
     <div class="form-group">
-        <label for="game_1" class="col-sm-2 control-label">Game</label>
-
-        <div class="col-sm-9">
-            <select name="gameId" id="game_1" class="form-control">
-                <option value="">Choose a game</option>
-                {% for game in games %}
-                <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-    <div class="form-group" id="genServers_1" hidden>
         <label class="col-sm-2 control-label">Servers</label>
 
         <div class="col-sm-9">
-
+            {% for key,value in req.game.servers %}
+            <label class="checkbox-inline"><input type="checkbox" name="servers[{{key}}]"
+                                                  value="{{value}}">{{value}}</label>
+            {% endfor %}
         </div>
     </div>
     <div class="form-group">
@@ -59,23 +50,15 @@
 <form action="/service/send-global-mail" method="post" role="form" class="form-horizontal" id="form_2">
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
-    <div class="form-group">
-        <label for="game_2" class="col-sm-2 control-label">Game</label>
 
-        <div class="col-sm-9">
-            <select name="gameId" id="game_2" class="form-control">
-                <option value="">Choose a game</option>
-                {% for game in games %}
-                <option value="{{game._id}}" servers="{{game.servers}}">{{game.name}}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-    <div class="form-group" id="genServers_2" hidden>
+    <div class="form-group">
         <label class="col-sm-2 control-label">Servers</label>
 
         <div class="col-sm-9">
-
+            {% for key,value in req.game.servers %}
+            <label class="checkbox-inline"><input type="checkbox" name="servers[{{key}}]"
+                                                  value="{{value}}">{{value}}</label>
+            {% endfor %}
         </div>
     </div>
     <div class="form-group">
@@ -99,7 +82,7 @@
             <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
                    id="rewards_2" class="form-control">
 
-            <p><a href="javascript:showMailRewardHelp('game_2')">Need Help?</a></p>
+            <p><a href="javascript:showMailRewardHelp('{{req.game._id}}')">Need Help?</a></p>
         </div>
     </div>
     <div class="form-group">
@@ -116,18 +99,6 @@
 <form action="/service/send-mail-to-players" method="post" role="form" class="form-horizontal" id="form_3">
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
-    <div class="form-group">
-        <label for="game_3" class="col-sm-2 control-label">Game</label>
-
-        <div class="col-sm-9">
-            <select name="gameId" id="game_3" class="form-control">
-                <option value="">Choose a game</option>
-                {% for game in games %}
-                <option value="{{game._id}}">{{game.name}}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
     <div class="form-group">
         <label for="players_3" class="col-sm-2 control-label">Players</label>
 
@@ -156,7 +127,7 @@
             <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
                    id="rewards_3" class="form-control">
 
-            <p><a href="javascript:showMailRewardHelp('game_3')">Need Help?</a></p>
+            <p><a href="javascript:showMailRewardHelp('{{req.game._id}}')">Need Help?</a></p>
         </div>
     </div>
     <div class="form-group">
@@ -170,42 +141,6 @@
 {% block foot %}
 <script type="text/javascript">
     $(function(){
-        $('#game_1').on('change', function(){
-            var selected = $(this).find("option:selected").attr('servers');
-            var servers = !!selected ? selected.split(',') : [];
-            if(servers.length > 0){
-                $('#genServers_1 > div').html((function(){
-                    var html = '';
-                    for(var i = 0; i < servers.length; i++){
-                        var server = servers[i];
-                        html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
-                    }
-                    return html;
-                })());
-                $('#genServers_1').removeAttr('hidden');
-            }else{
-                $('#genServers_1').attr('hidden', 'hidden');
-            }
-        });
-
-        $('#game_2').on('change', function(){
-            var selected = $(this).find("option:selected").attr('servers');
-            var servers = !!selected ? selected.split(',') : [];
-            if(servers.length > 0){
-                $('#genServers_2 > div').html((function(){
-                    var html = '';
-                    for(var i = 0; i < servers.length; i++){
-                        var server = servers[i];
-                        html += '<label class="checkbox-inline"><input type="checkbox" name="servers[' + i + ']" value="' + server + '">' + server + '</label>';
-                    }
-                    return html;
-                })());
-                $('#genServers_2').removeAttr('hidden');
-            }else{
-                $('#genServers_2').attr('hidden', 'hidden');
-            }
-        });
-
         $('#players_3').tagsInput({
             width:'auto',
             defaultText:''
@@ -269,16 +204,8 @@
         })
     });
 
-    function showMailRewardHelp(gameId){
-        gameId = $('#' + gameId).val();
-        if(gameId.trim().length == 0){
-            new PNotify({
-                type:'error',
-                text:'Game not selected'
-            })
-        }else{
-            window.open('/service/get-mail-reward-types?gameId=' + gameId);
-        }
+    function showMailRewardHelp(){
+        window.open('/service/get-mail-reward-types');
     }
 </script>
 {% endblock %}
