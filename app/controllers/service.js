@@ -421,20 +421,38 @@ router.post('/player/mute', function(req, res, next){
   });
 });
 
-router.get('/gemuse/get-gemuse-data', function(req, res, next){
+router.get('/get-gemchange-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;
   var dateFrom = req.query.dateFrom;
   var dateTo = req.query.dateTo;
   var skip = req.query.skip;
 
-  utils.get(game.ip, game.port, 'get-gemuse-data', {
+  utils.get(game.ip, game.port, 'get-gemchange-data', {
     playerId:playerId,
     dateFrom:dateFrom,
     dateTo:dateTo,
     skip:skip
   }, function(e, data){
     if(!!e) return next(e);
-    res.render('service/gemuse/get-gemuse-data', {game:game, data:data});
+    res.render('service/get-gemchange-data', {game:game, data:data});
+  });
+});
+
+router.get('/get-gemadd-data', function(req, res, next){
+  var game = req.game;
+  var playerId = req.query.playerId;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'get-gemadd-data', {
+    playerId:playerId,
+    dateFrom:dateFrom,
+    dateTo:dateTo,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('service/get-gemadd-data', {game:game, data:data});
   });
 });
