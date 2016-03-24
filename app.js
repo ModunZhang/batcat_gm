@@ -93,7 +93,8 @@ app.use(function(req, res, next){
 
 require('./config/routes')(app);
 
-app.use(function(req, res){
+app.use(function(req, res, next){
+  if(env !== 'production') return next();
   res.status(404).send('Not found');
 });
 app.use(function(e, req, res, next){
