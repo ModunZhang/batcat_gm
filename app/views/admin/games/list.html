@@ -23,9 +23,9 @@
             <td>{{game.port}}</td>
             <td>{{game.servers}}</td>
             <td>
-                <form action="{{'/admin/games/delete/' + game._id}}" method="post"
+                <form action="/admin/games/delete/{{game._id}}" method="post"
                       onsubmit="return confirm('Are you sure?')">
-                    <a href="{{'/admin/games/edit/' + game._id}}" class="btn btn-link link-button">Edit</a>
+                    <a href="/admin/games/edit/{{game._id}}" class="btn btn-link link-button">Edit</a>
                     <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                     <input type="hidden" name="_method" value="DELETE">
                     &nbsp;

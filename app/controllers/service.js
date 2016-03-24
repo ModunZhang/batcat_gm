@@ -456,3 +456,97 @@ router.get('/get-gemadd-data', function(req, res, next){
     res.render('service/get-gemadd-data', {game:game, data:data});
   });
 });
+
+router.param('cacheServerId', function(req, res, next, cacheServerId){
+  var game = req.game;
+  if(!_.contains(game.servers, cacheServerId)) return next(new Error('Server not exist'));
+  next();
+});
+
+router.get('/server-notice', function(req, res){
+  res.render('service/server-notice/server-list');
+});
+
+router.get('/server-notice/create', function(req, res){
+  res.render('service/server-notice/notice-create')
+});
+
+router.post('/server-notice/create', function(req, res){
+  var notice = req.body;
+  var servers = notice.servers;
+  var game = req.game;
+  if(!_.isArray(servers) || servers.length == 0){
+    return res.render('service/server-notice/notice-create', {
+      errors:['Server not selected.'],
+      notice:notice
+    });
+  }
+  for(var i = 0; i < servers.length; i++){
+    var server = servers[i];
+    if(!_.contains(game.servers, server)){
+      return res.render('service/server-notice/notice-create', {
+        errors:['Server not selected.'],
+        notice:notice
+      });
+    }
+  }
+  if(!_.isString(notice.title) || notice.title.trim().length == 0){
+    return res.render('service/server-notice/notice-create', {
+      errors:['Title cannot be blank.'],
+      notice:notice
+    });
+  }
+  if(!_.isString(notice.content) || notice.content.trim().length == 0){
+    return res.render('service/server-notice/notice-create', {
+      errors:['Content cannot be blank.'],
+      notice:notice
+    });
+  }
+
+  var postData = {
+    servers:notice.servers,
+    title:notice.title,
+    content:notice.content
+  };
+  utils.post(game.ip, game.port, 'server-notice/create', postData, function(e, data){
+    if(!!e){
+      return res.render('service/server-notice/notice-create', {
+        errors:[e.message],
+        notice:notice
+      });
+    }
+    _.each(data, function(status){
+      if(status.code !== 200){
+        req.flash('error', status.data);
+      }
+    });
+    return res.redirect('/service/server-notice');
+  });
+});
+
+router.delete('/server-notice/:cacheServerId/:noticeId', function(req, res){
+  var game = req.game;
+  var postData = {
+    serverId:req.params.cacheServerId,
+    noticeId:req.params.noticeId
+  };
+  utils.post(game.ip, game.port, 'server-notice/delete', postData, function(e){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/service/server-notice/' + req.params.cacheServerId);
+    }
+    req.flash('success', 'Delete successfully');
+    return res.redirect('/service/server-notice/' + req.params.cacheServerId);
+  });
+});
+
+router.get('/server-notice/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  utils.get(game.ip, game.port, 'server-notice/list', {
+    serverId:cacheServerId
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('service/server-notice/notice-list', {data:data});
+  });
+});

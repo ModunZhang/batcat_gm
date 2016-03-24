@@ -23,9 +23,9 @@
                 {{showGameNames(user.games)}}
             </td>
             <td>
-                <form action="{{'/admin/users/delete/' + user._id}}" method="post"
+                <form action="/admin/users/delete/{{user._id}}" method="post"
                       onsubmit="return confirm('Are you sure?')">
-                    <a href="{{'/admin/users/edit/' + user._id}}" class="btn btn-link link-button">Edit</a>
+                    <a href="/admin/users/edit/{{user._id}}" class="btn btn-link link-button">Edit</a>
                     <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                     &nbsp;
                     <input type="hidden" name="_method" value="DELETE">
