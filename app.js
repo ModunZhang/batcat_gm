@@ -93,5 +93,12 @@ app.use(function(req, res, next){
 
 require('./config/routes')(app);
 
+app.use(function(req, res){
+  res.status(404).send('Not found');
+});
+app.use(function(e, req, res, next){
+  if(env !== 'production') return next(e);
+  res.status(500).send(e.message);
+});
 
 module.exports = app;
