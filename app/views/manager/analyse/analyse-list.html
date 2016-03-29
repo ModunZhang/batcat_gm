@@ -52,7 +52,7 @@
     {% for index, data in data.datas%}
     <tr>
         <td>{{data.dateTime|date('Y-m-d')}}</td>
-        <td>{{Number(data.revenue).toFixed(2)}}</td>
+        <td>{%if data.revenue > 0%}{{Number(data.revenue).toFixed(2)}}{%else%}0{%endif%}</td>
         <td>{%if data.dau > 0 && data.revenue > 0%}{{Number(data.revenue/data.dau).toFixed(2)}}{%else%}0{%endif%}</td>
         <td>{{data.dau}}</td>
         <td>{{data.dnu}}</td>
