@@ -2,7 +2,7 @@
 {% block content %}
 <ol class="breadcrumb">
     <li><a href="/service/server-notice">Servers</a></li>
-    <li class="active">Notices</li>
+    <li class="active">{{req.params.cacheServerId}}</li>
 </ol>
 <table class="table table-striped table-bordered table-hover">
     <thead>
@@ -18,7 +18,7 @@
     <tr>
         <td>{{notice.title}}</td>
         <td>{{notice.content}}</td>
-        <td>{{notice.time|date('Y-m-d H:i:s', -60 * 8)}}</td>
+        <td>{{notice.time|date('Y-m-d H:i:s')}}</td>
         <td>
             <form action="/service/server-notice/{{req.params.cacheServerId}}/{{notice.id}}" method="post"
                   onsubmit="return confirm('Are you sure?')">

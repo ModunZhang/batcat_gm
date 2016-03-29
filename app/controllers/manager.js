@@ -65,3 +65,31 @@ router.get('/revenue/get-revenue-data', function(req, res, next){
     res.render('manager/revenue/get-revenue-data', {game:game, data:data});
   });
 });
+
+router.param('cacheServerId', function(req, res, next, cacheServerId){
+  var game = req.game;
+  if(!_.contains(game.servers, cacheServerId)) return next(new Error('Server not exist'));
+  next();
+});
+
+router.get('/analyse', function(req, res){
+  res.render('manager/analyse/server-list');
+});
+
+router.get('/analyse/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'get-analyse-data', {
+    serverId:cacheServerId,
+    dateFrom:dateFrom,
+    dateTo:dateTo,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('manager/analyse/analyse-list', {data:data});
+  });
+});

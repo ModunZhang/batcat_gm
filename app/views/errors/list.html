@@ -13,7 +13,7 @@
         {% for error in clientErrors%}
         <tr>
             <td><pre>{{error.stack}}</pre></td>
-            <td>{{error.deviceId}}<br/>{{error.createdAt|date('Y-m-d H:i:s', -60 * 8)}}</td>
+            <td>{{error.deviceId}}<br/>{{error.createdAt|date('Y-m-d H:i:s')}}</td>
         </tr>
         {% endfor %}
         </tbody>
