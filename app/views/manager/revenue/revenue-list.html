@@ -1,5 +1,9 @@
 {% extends '../../layouts/manager.html' %}
 {% block content %}
+<ol class="breadcrumb">
+    <li><a href="/manager/revenue">Servers</a></li>
+    <li class="active">{{req.params.cacheServerId}}</li>
+</ol>
 <form action="{{action}}" method="get" role="form" class="form-horizontal" id="findById">
     <div class="form-group">
         <label for="playerId" class="col-sm-2 control-label">Player Id</label>
@@ -66,7 +70,7 @@
         </li>
         {%else%}
         <li>
-            <a href="/manager/revenue/get-revenue-data?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip=0"
+            <a href="/manager/revenue/{{req.params.cacheServerId}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip=0"
                aria-label="First">
                 <span aria-hidden="true">&laquo;&nbsp;</span>
             </a>
@@ -78,7 +82,7 @@
         </li>
         {%else%}
         <li>
-            <a href="/manager/revenue/get-revenue-data?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.skip - data.query.limit}}"
+            <a href="/manager/revenue/{{req.params.cacheServerId}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.skip - data.query.limit}}"
                aria-label="Previous">
                 <span aria-hidden="true">&lsaquo;&nbsp;</span>
             </a>
@@ -104,7 +108,7 @@
                 {%if i + minPage === curPage %}
                     <a href="#">{{i + minPage + 1}}</a>
                 {%else%}
-                    <a href="/manager/revenue/get-revenue-data?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.limit * (i + minPage)}}">{{i + minPage + 1}}</a>
+                    <a href="/manager/revenue/{{req.params.cacheServerId}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.limit * (i + minPage)}}">{{i + minPage + 1}}</a>
                 {%endif%}
             </li>
         {%endfor%}
@@ -114,7 +118,7 @@
         </li>
         {%else%}
         <li>
-            <a href="/manager/revenue/get-revenue-data?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.skip + data.query.limit}}"
+            <a href="/manager/revenue/{{req.params.cacheServerId}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.skip + data.query.limit}}"
                aria-label="Next">
                 <span aria-hidden="true">&nbsp;&rsaquo;</span>
             </a>
@@ -126,7 +130,7 @@
         </li>
         {%else%}
         <li>
-            <a href="/manager/revenue/get-revenue-data?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.limit * (pages - 1)}}"
+            <a href="/manager/revenue/{{req.params.cacheServerId}}?playerId={{data.query.playerId}}&dateFrom={{data.query.dateFrom|date('Y-m-d')}}&dateTo={{data.query.dateTo|date('Y-m-d')}}&skip={{data.query.limit * (pages - 1)}}"
                aria-label="Next">
                 <span aria-hidden="true">&nbsp;&raquo;</span>
             </a>

@@ -48,7 +48,18 @@ router.get('/games/get-server-info', function(req, res, next){
   });
 });
 
-router.get('/revenue/get-revenue-data', function(req, res, next){
+router.param('cacheServerId', function(req, res, next, cacheServerId){
+  var game = req.game;
+  if(!_.contains(game.servers, cacheServerId)) return next(new Error('Server not exist'));
+  next();
+});
+
+router.get('/revenue', function(req, res){
+  res.render('manager/revenue/server-list');
+});
+
+router.get('/revenue/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
   var game = req.game;
   var playerId = req.query.playerId;
   var dateFrom = req.query.dateFrom;
@@ -56,20 +67,15 @@ router.get('/revenue/get-revenue-data', function(req, res, next){
   var skip = req.query.skip;
 
   utils.get(game.ip, game.port, 'get-revenue-data', {
+    serverId:cacheServerId,
     playerId:playerId,
     dateFrom:dateFrom,
     dateTo:dateTo,
     skip:skip
   }, function(e, data){
     if(!!e) return next(e);
-    res.render('manager/revenue/get-revenue-data', {game:game, data:data});
+    res.render('manager/revenue/revenue-list', {data:data});
   });
-});
-
-router.param('cacheServerId', function(req, res, next, cacheServerId){
-  var game = req.game;
-  if(!_.contains(game.servers, cacheServerId)) return next(new Error('Server not exist'));
-  next();
 });
 
 router.get('/analyse', function(req, res){
