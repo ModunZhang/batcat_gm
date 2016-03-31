@@ -33,7 +33,7 @@ router.get('/', function(req, res){
 
 router.all('*', function(req, res, next){
   Game.findById(req.user.defaultGame).then(function(game){
-    if(!game) return next(new Error('Game not exist'));
+    if(!game) return next(new Error('游戏不存在'));
     req.game = game;
     next();
   }, function(e){
@@ -50,15 +50,15 @@ router.post('/send-global-notice', function(req, res){
   var servers = notice.servers;
   var game = req.game;
 
-  if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['Server not selected.']});
+  if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['服务器未选择']});
   for(var i = 0; i < servers.length; i++){
     var server = servers[i];
-    if(!_.contains(game.servers, server)) return res.json({code:500, data:['Server not selected.']});
+    if(!_.contains(game.servers, server)) return res.json({code:500, data:['服务器未选择']});
   }
-  if(!_.contains(_.values(consts.NoticeType), notice.type)) return res.json({code:500, data:['Type not selected.']});
+  if(!_.contains(_.values(consts.NoticeType), notice.type)) return res.json({code:500, data:['类型未选择.']});
   if(!_.isString(notice.content) || notice.content.trim().length == 0) return res.json({
     code:500,
-    data:['Content cannot be blank.']
+    data:['内容不能为空']
   });
 
   var postData = {
@@ -78,18 +78,18 @@ router.post('/send-global-mail', function(req, res){
   var rewards = mail.rewards;
   var game = req.game;
 
-  if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['Server not selected.']});
+  if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['服务器未选择']});
   for(var i = 0; i < servers.length; i++){
     var server = servers[i];
-    if(!_.contains(game.servers, server))  return res.json({code:500, data:['Server not selected.']});
+    if(!_.contains(game.servers, server))  return res.json({code:500, data:['服务器未选择']});
   }
   if(!_.isString(mail.title) || mail.title.trim().length == 0) return res.json({
     code:500,
-    data:['Title cannot be blank.']
+    data:['标题不能为空']
   });
   if(!_.isString(mail.content) || mail.content.trim().length == 0) return res.json({
     code:500,
-    data:['Content cannot be blank.']
+    data:['内容不能为空']
   });
 
   var postData = {
@@ -110,14 +110,14 @@ router.post('/send-mail-to-players', function(req, res){
   var players = _.isString(mail.players) ? mail.players.trim().split(',') : [];
   var game = req.game;
 
-  if(players.length === 0) return res.json({code:500, data:['Players cannot be empty.']});
+  if(players.length === 0) return res.json({code:500, data:['玩家ID列表不能为空']});
   if(!_.isString(mail.title) || mail.title.trim().length == 0) return res.json({
     code:500,
-    data:['Title cannot be blank.']
+    data:['标题不能为空']
   });
   if(!_.isString(mail.content) || mail.content.trim().length == 0) return res.json({
     code:500,
-    data:['Content cannot be blank.']
+    data:['内容不能为空']
   });
 
   var postData = {
@@ -142,7 +142,7 @@ router.get('/get-global-chats', function(req, res){
 
   if(_.isNaN(time)) return res.json({
     code:500,
-    data:['Time not legal.']
+    data:['时间戳不合法']
   });
 
   utils.get(game.ip, game.port, 'get-global-chats', {time:Number(time)}, function(e, data){
@@ -157,7 +157,7 @@ router.post('/send-system-chat', function(req, res){
 
   if(!_.isString(chat.content) || chat.content.trim().length == 0) return res.json({
     code:500,
-    data:['Content cannot be blank.']
+    data:['聊天内容不能为空']
   });
 
   var postData = {
@@ -176,7 +176,11 @@ router.get('/get-alliance-chats', function(req, res){
 
   if(_.isNaN(time)) return res.json({
     code:500,
-    data:['Time not legal.']
+    data:['时间戳不合法']
+  });
+  if(!allianceId) return res.json({
+    code:500,
+    data:['联盟ID不合法']
   });
 
   utils.get(game.ip, game.port, 'get-alliance-chats', {allianceId:allianceId, time:Number(time)}, function(e, data){
@@ -197,7 +201,7 @@ router.post('/alliance/data', function(req, res){
   if(type !== 'id' && type !== 'tag'){
     return res.render('service/alliance/search', {
       action:'/service/alliance/data',
-      errors:['Type not selected.'],
+      errors:['查询类型不合法'],
       type:type,
       value:value
     });
@@ -206,7 +210,7 @@ router.post('/alliance/data', function(req, res){
   if(!_.isString(value) || value.trim().length == 0){
     return res.render('service/alliance/search', {
       action:'/service/alliance/data',
-      errors:['Value cannot be blank.'],
+      errors:['关键字不能为空'],
       type:type,
       value:value
     });
@@ -251,7 +255,7 @@ router.post('/player/data', function(req, res){
   if(type !== 'id' && type !== 'name' && type !== 'device'){
     return res.render('service/player/search', {
       action:'/service/player/data',
-      errors:['Type not selected.'],
+      errors:['查询类型不合法'],
       type:type,
       value:value
     });
@@ -260,7 +264,7 @@ router.post('/player/data', function(req, res){
   if(!_.isString(value) || value.trim().length == 0){
     return res.render('service/player/search', {
       action:'/service/player/data',
-      errors:['Value cannot be blank.'],
+      errors:['关键字不能为空'],
       type:type,
       value:value
     });
@@ -297,7 +301,7 @@ router.post('/player/ban-and-unban', function(req, res){
   if(type !== 'id' && type !== 'name'){
     return res.render('service/player/search', {
       action:'/service/player/ban-and-unban',
-      errors:['Type not selected.'],
+      errors:['查询类型不合法'],
       type:type,
       value:value
     });
@@ -306,7 +310,7 @@ router.post('/player/ban-and-unban', function(req, res){
   if(!_.isString(value) || value.trim().length == 0){
     return res.render('service/player/search', {
       action:'/service/player/ban-and-unban',
-      errors:['Value cannot be blank.'],
+      errors:['关键字不能为空'],
       type:type,
       value:value
     });
@@ -342,7 +346,7 @@ router.post('/player/ban', function(req, res, next){
 
   if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
   if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
-  if(_.isNaN(time) || time < 0) return next(new Error('time 不合法'));
+  if(_.isNaN(time) || time < 0) return next(new Error('时间不合法'));
   time = time * 60 * 1000;
 
   var postData = {
@@ -352,7 +356,7 @@ router.post('/player/ban', function(req, res, next){
   };
   utils.post(game.ip, game.port, 'player/ban', postData, function(e){
     if(!!e) return next(e);
-    req.flash('success', 'Edit successfully');
+    req.flash('success', '操作成功');
     return res.redirect('/service/player/ban-and-unban');
   });
 });
@@ -365,7 +369,7 @@ router.post('/player/mute-and-unmute', function(req, res){
   if(type !== 'id' && type !== 'name'){
     return res.render('service/player/search', {
       action:'/service/player/mute-and-unmute',
-      errors:['Type not selected.'],
+      errors:['查询类型不合法'],
       type:type,
       value:value
     });
@@ -374,7 +378,7 @@ router.post('/player/mute-and-unmute', function(req, res){
   if(!_.isString(value) || value.trim().length == 0){
     return res.render('service/player/search', {
       action:'/service/player/mute-and-unmute',
-      errors:['Value cannot be blank.'],
+      errors:['关键字不能为空'],
       type:type,
       value:value
     });
@@ -406,7 +410,7 @@ router.post('/player/mute', function(req, res, next){
 
   if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
   if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
-  if(_.isNaN(time) || time < 0) return next(new Error('time 不合法'));
+  if(_.isNaN(time) || time < 0) return next(new Error('时间不合法'));
   time = time * 60 * 1000;
 
   var postData = {
@@ -416,7 +420,7 @@ router.post('/player/mute', function(req, res, next){
   };
   utils.post(game.ip, game.port, 'player/mute', postData, function(e){
     if(!!e) return next(e);
-    req.flash('success', 'Edit successfully');
+    req.flash('success', '操作成功');
     return res.redirect('/service/player/mute-and-unmute');
   });
 });
@@ -477,7 +481,7 @@ router.post('/server-notice/create', function(req, res){
   var game = req.game;
   if(!_.isArray(servers) || servers.length == 0){
     return res.render('service/server-notice/notice-create', {
-      errors:['Server not selected.'],
+      errors:['服务器未选择'],
       notice:notice
     });
   }
@@ -485,20 +489,20 @@ router.post('/server-notice/create', function(req, res){
     var server = servers[i];
     if(!_.contains(game.servers, server)){
       return res.render('service/server-notice/notice-create', {
-        errors:['Server not selected.'],
+        errors:['服务器不合法'],
         notice:notice
       });
     }
   }
   if(!_.isString(notice.title) || notice.title.trim().length == 0){
     return res.render('service/server-notice/notice-create', {
-      errors:['Title cannot be blank.'],
+      errors:['标题不能为空'],
       notice:notice
     });
   }
   if(!_.isString(notice.content) || notice.content.trim().length == 0){
     return res.render('service/server-notice/notice-create', {
-      errors:['Content cannot be blank.'],
+      errors:['内容不能为空'],
       notice:notice
     });
   }
@@ -535,7 +539,7 @@ router.delete('/server-notice/:cacheServerId/:noticeId', function(req, res){
       req.flash('error', e.message);
       return res.redirect('/service/server-notice/' + req.params.cacheServerId);
     }
-    req.flash('success', 'Delete successfully');
+    req.flash('success', '删除成功');
     return res.redirect('/service/server-notice/' + req.params.cacheServerId);
   });
 });

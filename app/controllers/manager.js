@@ -23,7 +23,7 @@ router.get('/', function(req, res){
 
 router.all('*', function(req, res, next){
   Game.findById(req.user.defaultGame).then(function(game){
-    if(!game) return next(new Error('Game not exist'));
+    if(!game) return next(new Error('游戏不存在'));
     req.game = game;
     next();
   }, function(e){
@@ -50,7 +50,7 @@ router.get('/games/get-server-info', function(req, res, next){
 
 router.param('cacheServerId', function(req, res, next, cacheServerId){
   var game = req.game;
-  if(!_.contains(game.servers, cacheServerId)) return next(new Error('Server not exist'));
+  if(!_.contains(game.servers, cacheServerId)) return next(new Error('服务器不存在'));
   next();
 });
 

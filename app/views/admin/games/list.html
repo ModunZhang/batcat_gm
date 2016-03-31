@@ -1,18 +1,18 @@
 {% extends '../../layouts/admin.html' %}
 {% block content %}
 <ol class="breadcrumb">
-    <li class="active">Games</li>
+    <li class="active">游戏列表</li>
 </ol>
-<h4 style="text-align: right"><a href="/admin/games/create">Add Game</a></h4>
+<h4 style="text-align: right"><a href="/admin/games/create">新增游戏</a></h4>
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
-            <th>Name</th>
+            <th>名称</th>
             <th>Ip</th>
             <th>Port</th>
-            <th>Servers</th>
-            <th>Actions</th>
+            <th>服务器组</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
@@ -24,12 +24,12 @@
             <td>{{game.servers}}</td>
             <td>
                 <form action="/admin/games/delete/{{game._id}}" method="post"
-                      onsubmit="return confirm('Are you sure?')">
-                    <a href="/admin/games/edit/{{game._id}}" class="btn btn-link link-button">Edit</a>
+                      onsubmit="return confirm('你确定吗?')">
+                    <a href="/admin/games/edit/{{game._id}}" class="btn btn-link link-button">编辑</a>
                     <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                     <input type="hidden" name="_method" value="DELETE">
                     &nbsp;
-                    <button class="btn btn-link link-button error" type="submit">Delete</button>
+                    <button class="btn btn-link link-button error" type="submit">删除</button>
                 </form>
             </td>
         </tr>

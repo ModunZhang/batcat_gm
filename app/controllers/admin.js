@@ -49,7 +49,7 @@ router.all('/users/*', function(req, res, next){
 
 router.param('userId', function(req, res, next, userId){
   User.findById(userId).then(function(user){
-    if(!user) return next(new Error('User not exist'));
+    if(!user) return next(new Error('用户不存在'));
     req.member = user;
     next();
   }, function(e){
@@ -112,7 +112,7 @@ router.put('/users/edit/:userId', function(req, res){
   member.games = !!req.body.games ? req.body.games : [];
   member.save().then(function(){
     mongoose.connection.collection('sessions').deleteMany({session:{$regex:member._id}}, function(){
-      req.flash('success', 'Edit successfully');
+      req.flash('success', '编辑成功');
       if(member._id === req.user._id){
         req.logout();
         res.redirect('/user/login');
@@ -132,12 +132,12 @@ router.put('/users/edit/:userId', function(req, res){
 router.delete('/users/delete/:userId', function(req, res, next){
   var member = req.member;
   if(member._id === req.user._id){
-    req.flash('error', 'Can not delete your self');
+    req.flash('error', '不能删除自己');
     return res.redirect('/admin/users/list');
   }
   member.remove().then(function(){
     mongoose.connection.collection('sessions').deleteMany({session:{$regex:member._id}}, function(){
-      req.flash('success', 'Deleted successfully');
+      req.flash('success', '删除成功');
       res.redirect('/admin/users/list');
     });
   }, function(e){
@@ -148,7 +148,7 @@ router.delete('/users/delete/:userId', function(req, res, next){
 
 router.param('gameId', function(req, res, next, gameId){
   Game.findById(gameId).then(function(game){
-    if(!game) return next(new Error('Game not exist'));
+    if(!game) return next(new Error('游戏不存在'));
     req.game = game;
     next();
   }, function(e){
@@ -188,7 +188,7 @@ router.put('/games/edit/:gameId', function(req, res){
   var game = req.game;
   game = extend(game, req.body);
   game.save().then(function(){
-    req.flash('success', 'Edit successfully');
+    req.flash('success', '编辑成功');
     res.redirect('/admin/games/list');
   }, function(e){
     res.render('admin/games/edit', {
@@ -201,7 +201,7 @@ router.put('/games/edit/:gameId', function(req, res){
 router.delete('/games/delete/:gameId', function(req, res, next){
   var game = req.game;
   game.remove().then(function(){
-    req.flash('success', 'Deleted successfully');
+    req.flash('success', '删除成功');
     res.redirect('/admin/games/list');
   }, function(e){
     next(e);

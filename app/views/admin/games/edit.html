@@ -2,20 +2,20 @@
 
 {% block content %}
 <ol class="breadcrumb">
-    <li><a href="/admin/games/list">Games</a></li>
-    <li class="active">Edit Game</li>
+    <li><a href="/admin/games/list">游戏列表</a></li>
+    <li class="active">编辑游戏</li>
 </ol>
-<h4 style="text-align: center">Edit Game</h4>
+<h4 style="text-align: center">编辑游戏</h4>
 
 <form action="/admin/games/edit/{{game._id}}" method="post" role="form" class="form-horizontal">
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
     <input type="hidden" name="_method" value="PUT">
 
     <div class="form-group">
-        <label for="name" class="col-sm-2 control-label">Name</label>
+        <label for="name" class="col-sm-2 control-label">名称</label>
 
         <div class="col-sm-9">
-            <input type="text" name="name" placeholder="Name" value="{{game.name}}" id="name"
+            <input type="text" name="name" placeholder="名称" value="{{game.name}}" id="name"
                    class="form-control">
         </div>
     </div>
@@ -36,19 +36,19 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="servers" class="col-sm-2 control-label">Servers</label>
+        <label for="servers" class="col-sm-2 control-label">服务器组</label>
 
         <div class="col-sm-9">
-            <input type="text" name="servers" placeholder="Servers" value="{{game.servers}}"
+            <input type="text" name="servers" placeholder="服务器组" value="{{game.servers}}"
                    id="servers"
                    class="form-control">
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
-            <button class="btn btn-primary" type="submit">Edit</button>
+            <button class="btn btn-primary" type="submit">编辑</button>
             &nbsp; or &nbsp;
-            <a href="/admin/games/list" class="show-login">Cancel</a>
+            <a href="/admin/games/list" class="show-login">取消</a>
         </div>
     </div>
 </form>

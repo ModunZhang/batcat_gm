@@ -2,13 +2,13 @@
 
 
 {% block content %}
-<h4 style="text-align: center">Send Global Notice</h4>
+<h4 style="text-align: center">发送全服滚屏公告</h4>
 
 <form action="/service/send-global-notice" method="post" role="form" class="form-horizontal" id="form_1">
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Servers</label>
+        <label class="col-sm-2 control-label">发送到哪里</label>
 
         <div class="col-sm-9">
             {% for key,value in req.game.servers %}
@@ -18,11 +18,11 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="type_1" class="col-sm-2 control-label">Type</label>
+        <label for="type_1" class="col-sm-2 control-label">类型</label>
 
         <div class="col-sm-9">
             <select name="type" id="type_1" class="form-control">
-                <option value="">Choose a type</option>
+                <option value="">请选择一个类型</option>
                 {% for key,value in types %}
                 <option value="{{value}}">{{key}}</option>
                 {% endfor %}
@@ -30,29 +30,29 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="content_1" class="col-sm-2 control-label">Content</label>
+        <label for="content_1" class="col-sm-2 control-label">内容</label>
 
         <div class="col-sm-9">
-            <input type="text" name="content" placeholder="Content" id="content_1" class="form-control">
+            <input type="text" name="content" placeholder="内容" id="content_1" class="form-control">
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
-            <button class="btn btn-primary" type="submit">Send</button>
+            <button class="btn btn-primary" type="submit">发送</button>
         </div>
     </div>
 </form>
 
 
 <br/>
-<h4 style="text-align: center">Send Global Mail</h4>
+<h4 style="text-align: center">发送全服邮件</h4>
 
 <form action="/service/send-global-mail" method="post" role="form" class="form-horizontal" id="form_2">
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Servers</label>
+        <label class="col-sm-2 control-label">发送到哪里</label>
 
         <div class="col-sm-9">
             {% for key,value in req.game.servers %}
@@ -62,77 +62,77 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="title_2" class="col-sm-2 control-label">Title</label>
+        <label for="title_2" class="col-sm-2 control-label">标题</label>
 
         <div class="col-sm-9">
-            <input type="text" name="title" placeholder="Title" id="title_2" class="form-control">
+            <input type="text" name="title" placeholder="标题" id="title_2" class="form-control">
         </div>
     </div>
     <div class="form-group">
-        <label for="content_2" class="col-sm-2 control-label">Content</label>
+        <label for="content_2" class="col-sm-2 control-label">内容</label>
 
         <div class="col-sm-9">
-            <textarea rows="5" name="content" placeholder="Content" id="content_2" class="form-control"></textarea>
+            <textarea rows="5" name="content" placeholder="内容" id="content_2" class="form-control"></textarea>
         </div>
     </div>
     <div class="form-group">
-        <label for="rewards_2" class="col-sm-2 control-label">Rewards</label>
+        <label for="rewards_2" class="col-sm-2 control-label">奖励</label>
 
         <div class="col-sm-9">
-            <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
+            <input type="text" name="rewards" placeholder="奖励格式为->    奖励类型1:奖励子类型1:奖励数量1,奖励类型2:奖励子类型2:奖励数量2"
                    id="rewards_2" class="form-control">
 
-            <p><a href="javascript:showMailRewardHelp('{{req.game._id}}')">Need Help?</a></p>
+            <p><a href="javascript:showMailRewardHelp('{{req.game._id}}')">查看类型和子类型?</a></p>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
-            <button class="btn btn-primary" type="submit">Send</button>
+            <button class="btn btn-primary" type="submit">发送</button>
         </div>
     </div>
 </form>
 
 
 <br/>
-<h4 style="text-align: center">Send Mail To Players</h4>
+<h4 style="text-align: center">给指定玩家发送邮件</h4>
 
 <form action="/service/send-mail-to-players" method="post" role="form" class="form-horizontal" id="form_3">
     <input type="hidden" name="_csrf" value="{{csrf_token}}">
 
     <div class="form-group">
-        <label for="players_3" class="col-sm-2 control-label">Players</label>
+        <label for="players_3" class="col-sm-2 control-label">玩家ID列表</label>
 
         <div class="col-sm-9">
-            <input type="text" name="players" placeholder="Players" id="players_3" class="form-control">
+            <input type="text" name="players" placeholder="玩家ID列表" id="players_3" class="form-control">
         </div>
     </div>
     <div class="form-group">
-        <label for="title_3" class="col-sm-2 control-label">Title</label>
+        <label for="title_3" class="col-sm-2 control-label">标题</label>
 
         <div class="col-sm-9">
-            <input type="text" name="title" placeholder="Title" id="title_3" class="form-control">
+            <input type="text" name="title" placeholder="标题" id="title_3" class="form-control">
         </div>
     </div>
     <div class="form-group">
-        <label for="content_3" class="col-sm-2 control-label">Content</label>
+        <label for="content_3" class="col-sm-2 control-label">内容</label>
 
         <div class="col-sm-9">
-            <textarea rows="5" name="content" placeholder="Content" id="content_3" class="form-control"></textarea>
+            <textarea rows="5" name="content" placeholder="内容" id="content_3" class="form-control"></textarea>
         </div>
     </div>
     <div class="form-group">
-        <label for="rewards_3" class="col-sm-2 control-label">Rewards</label>
+        <label for="rewards_3" class="col-sm-2 control-label">奖励</label>
 
         <div class="col-sm-9">
-            <input type="text" name="rewards" placeholder="The format is -> rewardType:rewardName:rewardCount"
+            <input type="text" name="rewards" placeholder="奖励格式为->    奖励类型1:奖励子类型1:奖励数量1,奖励类型2:奖励子类型2:奖励数量2"
                    id="rewards_3" class="form-control">
 
-            <p><a href="javascript:showMailRewardHelp('{{req.game._id}}')">Need Help?</a></p>
+            <p><a href="javascript:showMailRewardHelp('{{req.game._id}}')">查看类型和子类型?</a></p>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
-            <button class="btn btn-primary" type="submit">Send</button>
+            <button class="btn btn-primary" type="submit">发送</button>
         </div>
     </div>
 </form>
@@ -162,7 +162,7 @@
                     });
                 }else{
                     new PNotify({
-                        text:'Send successfully',
+                        text:'发送成功',
                         type:'success'
                     });
                 }
@@ -179,7 +179,7 @@
                     });
                 }else{
                     new PNotify({
-                        text:'Send successfully',
+                        text:'发送成功',
                         type:'success'
                     });
                 }
@@ -196,7 +196,7 @@
                     });
                 }else{
                     new PNotify({
-                        text:'Send successfully',
+                        text:'发送成功',
                         type:'success'
                     });
                 }

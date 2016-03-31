@@ -1,14 +1,14 @@
 {% extends '../../layouts/manager.html' %}
 {% block content %}
 <ol class="breadcrumb">
-    <li class="active">Servers</li>
+    <li class="active">服务器列表</li>
 </ol>
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
-            <th>Server</th>
-            <th>Actions</th>
+            <th>名称</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
@@ -16,7 +16,7 @@
         <tr>
             <td>{{serverId}}</td>
             <td>
-                <a href="/manager/revenue/{{serverId}}" class="btn btn-link link-button">View</a>
+                <a href="/manager/revenue/{{serverId}}" class="btn btn-link link-button">查看</a>
             </td>
         </tr>
         {% endfor %}
