@@ -31,7 +31,19 @@
             </tr>
             <tr>
                 <td><strong>联盟ID</strong></td>
-                <td>{{player.allianceId | default('未加入')}}</td>
+                <td>
+                    {%if !player.allianceId%}
+                    未加入
+                    {%else%}
+                    <form action="/service/alliance/data" method="post">
+                        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                        <input type="hidden" name="type" value="id">
+                        <input type="hidden" name="value" value="{{player.allianceId}}">
+                        &nbsp;
+                        <button class="btn btn-link link-button" type="submit">{{player.allianceId}}</button>
+                    </form>
+                    {%endif%}
+                </td>
             </tr>
             <tr>
                 <td><strong>注册时间</strong></td>
@@ -44,20 +56,46 @@
             <tr>
                 <td><strong>到期锁定时间</strong></td>
                 <td>
-                    {% if player.countInfo.lockTime - Date.now() > 0 %} {{player.countInfo.lockTime|date('Y-m-d H:i:s')}}
-                    {% else %} 未锁定 {% endif %}
+                    {% if player.countInfo.lockTime - Date.now() > 0 %}
+                    {{player.countInfo.lockTime|date('Y-m-d H:i:s')}}
+                    {% else %}
+                    未锁定
+                    {% endif %}
                 </td>
             </tr>
             <tr>
                 <td><strong>到期禁言时间</strong></td>
                 <td>
-                    {% if player.countInfo.muteTime - Date.now() > 0 %} {{player.countInfo.muteTime|date('Y-m-d H:i:s')}}
-                    {% else %} 未禁言 {% endif %}
+                    {% if player.countInfo.muteTime - Date.now() > 0 %}
+                    {{player.countInfo.muteTime|date('Y-m-d H:i:s')}}
+                    {% else %}
+                    未禁言
+                    {% endif %}
                 </td>
             </tr>
             <tr>
                 <td><strong>宝石数量</strong></td>
                 <td>{{player.resources.gem}}</td>
+            </tr>
+            <tr>
+                <td><strong>充值总额</strong></td>
+                <td>{{player.countInfo.iapGemCount}}</td>
+            </tr>
+            <tr>
+                <td><strong>玩家等级</strong></td>
+                <td>{{player.basicInfo.level}}</td>
+            </tr>
+            <tr>
+                <td><strong>主城等级</strong></td>
+                <td>{{player.buildings.location_1.level}}</td>
+            </tr>
+            <tr>
+                <td><strong>战斗力</strong></td>
+                <td>{{player.basicInfo.power}}</td>
+            </tr>
+            <tr>
+                <td><strong>VIP等级</strong></td>
+                <td>{{player.basicInfo.vipLevel}}</td>
             </tr>
         </table>
     </div>

@@ -21,6 +21,55 @@
                 <td><strong>名称</strong></td>
                 <td>{{alliance.basicInfo.name}}</td>
             </tr>
+            <tr>
+                <td><strong>状态</strong></td>
+                <td>{{alliance.basicInfo.status}}</td>
+            </tr>
+            <tr>
+                <td><strong>战斗力</strong></td>
+                <td>{{alliance.basicInfo.power}}</td>
+            </tr>
+            <tr>
+                <td><strong>荣耀值</strong></td>
+                <td>{{alliance.basicInfo.honour}}</td>
+            </tr>
+            <tr>
+                <td><strong>地理位置</strong></td>
+                <td>第{{alliance.basicInfo.round}}圈</td>
+            </tr>
+            <tr>
+                <td><strong>联盟人数</strong></td>
+                <td>{{alliance.members.length}}</td>
+            </tr>
+            {%for key, value in alliance.members%}
+            {%if value.title === 'archon'%}
+            <tr>
+                <td><strong>盟主</strong></td>
+                <td>
+                    <form action="/service/player/data" method="post">
+                        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                        <input type="hidden" name="type" value="id">
+                        <input type="hidden" name="value" value="{{value.id}}">
+                        &nbsp;
+                        <button class="btn btn-link link-button" type="submit">{{value.name}}</button>
+                    </form>
+                </td>
+            </tr>
+            {%else%}
+            <tr>
+                <td><strong>成员{{key}}</strong></td>
+                <td>
+                    <form action="/service/player/data" method="post">
+                        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                        <input type="hidden" name="type" value="id">
+                        <input type="hidden" name="value" value="{{value.id}}">
+                        &nbsp;
+                        <button class="btn btn-link link-button" type="submit">{{value.name}}</button>
+                    </form>
+                </td>
+            </tr>
+            {%endif%}
+            {%endfor%}
         </table>
     </div>
     <div class="col-sm-8">
