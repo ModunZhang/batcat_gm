@@ -5,12 +5,14 @@
 var express = require('express');
 var _ = require('underscore');
 var mongoose = require('mongoose');
+var Promise = require('bluebird');
 
 var auth = require('../../middlewares/authorization');
 var consts = require('../../config/consts');
 var utils = require('../../config/utils');
 
 var Game = mongoose.model('Game');
+var Log = mongoose.model('Log');
 
 var router = express.Router();
 module.exports = router;
@@ -98,4 +100,41 @@ router.get('/analyse/:cacheServerId', function(req, res, next){
     if(!!e) return next(e);
     res.render('manager/analyse/analyse-list', {data:data});
   });
+});
+
+router.get('/logs', function(req, res, next){
+  var game = req.game;
+  var skip = req.query.skip;
+  if(!_.isNumber(skip) || skip % 1 !== 0){
+    skip = 0;
+  }
+  var userEmail = !!req.query.userEmail ? req.query.userEmail : null;
+  var limit = 15;
+  var result = {};
+  result.query = {
+    userEmail:userEmail,
+    skip:skip,
+    limit:limit
+  };
+  var sql = {
+    userEmail:!!userEmail ? userEmail : {$exists:true},
+    game:game._id
+  };
+  Promise.fromCallback(function(callback){
+    Log.count(sql, callback);
+  }).then(function(count){
+    result.totalCount = count;
+    return Promise.fromCallback(function(callback){
+      Log.find(sql, null, {
+        skip:skip,
+        limit:limit,
+        sort:{createdAt:-1}
+      }, callback)
+    });
+  }).then(function(datas){
+    result.datas = datas;
+    res.render('manager/logs', {data:result});
+  }).catch(function(e){
+    next(e);
+  })
 });

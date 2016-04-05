@@ -46,26 +46,14 @@
             <tr>
                 <td><strong>盟主</strong></td>
                 <td>
-                    <form action="/service/player/data" method="post">
-                        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-                        <input type="hidden" name="type" value="id">
-                        <input type="hidden" name="value" value="{{value.id}}">
-                        &nbsp;
-                        <button class="btn btn-link link-button" type="submit">{{value.name}}</button>
-                    </form>
+                    <a href="/service/player/search?type=id&value={{value.id}}">{{value.name}}</a>
                 </td>
             </tr>
             {%else%}
             <tr>
                 <td><strong>成员{{key}}</strong></td>
                 <td>
-                    <form action="/service/player/data" method="post">
-                        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-                        <input type="hidden" name="type" value="id">
-                        <input type="hidden" name="value" value="{{value.id}}">
-                        &nbsp;
-                        <button class="btn btn-link link-button" type="submit">{{value.name}}</button>
-                    </form>
+                    <a href="/service/player/search?type=id&value={{value.id}}">{{value.name}}</a>
                 </td>
             </tr>
             {%endif%}

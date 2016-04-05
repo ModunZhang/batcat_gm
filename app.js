@@ -20,6 +20,7 @@ var pkg = require('./package.json');
 var env = process.env.NODE_ENV || 'development';
 
 var Game = mongoose.model('Game');
+var Log = mongoose.model('Log');
 
 var app = express();
 app.engine('html', swig.renderFile);
@@ -49,24 +50,21 @@ app.use(session({
     url:config.mongoHost,
     collection:'sessions',
     ttl:60 * 60 * 24 * 10,
-    touchAfter: 60 * 60 * 24
+    touchAfter:60 * 60 * 24
   }),
-  cookie:{path: '/', httpOnly: true, secure: false, maxAge: null}
+  cookie:{path:'/', httpOnly:true, secure:false, maxAge:null}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(helpers(pkg.name));
 app.use(csrf());
+
 app.use(function(req, res, next){
-  res.locals.csrf_token = req.csrfToken();
-  next();
-});
-app.use(function(req, res, next){
-  res.locals.isActive = function (link) {
-    if (link === '/' ) {
+  res.locals.isActive = function(link){
+    if(link === '/'){
       return req.originalUrl === '/' ? 'active' : ''
-    } else {
+    }else{
       return req.originalUrl.indexOf(link) !== -1 ? 'active' : ''
     }
   };
@@ -89,6 +87,24 @@ app.use(function(req, res, next){
   }else{
     next();
   }
+});
+app.use(function(req, res, next){
+  res.locals.csrf_token = req.csrfToken();
+  if(!!req.user && (req.method === 'POST' || req.member === 'DELETE' || req.method === 'PUT')){
+    var body = {};
+    if(!!req.body){
+      body = _.omit(req.body, '_csrf');
+    }
+    var log = {
+      api:req.originalUrl,
+      params:body,
+      method:req.method,
+      userEmail:req.user.email,
+      game:req.user.defaultGame
+    };
+    return new Log(log).save(next);
+  }
+  next();
 });
 
 require('./config/routes')(app);

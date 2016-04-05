@@ -4,6 +4,9 @@
 
 var request = require('request');
 var _ = require('underscore');
+var mongoose = require('mongoose');
+
+var Log = mongoose.model('Log');
 
 var Utils = module.exports;
 

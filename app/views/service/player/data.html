@@ -35,13 +35,7 @@
                     {%if !player.allianceId%}
                     未加入
                     {%else%}
-                    <form action="/service/alliance/data" method="post">
-                        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-                        <input type="hidden" name="type" value="id">
-                        <input type="hidden" name="value" value="{{player.allianceId}}">
-                        &nbsp;
-                        <button class="btn btn-link link-button" type="submit">{{player.allianceId}}</button>
-                    </form>
+                    <a href="/service/alliance/search?type=id&value={{player.allianceId}}">{{player.allianceId}}</a>
                     {%endif%}
                 </td>
             </tr>

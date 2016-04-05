@@ -3,9 +3,7 @@
 {% block content %}
 <h4 style="text-align: center">查询玩家</h4>
 
-<form action="{{action}}" method="post" role="form" class="form-horizontal" id="findById">
-    <input type="hidden" name="_csrf" value="{{csrf_token}}">
-
+<form action="{{action}}" method="get" role="form" class="form-horizontal" id="findById">
     <div class="form-group">
         <label for="type" class="col-sm-2 control-label">类型</label>
 

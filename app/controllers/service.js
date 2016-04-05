@@ -189,18 +189,27 @@ router.get('/get-alliance-chats', function(req, res){
   });
 });
 
-router.get('/alliance/data', function(req, res){
-  res.render('service/alliance/search', {action:'/service/alliance/data'})
+router.get('/get-mail-reward-types', function(req, res){
+  var game = req.game;
+
+  utils.get(game.ip, game.port, 'get-mail-reward-types', null, function(e, data){
+    if(!!e) return res.render('service/get-mail-reward-types', {data:{}});
+    return res.render('service/get-mail-reward-types', {data:JSON.stringify(data)});
+  });
 });
 
-router.post('/alliance/data', function(req, res){
-  var type = req.body.type;
-  var value = req.body.value;
+router.get('/alliance/search', function(req, res){
+  var type = req.query.type;
+  var value = req.query.value;
   var game = req.game;
+
+  if(_.isUndefined(type) && _.isUndefined(value)){
+    return res.render('service/alliance/search', {action:'/service/alliance/search'})
+  }
 
   if(type !== 'id' && type !== 'tag'){
     return res.render('service/alliance/search', {
-      action:'/service/alliance/data',
+      action:'/service/alliance/search',
       errors:['查询类型不合法'],
       type:type,
       value:value
@@ -209,7 +218,7 @@ router.post('/alliance/data', function(req, res){
 
   if(!_.isString(value) || value.trim().length == 0){
     return res.render('service/alliance/search', {
-      action:'/service/alliance/data',
+      action:'/service/alliance/search',
       errors:['关键字不能为空'],
       type:type,
       value:value
@@ -221,7 +230,7 @@ router.post('/alliance/data', function(req, res){
   utils.get(game.ip, game.port, url, params, function(e, data){
     if(!!e){
       return res.render('service/alliance/search', {
-        action:'/service/alliance/data',
+        action:'/service/alliance/search',
         errors:[e.message],
         type:type,
         value:value
@@ -234,27 +243,17 @@ router.post('/alliance/data', function(req, res){
   });
 });
 
-router.get('/get-mail-reward-types', function(req, res){
+router.get('/player/search', function(req, res){
+  var type = req.query.type;
+  var value = req.query.value;
   var game = req.game;
-
-  utils.get(game.ip, game.port, 'get-mail-reward-types', null, function(e, data){
-    if(!!e) return res.render('service/get-mail-reward-types', {data:{}});
-    return res.render('service/get-mail-reward-types', {data:JSON.stringify(data)});
-  });
-});
-
-router.get('/player/data', function(req, res){
-  res.render('service/player/search', {action:'/service/player/data'})
-});
-
-router.post('/player/data', function(req, res){
-  var type = req.body.type;
-  var value = req.body.value;
-  var game = req.game;
+  if(_.isUndefined(type) && _.isUndefined(value)){
+    return res.render('service/player/search', {action:'/service/player/search'})
+  }
 
   if(type !== 'id' && type !== 'name' && type !== 'device'){
     return res.render('service/player/search', {
-      action:'/service/player/data',
+      action:'/service/player/search',
       errors:['查询类型不合法'],
       type:type,
       value:value
@@ -263,7 +262,7 @@ router.post('/player/data', function(req, res){
 
   if(!_.isString(value) || value.trim().length == 0){
     return res.render('service/player/search', {
-      action:'/service/player/data',
+      action:'/service/player/search',
       errors:['关键字不能为空'],
       type:type,
       value:value
@@ -275,7 +274,7 @@ router.post('/player/data', function(req, res){
   utils.get(game.ip, game.port, url, params, function(e, data){
     if(!!e){
       return res.render('service/player/search', {
-        action:'/service/player/data',
+        action:'/service/player/search',
         errors:[e.message],
         type:type,
         value:value
@@ -288,15 +287,14 @@ router.post('/player/data', function(req, res){
   });
 });
 
-
 router.get('/player/ban-and-unban', function(req, res){
-  res.render('service/player/search', {action:'/service/player/ban-and-unban'})
-});
-
-router.post('/player/ban-and-unban', function(req, res){
-  var type = req.body.type;
-  var value = req.body.value;
+  var type = req.query.type;
+  var value = req.query.value;
   var game = req.game;
+
+  if(_.isUndefined(type) && _.isUndefined(value)){
+    return res.render('service/player/search', {action:'/service/player/ban-and-unban'})
+  }
 
   if(type !== 'id' && type !== 'name'){
     return res.render('service/player/search', {
@@ -334,10 +332,6 @@ router.post('/player/ban-and-unban', function(req, res){
   });
 });
 
-router.get('/player/mute-and-unmute', function(req, res){
-  res.render('service/player/search', {action:'/service/player/mute-and-unmute'})
-});
-
 router.post('/player/ban', function(req, res, next){
   var game = req.game;
   var playerId = req.body.playerId;
@@ -361,10 +355,14 @@ router.post('/player/ban', function(req, res, next){
   });
 });
 
-router.post('/player/mute-and-unmute', function(req, res){
-  var type = req.body.type;
-  var value = req.body.value;
+router.get('/player/mute-and-unmute', function(req, res){
+  var type = req.query.type;
+  var value = req.query.value;
   var game = req.game;
+
+  if(_.isUndefined(type) && _.isUndefined(value)){
+    return res.render('service/player/search', {action:'/service/player/mute-and-unmute'})
+  }
 
   if(type !== 'id' && type !== 'name'){
     return res.render('service/player/search', {
