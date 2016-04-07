@@ -104,7 +104,7 @@ router.get('/analyse/:cacheServerId', function(req, res, next){
 
 router.get('/logs', function(req, res, next){
   var game = req.game;
-  var skip = req.query.skip;
+  var skip = parseInt(req.query.skip);
   if(!_.isNumber(skip) || skip % 1 !== 0){
     skip = 0;
   }
