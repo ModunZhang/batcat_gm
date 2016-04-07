@@ -35,7 +35,7 @@ router.all('*', function(req, res, next){
 
 router.get('/games/get-server-info', function(req, res, next){
   var game = req.game;
-  utils.get(game.ip, game.port, 'get-servers-info', {}, function(e, data){
+  utils.get(game.ip, game.port, 'get-servers-info', {servers:game.servers.toObject()}, function(e, data){
     if(!!e) return next(e);
     var serverNames = _.sortBy(_.keys(data), function(serverName){
       return serverName;
