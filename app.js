@@ -91,6 +91,7 @@ app.use(function(req, res, next){
 app.use(function(req, res, next){
   res.locals.csrf_token = req.csrfToken();
   if(!!req.user && (req.method === 'POST' || req.member === 'DELETE' || req.method === 'PUT')){
+    if(req.originalUrl === '/user/set-default-game') return next();
     var body = {};
     if(!!req.body){
       body = _.omit(req.body, '_csrf');
