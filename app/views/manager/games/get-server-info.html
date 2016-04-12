@@ -12,6 +12,7 @@
             <th>内存使用(M)</th>
             <th>Heap使用(M)</th>
             <th>开启时长(m)</th>
+            <th>开服时间</th>
         </tr>
         </thead>
         <tbody>
@@ -19,7 +20,7 @@
         <tr>
             <td>{{ server.name }}</td>
             {% if server.code !== 200 %}
-            <td colspan="7">{{server.data}}</td>
+            <td colspan="8">{{server.data}}</td>
             {% else %}
             <td>{{ server.data.gameInfo.totalCount }}</td>
             <td>{{ server.data.gameInfo.activeCount }}</td>
@@ -28,6 +29,7 @@
             <td>{{ server.data.sysInfo.rss }}</td>
             <td>{{ server.data.sysInfo.heapUsed }}</td>
             <td>{{ server.data.sysInfo.uptime }}</td>
+            <td>{{ server.data.sysInfo.openAt|date('Y-m-d H:i:s') }}</td>
             {% endif %}
         </tr>
         {% endfor %}
