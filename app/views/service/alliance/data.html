@@ -51,15 +51,17 @@
             </tr>
             {%endif%}
             {%endfor%}
-            {%for key, value in alliance.members%}
+            {%set i = 1%}
+            {%for _, value in alliance.members%}
             {%if value.title !== 'archon'%}
             <tr>
-                <td><strong>成员{{key}}</strong></td>
+                <td><strong>成员{{i}}</strong></td>
                 <td>
                     <a href="/service/player/search?type=id&value={{value.id}}">{{value.name}}</a>
                 </td>
             </tr>
             {%endif%}
+            {%set i = i + 1%}
             {%endfor%}
         </table>
     </div>
