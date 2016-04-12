@@ -49,7 +49,10 @@
                     <a href="/service/player/search?type=id&value={{value.id}}">{{value.name}}</a>
                 </td>
             </tr>
-            {%else%}
+            {%endif%}
+            {%endfor%}
+            {%for key, value in alliance.members%}
+            {%if value.title !== 'archon'%}
             <tr>
                 <td><strong>成员{{key}}</strong></td>
                 <td>
