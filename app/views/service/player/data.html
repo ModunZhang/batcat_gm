@@ -48,6 +48,16 @@
                 <td>{{player.countInfo.lastLoginTime|date('Y-m-d H:i:s')}}</td>
             </tr>
             <tr>
+                <td><strong>最后登出时间</strong></td>
+                <td>
+                    {% if !!player.logicServerId %}
+                    在线
+                    {% else %}
+                    {{player.countInfo.lastLogoutTime|date('Y-m-d H:i:s')}}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <td><strong>到期锁定时间</strong></td>
                 <td>
                     {% if player.countInfo.lockTime - Date.now() > 0 %}
