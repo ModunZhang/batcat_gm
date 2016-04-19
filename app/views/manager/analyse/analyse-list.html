@@ -60,7 +60,7 @@
         <td>{%if data.day15 === -1%}暂无{%elseif data.day15 === 0 || data.dnu === 0%}0%{%else%}{{Number(data.day15/data.dnu * 100).toFixed(2)}}%{%endif%}</td>
         <td>{%if data.day30 === -1%}暂无{%elseif data.day30 === 0 || data.dnu === 0%}0%{%else%}{{Number(data.day30/data.dnu * 100).toFixed(2)}}%{%endif%}</td>
         <td>${%if data.revenue > 0%}{{Number(data.revenue).toFixed(2)}}{%else%}0{%endif%}</td>
-        <td>${%if data.dau > 0 && data.revenue > 0%}{{Number(data.revenue/data.dau).toFixed(2)}}{%else%}0{%endif%}</td>
+        <td>${%if data.dau > 0 && data.revenue > 0%}{{Number(data.revenue/data.dau).toFixed(3)}}{%else%}0{%endif%}</td>
         <td>${%if data.payCount > 0%}{{Number(data.revenue / data.payCount).toFixed(2)}}{%else%}0{%endif%}</td>
         <td>{{data.payCount}}</td>
         <td>{{data.payTimes}}</td>
