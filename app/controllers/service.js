@@ -423,6 +423,98 @@ router.post('/player/mute', function(req, res, next){
   });
 });
 
+router.get('/player/get-gm-chats', function(req, res){
+  var type = req.query.type;
+  var value = req.query.value;
+  var game = req.game;
+
+  if(_.isUndefined(type) && _.isUndefined(value)){
+    return res.render('service/player/search', {action:'/service/player/get-gm-chats'})
+  }
+
+  if(type !== 'id' && type !== 'name'){
+    return res.render('service/player/search', {
+      action:'/service/player/get-gm-chats',
+      errors:['查询类型不合法'],
+      type:type,
+      value:value
+    });
+  }
+
+  if(!_.isString(value) || value.trim().length == 0){
+    return res.render('service/player/search', {
+      action:'/service/player/get-gm-chats',
+      errors:['关键字不能为空'],
+      type:type,
+      value:value
+    });
+  }
+
+  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
+  var params = type === 'id' ? {playerId:value} : {playerName:value};
+  utils.get(game.ip, game.port, url, params, function(e, data){
+    if(!!e){
+      return res.render('service/player/search', {
+        action:'/service/player/get-gm-chats',
+        errors:[e.message],
+        type:type,
+        value:value
+      });
+    }
+    if(!data.logicServerId){
+      return res.render('service/player/search', {
+        action:'/service/player/get-gm-chats',
+        errors:['玩家不在线'],
+        type:type,
+        value:value
+      });
+    }
+    return res.render('service/player/gmChat', {
+      player:data
+    });
+  });
+});
+
+router.get('/player/get-gm-chats-ajax', function(req, res){
+  var time = Number(req.query.time);
+  var game = req.game;
+  var playerId = req.query.playerId;
+  var logicServerId = req.query.logicServerId;
+
+  if(_.isNaN(time)) return res.json({
+    code:500,
+    data:['时间戳不合法']
+  });
+
+  utils.get(game.ip, game.port, 'get-gm-chats', {
+    time:Number(time),
+    playerId:playerId,
+    logicServerId:logicServerId
+  }, function(e, data){
+    if(!!e) return res.json({code:500, data:e.message});
+    return res.json({code:200, data:data});
+  });
+});
+
+router.post('/player/send-gm-chat', function(req, res){
+  var game = req.game;
+
+  if(!_.isString(req.body.content) || req.body.content.trim().length == 0) return res.json({
+    code:500,
+    data:['聊天内容不能为空']
+  });
+
+  var postData = {
+    playerId:req.body.playerId,
+    logicServerId:req.body.logicServerId,
+    content:req.body.content
+  };
+  utils.post(game.ip, game.port, 'send-gm-chat', postData, function(e, data){
+    if(!!e) return res.json({code:500, data:e.message});
+    return res.json({code:200, data:data});
+  });
+});
+
 router.get('/get-gemchange-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;

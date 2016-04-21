@@ -1,0 +1,92 @@
+{% extends '../../layouts/service.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">GM陪聊(^v^)</div>
+            <div class="panel-body">
+                <div class="row">
+                    <form action="/service/player/send-gm-chat" method="post" role="form" class="form-horizontal"
+                          id="send_gm_chat">
+                        <input type="hidden" name="_csrf" value="{{csrf_token}}">
+                        <input type="hidden" name="playerId" value="{{player._id}}">
+                        <input type="hidden" name="logicServerId" value="{{player.logicServerId}}">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">列表</label>
+
+                            <div class="col-sm-10 chat-body" id="chat_body_1">
+                                <ul class="chat" id="chat_ul_1"></ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="content_1" class="col-sm-2 control-label">GM内容</label>
+
+                            <div class="col-sm-9">
+                                <input type="text" name="content" placeholder="Content" id="content_1"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-9">
+                                <button class="btn btn-primary" type="submit">发布</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block foot %}
+<script type="text/javascript">
+    var chatOthersTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="primary-font">^Name^</strong><small class="pull-right text-muted">^Server^,^Time^</small></div><p>^Content^</p></div></li>';
+    var chatMineTemplate = '<li><div class="chat-content clearfix"><div class="header"><strong class="pull-right primary-font">^Name^</strong><small class="text-muted">^Time^</small></div><p>^Content^</p></div></li>';
+    $(function(){
+        var chat_body_1 = $('#chat_body_1');
+        var lastChatTime = 0;
+        var getGlobalChats = function(){
+            $.get('/service/player/get-gm-chats-ajax', {
+                time:lastChatTime,
+                playerId:'{{player._id}}',
+                logicServerId:'{{player.logicServerId}}'
+            }, function(resp){
+                if(resp.code === 500){
+                    return location.reload();
+                }
+                var chats = resp.data;
+                for(var i = 0; i < chats.length; i++){
+                    var chat = chats[i];
+                    var content = null;
+                    if(chat.name === 'System'){
+                        content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                    }else{
+                        content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                    }
+                    $('#chat_ul_1').append(content);
+                }
+                if(chats.length > 0){
+                    lastChatTime = chats[chats.length - 1].time;
+                    chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                }
+            })
+        };
+        getGlobalChats();
+        setInterval(getGlobalChats, 2000);
+
+        $('#send_gm_chat').ajaxForm(function(resp){
+            if(resp.code === 500){
+                new PNotify({
+                    text:resp.data,
+                    type:'error'
+                });
+            }else{
+                $('#content_1').val('');
+            }
+        });
+    })
+</script>
+{% endblock %}
