@@ -1,0 +1,119 @@
+{% extends '../../layouts/manager.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/manager/revenue">服务器列表</a></li>
+    <li class="active">{{req.params.cacheServerId}}</li>
+</ol>
+<br/>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>日期</th>
+        <th>DAU</th>
+        <th>DNU</th>
+        <th>最高城堡等级</th>
+        <th>新手通过率</th>
+        <th>平均宝石消耗数量</th>
+        <th>平均宝石剩余数量</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, data in data.datas%}
+    <tr>
+        <td>{{data.dateTime|date('Y-m-d')}}</td>
+        <td>{{data.dau}}</td>
+        <td>{{data.dnu}}</td>
+        <td>
+            {%set maxKeepLevel=0%}
+            {%set maxKeepCount=0%}
+            {%for keepData in data.keepLevels%}
+            {%if keepData.count > maxKeepCount%}
+            {%set maxKeepLevel=keepData.level%}
+            {%set maxKeepCount=keepData.count%}
+            {%endif%}
+            {%endfor%}
+            {{maxKeepLevel}}
+        </td>
+        <td>{{Number(data.ftePassed/data.dau * 100).toFixed(2)}}%</td>
+        <td>{{Number(data.gemUsed/data.dau * 100).toFixed(2)}}</td>
+        <td>{{Number(data.gemLeft/data.dau * 100).toFixed(2)}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<nav>
+    <ul class="pagination">
+        {% if data.query.skip === 0 %}
+        <li class="disabled">
+            <span aria-hidden="true">&laquo;&nbsp;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/manager/dailyReports/{{req.params.cacheServerId}}?&skip=0"
+               aria-label="First">
+                <span aria-hidden="true">&laquo;&nbsp;</span>
+            </a>
+        </li>
+        {%endif%}
+        {% if data.query.skip < data.query.limit %}
+        <li class="disabled">
+            <span aria-hidden="true">&lsaquo;&nbsp;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/manager/dailyReports/{{req.params.cacheServerId}}?&skip={{data.query.skip - data.query.limit}}"
+               aria-label="Previous">
+                <span aria-hidden="true">&lsaquo;&nbsp;</span>
+            </a>
+        </li>
+        {%endif%}
+        {%set adjacent = 5%}
+        {%set pages = Math.ceil(data.totalCount / data.query.limit)%}
+        {%set curPage = Math.ceil(data.query.skip / data.query.limit)%}
+        {%if curPage > adjacent%}
+        {%set minPage = curPage - adjacent%}
+        {%else%}
+        {%set minPage = 0%}
+        {%endif%}
+        {%if curPage < pages - adjacent%}
+        {%set maxPage = curPage + adjacent%}
+        {%else%}
+        {%set maxPage = pages - 1%}
+        {%endif%}
+        {%for i,v in Array(maxPage - minPage + 1)%}
+        <li class="{%if i + minPage === curPage %}active{%endif%}">
+            {%if i + minPage === curPage %}
+            <a href="#">{{i + minPage + 1}}</a>
+            {%else%}
+            <a href="/manager/dailyReports/{{req.params.cacheServerId}}?&skip={{data.query.limit * (i + minPage)}}">{{i
+                + minPage + 1}}</a>
+            {%endif%}
+        </li>
+        {%endfor%}
+        {% if data.query.skip >= data.totalCount - data.query.limit %}
+        <li class="disabled">
+            <span aria-hidden="true">&nbsp;&rsaquo;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/manager/dailyReports/{{req.params.cacheServerId}}?&skip={{data.query.skip + data.query.limit}}"
+               aria-label="Next">
+                <span aria-hidden="true">&nbsp;&rsaquo;</span>
+            </a>
+        </li>
+        {%endif%}
+        {% if data.query.skip + data.datas.length >= data.totalCount%}
+        <li class="disabled">
+            <span aria-hidden="true">&nbsp;&raquo;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/manager/dailyReports/{{req.params.cacheServerId}}?&skip={{data.query.limit * (pages - 1)}}"
+               aria-label="Next">
+                <span aria-hidden="true">&nbsp;&raquo;</span>
+            </a>
+        </li>
+        {%endif%}
+    </ul>
+</nav>
+{% endblock %}

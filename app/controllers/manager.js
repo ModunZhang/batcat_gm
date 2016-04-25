@@ -138,3 +138,21 @@ router.get('/logs', function(req, res, next){
     next(e);
   })
 });
+
+router.get('/dailyReports', function(req, res){
+  res.render('manager/dailyReports/server-list');
+});
+
+router.get('/dailyReports/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'get-daily-reports', {
+    serverId:cacheServerId,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('manager/dailyReports/report-list', {data:data});
+  });
+});
