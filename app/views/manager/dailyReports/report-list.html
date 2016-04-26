@@ -11,10 +11,10 @@
         <th>日期</th>
         <th>DAU</th>
         <th>DNU</th>
-        <th>最高城堡等级</th>
-        <th>新手通过率</th>
-        <th>平均宝石消耗数量</th>
-        <th>平均宝石剩余数量</th>
+        <th>城堡等级</th>
+        <th>新手引导通过人数</th>
+        <th>宝石总消耗</th>
+        <th>宝石总剩余</th>
     </tr>
     </thead>
     <tbody>
@@ -24,19 +24,15 @@
         <td>{{data.dau}}</td>
         <td>{{data.dnu}}</td>
         <td>
-            {%set maxKeepLevel=0%}
-            {%set maxKeepCount=0%}
             {%for keepData in data.keepLevels%}
-            {%if keepData.level > maxKeepLevel && keepData.count > 0%}
             {%set maxKeepLevel=keepData.level%}
             {%set maxKeepCount=keepData.count%}
-            {%endif%}
+            {{keepData.level}}({{keepData.count}})
             {%endfor%}
-            {{maxKeepLevel}}级共{{maxKeepCount}}个
         </td>
-        <td>{%if data.dau>0 %}{{Number(data.ftePassed/data.dau * 100).toFixed(2)}}{%else%}0{%endif%}%</td>
-        <td>{%if data.dau>0 %}{{Number(data.gemUsed/data.dau * 100).toFixed(2)}}{%else%}0{%endif%}</td>
-        <td>{%if data.dau>0 %}{{Number(data.gemLeft/data.dau * 100).toFixed(2)}}{%else%}0{%endif%}</td>
+        <td>{{data.ftePassed}}</td>
+        <td>{{data.gemUsed}}</td>
+        <td>{{data.gemLeft}}</td>
     </tr>
     {% endfor %}
     </tbody>
