@@ -557,10 +557,6 @@ router.param('cacheServerId', function(req, res, next, cacheServerId){
   next();
 });
 
-router.get('/server-notice', function(req, res){
-  res.render('service/server-notice/server-list');
-});
-
 router.get('/server-notice/create', function(req, res){
   res.render('service/server-notice/notice-create')
 });
@@ -618,6 +614,21 @@ router.post('/server-notice/create', function(req, res){
   });
 });
 
+router.get('/server-notice', function(req, res){
+  res.render('service/server-notice/server-list');
+});
+
+router.get('/server-notice/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  utils.get(game.ip, game.port, 'server-notice/list', {
+    serverId:cacheServerId
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('service/server-notice/notice-list', {data:data});
+  });
+});
+
 router.delete('/server-notice/:cacheServerId/:noticeId', function(req, res){
   var game = req.game;
   var postData = {
@@ -631,16 +642,5 @@ router.delete('/server-notice/:cacheServerId/:noticeId', function(req, res){
     }
     req.flash('success', '删除成功');
     return res.redirect('/service/server-notice/' + req.params.cacheServerId);
-  });
-});
-
-router.get('/server-notice/:cacheServerId', function(req, res, next){
-  var cacheServerId = req.params.cacheServerId;
-  var game = req.game;
-  utils.get(game.ip, game.port, 'server-notice/list', {
-    serverId:cacheServerId
-  }, function(e, data){
-    if(!!e) return next(e);
-    res.render('service/server-notice/notice-list', {data:data});
   });
 });

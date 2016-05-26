@@ -1,0 +1,51 @@
+{% extends '../../layouts/manager.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/manager/activities">服务器列表</a></li>
+    <li class="active">新增活动</li>
+</ol>
+<form action="/manager/activities/create" method="post" role="form" class="form-horizontal">
+    <input type="hidden" name="_csrf" value="{{csrf_token}}">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">发布到哪里</label>
+
+        <div class="col-sm-9">
+            {% for index, server in req.game.servers %}
+            <label class="checkbox-inline">
+                <input type="checkbox" name="servers[{{index}}]"
+                       value="{{server}}" {%if contains(activity.servers, server) %}checked{% endif %}>
+                {{server}}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="type" class="col-sm-2 control-label">活动类型</label>
+
+        <div class="col-sm-9">
+            <select title='Choose a type' name="type" id="type" class="form-control">
+                <option value="">请选择一个类型</option>
+                {% for type, desc in req.app.activityTypes%}
+                <option value="{{type}}" {% if type===activity.type %}selected{% endif %}>{{type}}({{desc}})</option>
+                {%endfor%}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="dateStart" class="col-sm-2 control-label">开始日期</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="dateStart" placeholder="开始日期" id="dateStart"
+                   class="form-control" value="{{activity.dateStart|default(Date.now())|date('Y-m-d')}}">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button class="btn btn-primary" type="submit">发布</button>
+            &nbsp; or &nbsp;
+            <a href="/manager/activities" class="show-login">取消</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

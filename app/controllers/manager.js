@@ -156,3 +156,118 @@ router.get('/dailyReports/:cacheServerId', function(req, res, next){
     res.render('manager/dailyReports/report-list', {data:data});
   });
 });
+
+router.get('/activities', function(req, res){
+  res.render('manager/activities/server-list');
+});
+
+router.get('/activities/create', function(req, res, next){
+  var game = req.game;
+  if(!req.app.activityTypes){
+    utils.get(game.ip, game.port, 'get-activity-types', {}, function(e, data){
+      if(!!e) return next(e);
+      req.app.activityTypes = data;
+      res.render('manager/activities/activity-create');
+    });
+  }else{
+    res.render('manager/activities/activity-create');
+  }
+});
+
+router.post('/activities/create', function(req, res){
+  var activity = req.body;
+  var servers = activity.servers;
+  var game = req.game;
+  if(!_.isArray(servers) || servers.length == 0){
+    return res.render('manager/activities/activity-create', {
+      errors:['服务器未选择'],
+      activity:activity
+    });
+  }
+  for(var i = 0; i < servers.length; i++){
+    var server = servers[i];
+    if(!_.contains(game.servers, server)){
+      return res.render('manager/activities/activity-create', {
+        errors:['服务器不合法'],
+        activity:activity
+      });
+    }
+  }
+  if(!activity.type){
+    return res.render('manager/activities/activity-create', {
+      errors:['请选择活动类型'],
+      activity:activity
+    });
+  }
+  if(!activity.dateStart){
+    return res.render('manager/activities/activity-create', {
+      errors:['请选择开始日期'],
+      activity:activity
+    });
+  }
+
+  var postData = {
+    servers:activity.servers,
+    type:activity.type,
+    dateStart:activity.dateStart
+  };
+  utils.post(game.ip, game.port, 'create-activity', postData, function(e, data){
+    if(!!e){
+      return res.render('manager/activities/activity-create', {
+        errors:[e.message],
+        activity:activity
+      });
+    }
+    _.each(data, function(status){
+      if(status.code !== 200){
+        req.flash('error', status.data);
+      }
+    });
+    return res.redirect('/manager/activities/');
+  });
+});
+
+router.get('/activities/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  Promise.fromCallback(function(callback){
+    if(!req.app.activityTypes){
+      utils.get(game.ip, game.port, 'get-activity-types', {}, function(e, data){
+        if(!!e) return callback(e);
+        req.app.activityTypes = data;
+        callback();
+      });
+    }else{
+      callback();
+    }
+  }).then(function(){
+    return Promise.fromCallback(function(callback){
+      utils.get(game.ip, game.port, 'get-activities', {
+        cacheServerId:cacheServerId
+      }, function(e, data){
+        if(!!e) return callback(e);
+        callback(null, data);
+      });
+    });
+  }).then(function(data){
+    res.render('manager/activities/activity-list', {data:data});
+  }).catch(function(e){
+    next(e);
+  })
+});
+
+router.delete('/activities/delete/:cacheServerId/:activityType', function(req, res){
+  var game = req.game;
+  var postData = {
+    cacheServerId:req.params.cacheServerId,
+    type:req.params.activityType
+  };
+  utils.post(game.ip, game.port, 'delete-activity', postData, function(e){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/manager/activities/' + req.params.cacheServerId);
+    }
+    req.flash('success', '删除成功');
+    return res.redirect('/manager/activities/' + req.params.cacheServerId);
+  });
+});

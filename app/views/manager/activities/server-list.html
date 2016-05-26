@@ -1,0 +1,27 @@
+{% extends '../../layouts/manager.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">服务器列表</li>
+</ol>
+<h4 style="text-align: right"><a href="/manager/activities/create">发布新活动</a></h4>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>名称</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for serverId in req.game.servers%}
+        <tr>
+            <td>{{serverId}}</td>
+            <td>
+                <a href="/manager/activities/{{serverId}}" class="btn btn-link link-button">查看</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

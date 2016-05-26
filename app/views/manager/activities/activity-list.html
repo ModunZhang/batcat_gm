@@ -1,0 +1,85 @@
+{% extends '../../layouts/manager.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/manager/activities">服务器列表</a></li>
+    <li class="active">{{req.params.cacheServerId}}</li>
+</ol>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>类型(即将开始)</th>
+        <th>开始时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, activity in data.next%}
+    <tr>
+        <td>{{activity.type}}({{req.app.activityTypes[activity.type]}})</td>
+        <td>{{activity.startTime|date('Y-m-d H:i:s')}}</td>
+        <td>
+            <form action="/manager/activities/delete/{{req.params.cacheServerId}}/{{activity.type}}" method="post"
+                  onsubmit="return confirm('你确定吗?')">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                &nbsp;
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-link link-button error" type="submit">删除</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>类型(正在进行)</th>
+        <th>结束时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, activity in data.on%}
+    <tr>
+        <td>{{activity.type}}({{req.app.activityTypes[activity.type]}})</td>
+        <td>{{activity.finishTime|date('Y-m-d H:i:s')}}</td>
+        <td>
+            <form action="/manager/activities/delete/{{req.params.cacheServerId}}/{{activity.type}}" method="post"
+                  onsubmit="return confirm('你确定吗?')">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                &nbsp;
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-link link-button error" type="submit">删除</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>类型(已经结束)</th>
+        <th>过期时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, activity in data.expired%}
+    <tr>
+        <td>{{activity.type}}({{req.app.activityTypes[activity.type]}})</td>
+        <td>{{activity.removeTime|date('Y-m-d H:i:s')}}</td>
+        <td>
+            <form action="/manager/activities/delete/{{req.params.cacheServerId}}/{{activity.type}}" method="post"
+                  onsubmit="return confirm('你确定吗?')">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                &nbsp;
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-link link-button error" type="submit">删除</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
