@@ -43,15 +43,20 @@ router.get('/list', function(req, res, next){
   if(!_.isNumber(skip) || skip % 1 !== 0){
     skip = 0;
   }
+  var keyword = req.query.keyword;
   var query = {
     skip:skip,
     limit:50,
-    totalCount:8
+    keyword:keyword
   };
+  var sql = {};
+  if(!!keyword){
+    sql['stack'] = {$regex:keyword, $options:"i"};
+  }
 
-  Error.count().then(function(count){
+  Error.count(sql).then(function(count){
     query.totalCount = count;
-    return Error.find({}, {}, {
+    return Error.find(sql, {}, {
       skip:query.skip,
       limit:query.limit,
       sort:{createdAt:-1}
