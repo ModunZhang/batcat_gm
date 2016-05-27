@@ -46,7 +46,7 @@ router.get('/list', function(req, res, next){
   var keyword = req.query.keyword;
   var query = {
     skip:skip,
-    limit:50,
+    limit:20,
     keyword:keyword
   };
   var sql = {};
