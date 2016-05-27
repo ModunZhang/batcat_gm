@@ -3,6 +3,7 @@
  */
 
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 var express = require('express');
 var _ = require('underscore');
 var extend = require('util')._extend;
@@ -18,7 +19,7 @@ module.exports = router;
 
 
 router.get('/create', function(req, res){
-  res.json({token: res.locals.csrf_token})
+  res.json({token:res.locals.csrf_token})
 });
 
 router.post('/create', function(req, res){
@@ -38,10 +39,26 @@ router.get('/', function(req, res){
 });
 
 router.get('/list', function(req, res, next){
-  Error.find({}).sort({createdAt:-1}).limit(50).then(function(docs){
-    res.render('errors/list', {clientErrors:docs});
-  }, function(e){
+  var skip = parseInt(req.query.skip);
+  if(!_.isNumber(skip) || skip % 1 !== 0){
+    skip = 0;
+  }
+  var query = {
+    skip:skip,
+    limit:50,
+    totalCount:8
+  };
+
+  Error.count().then(function(count){
+    query.totalCount = count;
+    return Error.find({}, {}, {
+      skip:query.skip,
+      limit:query.limit,
+      sort:{createdAt:-1}
+    })
+  }).then(function(docs){
+    res.render('errors/list', {query:query, clientErrors:docs});
+  }).catch(function(e){
     next(e);
   });
-
 });

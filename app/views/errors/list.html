@@ -12,11 +12,89 @@
         <tbody>
         {% for error in clientErrors%}
         <tr>
-            <td><pre>{{error.stack}}</pre></td>
+            <td>
+                <pre>{{error.stack}}</pre>
+            </td>
             <td>{{error.deviceId}}<br/>{{error.createdAt|date('Y-m-d H:i:s')}}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+<nav>
+    <ul class="pagination">
+        {% if query.skip === 0 %}
+        <li class="disabled">
+            <span aria-hidden="true">&laquo;&nbsp;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/errors/list?skip=0"
+               aria-label="First">
+                <span aria-hidden="true">&laquo;&nbsp;</span>
+            </a>
+        </li>
+        {%endif%}
+        {% if query.skip < query.limit %}
+        <li class="disabled">
+            <span aria-hidden="true">&lsaquo;&nbsp;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/errors/list?skip={{query.skip - query.limit}}"
+               aria-label="Previous">
+                <span aria-hidden="true">&lsaquo;&nbsp;</span>
+            </a>
+        </li>
+        {%endif%}
+        {%set adjacent = 5%}
+        {%set pages = Math.ceil(query.totalCount / query.limit)%}
+        {%set curPage = Math.ceil(query.skip / query.limit)%}
+        {%if curPage > adjacent%}
+        {%set minPage = curPage - adjacent%}
+        {%else%}
+        {%set minPage = 0%}
+        {%endif%}
+        {%if curPage < pages - adjacent%}
+        {%set maxPage = curPage + adjacent%}
+        {%else%}
+        {%set maxPage = pages - 1%}
+        {%endif%}
+
+
+        {%for i,v in Array(maxPage - minPage + 1)%}
+        <li class="{%if i + minPage === curPage %}active{%endif%}">
+            {%if i + minPage === curPage %}
+            <a href="#">{{i + minPage + 1}}</a>
+            {%else%}
+            <a href="/errors/list?skip={{query.limit * (i + minPage)}}">{{i + minPage + 1}}</a>
+            {%endif%}
+        </li>
+        {%endfor%}
+        {% if query.skip >= query.totalCount - query.limit %}
+        <li class="disabled">
+            <span aria-hidden="true">&nbsp;&rsaquo;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/errors/list?&skip={{query.skip + query.limit}}"
+               aria-label="Next">
+                <span aria-hidden="true">&nbsp;&rsaquo;</span>
+            </a>
+        </li>
+        {%endif%}
+        {% if query.skip + clientErrors.length >= query.totalCount%}
+        <li class="disabled">
+            <span aria-hidden="true">&nbsp;&raquo;</span>
+        </li>
+        {%else%}
+        <li>
+            <a href="/errors/list?skip={{query.limit * (pages - 1)}}"
+               aria-label="Next">
+                <span aria-hidden="true">&nbsp;&raquo;</span>
+            </a>
+        </li>
+        {%endif%}
+    </ul>
+</nav>
 {% endblock %}
