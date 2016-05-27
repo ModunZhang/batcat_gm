@@ -15,7 +15,7 @@ var ErrorSchema = new Schema({
   _id:{type:String, required:true, default:shortid.generate},
   deviceId:{type:String},
   stack:{type:String},
-  createdAt:{type:Number, required:true, default:Date.now, expires:60 * 60 * 24 * 7}
+  createdAt:{type:Number, required:true, index:true, default:Date.now, expires:60 * 60 * 24 * 7}
 });
 
 
