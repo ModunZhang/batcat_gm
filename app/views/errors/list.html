@@ -15,6 +15,14 @@
         </div>
     </div>
 </form>
+<form action="/errors/list?keyword={{query.keyword}}" method="post"
+      onsubmit="return confirm('你确定吗?')">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    &nbsp;
+    <input type="hidden" name="_method" value="DELETE">
+    <button class="btn btn-link link-button error" type="submit">删除</button>
+</form>
+
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
         <thead>

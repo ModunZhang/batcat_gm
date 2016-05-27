@@ -12,7 +12,7 @@ var auth = require('../../middlewares/authorization');
 var utils = require('../../config/utils');
 var consts = require('../../config/consts');
 
-var Error = mongoose.model('Error');
+var ClientError = mongoose.model('Error');
 
 var router = express.Router();
 module.exports = router;
@@ -54,9 +54,9 @@ router.get('/list', function(req, res, next){
     sql['stack'] = {$regex:keyword, $options:"i"};
   }
 
-  Error.count(sql).then(function(count){
+  ClientError.count(sql).then(function(count){
     query.totalCount = count;
-    return Error.find(sql, {}, {
+    return ClientError.find(sql, {}, {
       skip:query.skip,
       limit:query.limit,
       sort:{createdAt:-1}
@@ -66,4 +66,21 @@ router.get('/list', function(req, res, next){
   }).catch(function(e){
     next(e);
   });
+});
+
+router.delete('/list', function(req, res, next){
+  var keyword = req.query.keyword;
+  if(!keyword){
+    var e = new Error('keyword 不能为空');
+    return next(e);
+  }
+
+  var sql = {
+    stack:{$regex:keyword, $options:"i"}
+  };
+  ClientError.remove(sql).then(function(){
+    res.redirect('/errors/list');
+  }).catch(function(e){
+    next(e);
+  })
 });
