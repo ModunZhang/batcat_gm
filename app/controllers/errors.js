@@ -23,10 +23,9 @@ router.get('/create', function(req, res){
 });
 
 router.post('/create', function(req, res){
-  var error = new Error(req.body);
-  error.save().then(function(){
-    //res.json({code:200, data:null});
-    res.redirect('/errors/create');
+  var clientError = new ClientError(req.body);
+  clientError.save().then(function(){
+    res.json({code:200, data:null});
   }, function(e){
     res.json({code:500, data:e.message});
   });
