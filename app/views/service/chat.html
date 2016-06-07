@@ -84,9 +84,10 @@
     $(function(){
         var chat_body_1 = $('#chat_body_1');
         var lastChatTime = 0;
-        var getGlobalChats = function(){
+        (function getGlobalChats(){
             $.get('/service/get-global-chats', {time:lastChatTime}, function(resp){
                 if(resp.code === 500) return;
+                var scrollBottom = chat_body_1[0].scrollHeight - chat_body_1.scrollTop() === chat_body_1.outerHeight();
                 var chats = resp.data;
                 for(var i = 0; i < chats.length; i++){
                     var chat = chats[i];
@@ -100,12 +101,13 @@
                 }
                 if(chats.length > 0){
                     lastChatTime = chats[chats.length - 1].time;
-                    chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                    if(scrollBottom){
+                        chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                    }
                 }
+                setTimeout(getGlobalChats, 2000);
             })
-        };
-        getGlobalChats();
-        setInterval(getGlobalChats, 2000);
+        })();
 
         $('#send_system_chat').ajaxForm(function(resp){
             if(resp.code === 500){
@@ -119,7 +121,7 @@
         });
 
 
-        var intervalId_2 = null;
+        var timeoutId_2 = null;
         var chat_body_2 = $('#chat_body_2');
         var submit_button_2 = $('#submit_button_2');
 
@@ -138,7 +140,7 @@
                         type:'error'
                     });
                 }else{
-                    clearInterval(intervalId_2);
+                    clearTimeout(timeoutId_2);
                     var allianceId = $('#alliance_2').val();
                     var lastChatTime = 0;
                     var chats = resp.data;
@@ -153,12 +155,13 @@
                         chat_body_2.scrollTop(chat_body_2[0].scrollHeight);
                     }
 
-                    var getAllianceChats = function(){
+                    (function getAllianceChats(){
                         $.get('/service/get-alliance-chats', {
                             allianceId:allianceId,
                             time:lastChatTime
                         }, function(resp){
                             if(resp.code === 500) return;
+                            var scrollBottom = chat_body_2[0].scrollHeight - chat_body_2.scrollTop() === chat_body_2.outerHeight();
                             var chats = resp.data;
                             for(var i = 0; i < chats.length; i++){
                                 var chat = chats[i];
@@ -168,11 +171,13 @@
                             }
                             if(chats.length > 0){
                                 lastChatTime = chats[chats.length - 1].time;
-                                chat_body_2.scrollTop(chat_body_2[0].scrollHeight);
+                                if(scrollBottom){
+                                    chat_body_2.scrollTop(chat_body_2[0].scrollHeight);
+                                }
                             }
+                            timeoutId_2 = setTimeout(getAllianceChats, 2000);
                         })
-                    };
-                    intervalId_2 = setInterval(getAllianceChats, 2000);
+                    })();
                 }
             }
         });
