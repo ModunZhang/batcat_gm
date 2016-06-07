@@ -86,23 +86,24 @@
         var lastChatTime = 0;
         (function getGlobalChats(){
             $.get('/service/get-global-chats', {time:lastChatTime}, function(resp){
-                if(resp.code === 500) return;
-                var scrollBottom = chat_body_1[0].scrollHeight - chat_body_1.scrollTop() === chat_body_1.outerHeight();
-                var chats = resp.data;
-                for(var i = 0; i < chats.length; i++){
-                    var chat = chats[i];
-                    var content = null;
-                    if(chat.name === 'System'){
-                        content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
-                    }else{
-                        content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                if(!!resp && resp.code && resp.code !== 500){
+                    var scrollBottom = chat_body_1[0].scrollHeight - chat_body_1.scrollTop() === chat_body_1.outerHeight();
+                    var chats = resp.data;
+                    for(var i = 0; i < chats.length; i++){
+                        var chat = chats[i];
+                        var content = null;
+                        if(chat.name === 'System'){
+                            content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        }else{
+                            content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        }
+                        $('#chat_ul_1').append(content);
                     }
-                    $('#chat_ul_1').append(content);
-                }
-                if(chats.length > 0){
-                    lastChatTime = chats[chats.length - 1].time;
-                    if(scrollBottom){
-                        chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                    if(chats.length > 0){
+                        lastChatTime = chats[chats.length - 1].time;
+                        if(scrollBottom){
+                            chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                        }
                     }
                 }
                 setTimeout(getGlobalChats, 2000);
@@ -156,23 +157,21 @@
                     }
 
                     (function getAllianceChats(){
-                        $.get('/service/get-alliance-chats', {
-                            allianceId:allianceId,
-                            time:lastChatTime
-                        }, function(resp){
-                            if(resp.code === 500) return;
-                            var scrollBottom = chat_body_2[0].scrollHeight - chat_body_2.scrollTop() === chat_body_2.outerHeight();
-                            var chats = resp.data;
-                            for(var i = 0; i < chats.length; i++){
-                                var chat = chats[i];
-                                var content = null;
-                                content = chatOthersTemplate.replace('^Name^', "[" + chat.allianceTag + "]" + chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
-                                $('#chat_ul_2').append(content);
-                            }
-                            if(chats.length > 0){
-                                lastChatTime = chats[chats.length - 1].time;
-                                if(scrollBottom){
-                                    chat_body_2.scrollTop(chat_body_2[0].scrollHeight);
+                        $.get('/service/get-alliance-chats', {allianceId:allianceId, time:lastChatTime}, function(resp){
+                            if(!!resp && resp.code && resp.code !== 500){
+                                var scrollBottom = chat_body_2[0].scrollHeight - chat_body_2.scrollTop() === chat_body_2.outerHeight();
+                                var chats = resp.data;
+                                for(var i = 0; i < chats.length; i++){
+                                    var chat = chats[i];
+                                    var content = null;
+                                    content = chatOthersTemplate.replace('^Name^', "[" + chat.allianceTag + "]" + chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                                    $('#chat_ul_2').append(content);
+                                }
+                                if(chats.length > 0){
+                                    lastChatTime = chats[chats.length - 1].time;
+                                    if(scrollBottom){
+                                        chat_body_2.scrollTop(chat_body_2[0].scrollHeight);
+                                    }
                                 }
                             }
                             timeoutId_2 = setTimeout(getAllianceChats, 2000);
