@@ -18,7 +18,8 @@ var LogSchema = new Schema({
   method:{type:String, required:true},
   userEmail:{type:String, required:true},
   game:{type:String, required:true},
-  createdAt:{type:Number, required:true, default:Date.now, expires:60 * 60 * 24 * 30}
+  createdAt:{type:Number, required:true, default:Date.now},
+  expires:{type:Date, required:true, default:Date.now, expires:60 * 60 * 24 * 7}
 });
 
 
