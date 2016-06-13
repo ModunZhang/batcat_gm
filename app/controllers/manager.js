@@ -5,7 +5,7 @@
 var express = require('express');
 var _ = require('underscore');
 var mongoose = require('mongoose');
-var Promise = require('bluebird');
+var P = require('bluebird');
 
 var auth = require('../../middlewares/authorization');
 var consts = require('../../config/consts');
@@ -120,11 +120,11 @@ router.get('/logs', function(req, res, next){
     userEmail:!!userEmail ? userEmail : {$exists:true},
     game:game._id
   };
-  Promise.fromCallback(function(callback){
+  P.fromCallback(function(callback){
     Log.count(sql, callback);
   }).then(function(count){
     result.totalCount = count;
-    return Promise.fromCallback(function(callback){
+    return P.fromCallback(function(callback){
       Log.find(sql, null, {
         skip:skip,
         limit:limit,
@@ -230,7 +230,7 @@ router.post('/activities/create', function(req, res){
 router.get('/activities/:cacheServerId', function(req, res, next){
   var cacheServerId = req.params.cacheServerId;
   var game = req.game;
-  Promise.fromCallback(function(callback){
+  P.fromCallback(function(callback){
     if(!req.app.activityTypes){
       utils.get(game.ip, game.port, 'get-activity-types', {}, function(e, data){
         if(!!e) return callback(e);
@@ -241,7 +241,7 @@ router.get('/activities/:cacheServerId', function(req, res, next){
       callback();
     }
   }).then(function(){
-    return Promise.fromCallback(function(callback){
+    return P.fromCallback(function(callback){
       utils.get(game.ip, game.port, 'get-activities', {
         cacheServerId:cacheServerId
       }, function(e, data){
@@ -269,5 +269,63 @@ router.delete('/activities/delete/:cacheServerId/:activityType', function(req, r
     }
     req.flash('success', '删除成功');
     return res.redirect('/manager/activities/' + req.params.cacheServerId);
+  });
+});
+
+
+router.get('/mods/list', function(req, res, next){
+  var game = req.game;
+  P.fromCallback(function(callback){
+    utils.get(game.ip, game.port, 'mod/list', {}, callback);
+  }).then(function(data){
+    res.render('manager/mods/list', {data:data});
+  }).catch(function(e){
+    next(e);
+  })
+});
+
+router.get('/mods/create', function(req, res){
+  res.render('manager/mods/create');
+});
+
+router.post('/mods/create', function(req, res){
+  var game = req.game;
+  var mod = {
+    id:req.body.id,
+    name:req.body.name
+  };
+
+  if(!_.isString(mod.id) || mod.id.trim().length === 0){
+    return res.render('manager/mods/create', {
+      errors:['墨子ID不合法'],
+      mod:mod
+    });
+  }
+  if(!_.isString(mod.name) || mod.name.trim().length === 0){
+    return res.render('manager/mods/create', {
+      errors:['墨子名称不合法'],
+      mod:mod
+    });
+  }
+  P.fromCallback(function(callback){
+    utils.post(game.ip, game.port, 'mod/create', mod, callback)
+  }).then(function(){
+    res.redirect('/manager/mods/list');
+  }).catch(function(e){
+    return res.render('manager/mods/create', {
+      errors:[e.message],
+      mod:mod
+    });
+  });
+});
+
+router.delete('/mods/delete/:modId', function(req, res, next){
+  var game = req.game;
+  P.fromCallback(function(callback){
+    utils.post(game.ip, game.port, 'mod/delete', {id:req.params.modId}, callback)
+  }).then(function(){
+    res.redirect('/manager/mods/list');
+  }).catch(function(e){
+    next(e);
   });
 });

@@ -57,6 +57,7 @@
                 if(resp.code === 500){
                     return location.reload();
                 }
+                var scrollBottom = chat_body_1[0].scrollHeight - chat_body_1.scrollTop() === chat_body_1.outerHeight();
                 var chats = resp.data;
                 for(var i = 0; i < chats.length; i++){
                     var chat = chats[i];
@@ -70,7 +71,9 @@
                 }
                 if(chats.length > 0){
                     lastChatTime = chats[chats.length - 1].time;
-                    chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                    if(scrollBottom){
+                        chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
+                    }
                 }
             })
         };

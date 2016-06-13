@@ -10,6 +10,7 @@ var mongoStore = require('connect-mongo')(session);
 var swig = require('swig');
 var _ = require('underscore');
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 
 var flash = require('connect-flash');
 var helpers = require('view-helpers');

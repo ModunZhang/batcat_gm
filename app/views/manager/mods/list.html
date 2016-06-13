@@ -1,0 +1,37 @@
+{% extends '../../layouts/manager.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">墨子列表</li>
+</ol>
+<h4 style="text-align: right"><a href="/manager/mods/create">新增墨子</a></h4>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>昵称</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for mod in data%}
+        <tr>
+            <td>{{mod._id}}</td>
+            <td>{{mod.name}}</td>
+            <td>{{mod.time|date('Y-m-d H:i:s')}}</td>
+            <td>
+                <form action="/manager/mods/delete/{{mod._id}}" method="post"
+                      onsubmit="return confirm('你确定吗?')">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    &nbsp;
+                    <button class="btn btn-link link-button error" type="submit">删除</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -3,7 +3,6 @@
  */
 
 var mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
 var express = require('express');
 var _ = require('underscore');
 var extend = require('util')._extend;
