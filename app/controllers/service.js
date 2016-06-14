@@ -288,7 +288,7 @@ router.get('/player/search', function(req, res){
   });
 });
 
-router.get('/ban/list', function(req, res){
+router.get('/ban/list', function(req, res, next){
   var game = req.game;
   P.fromCallback(function(callback){
     utils.get(game.ip, game.port, 'player/get-baned-list', {}, callback);
@@ -352,7 +352,7 @@ router.delete('/ban/delete/:playerId', function(req, res, next){
   });
 });
 
-router.get('/mute/list', function(req, res){
+router.get('/mute/list', function(req, res, next){
   var game = req.game;
   P.fromCallback(function(callback){
     utils.get(game.ip, game.port, 'player/get-muted-list', {}, callback);
