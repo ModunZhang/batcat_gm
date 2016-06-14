@@ -1,0 +1,39 @@
+{% extends '../../layouts/service.html' %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">禁止登陆列表</li>
+</ol>
+<h4 style="text-align: right"><a href="/service/ban/create">新增禁止登陆</a></h4>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>玩家</th>
+            <th>原因</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for baned in data%}
+        <tr>
+            <td>{{baned._id}}::{{baned.name}}</td>
+            <td>{{baned.reason}}</td>
+            <td>{{baned.time|date('Y-m-d H:i:s')}}</td>
+            <td>{{baned.finishTime|date('Y-m-d H:i:s')}}</td>
+            <td>
+                <form action="/service/ban/delete/{{baned._id}}" method="post"
+                      onsubmit="return confirm('你确定吗?')">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    &nbsp;
+                    <button class="btn btn-link link-button error" type="submit">取消禁止登陆</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

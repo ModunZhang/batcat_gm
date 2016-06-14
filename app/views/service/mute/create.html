@@ -1,0 +1,51 @@
+{% extends '../../layouts/service.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/service/mute/list">禁言列表</a></li>
+    <li class="active">新增禁言</li>
+</ol>
+<h4 style="text-align: center">新增禁言</h4>
+
+<form action="/service/mute/create" method="post" role="form" class="form-horizontal">
+    <input type="hidden" name="_csrf" value="{{csrf_token}}">
+
+    <div class="form-group">
+        <label for="playerId" class="col-sm-2 control-label">玩家ID</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="playerId" placeholder="玩家ID" value="{{muted.playerId}}" id="playerId"
+                   class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="reason" class="col-sm-2 control-label">禁言原因</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="reason" placeholder="禁言原因" value="{{muted.reason}}" id="reason"
+                   class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="actionType" class="col-sm-2 control-label">禁言时间</label>
+
+        <div class="col-sm-9">
+            <select name="minutes" id="actionType" class="form-control">
+                <option value="">请选择一个时间</option>
+                <option value="30" {% if muted.minutes=='30' %}selected{% endif %}>30分钟</option>
+                <option value="60" {% if muted.minutes=='60' %}selected{% endif %}>1小时</option>
+                <option value="360" {% if muted.minutes=='360' %}selected{% endif %}>6小时</option>
+                <option value="1440" {% if muted.minutes=='1440' %}selected{% endif %}>24小时</option>
+                <option value="2628000" {% if muted.minutes=='2628000' %}selected{% endif %}>永远</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button class="btn btn-primary" type="submit">新增</button>
+            &nbsp; or &nbsp;
+            <a href="/service/mute/list" class="show-login">取消</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends '../layouts/manager.html' %}
+{% block content %}
+<form method="get" role="form" class="form-horizontal" id="findById">
+    <div class="form-group">
+        <label for="modId" class="col-sm-2 control-label">墨子ID</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="modId" placeholder="墨子ID" id="modId"
+                   class="form-control" value="{{req.query.modId}}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="actionType" class="col-sm-2 control-label">操作类型</label>
+
+        <div class="col-sm-9">
+            <select title='Choose a type' name="actionType" id="actionType" class="form-control">
+                <option value="">请选择一个类型</option>
+                <option value="chat" {% if req.query.actionType==='chat' %}selected{% endif %}>Chat</option>
+                <option value="mute" {% if req.query.actionType==='mute' %}selected{% endif %}>Mute</option>
+                <option value="unmute" {% if req.query.actionType==='unmute' %}selected{% endif %}>UnMute</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button class="btn btn-primary" type="submit">查询</button>
+        </div>
+    </div>
+</form>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>墨子ID</th>
+        <th>墨子昵称</th>
+        <th>操作类型</th>
+        <th>操作值</th>
+        <th>操作时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, modLog in data%}
+    <tr>
+        <td>{{modLog.mod.id}}</td>
+        <td>{{modLog.mod.name}}</td>
+        <td>{{modLog.action.type}}</td>
+        <td>{{modLog.action.value}}</td>
+        <td>{{modLog.time|date('Y-m-d H:i:s')}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

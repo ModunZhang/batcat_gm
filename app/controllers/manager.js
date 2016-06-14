@@ -329,3 +329,15 @@ router.delete('/mods/delete/:modId', function(req, res, next){
     next(e);
   });
 });
+
+router.get('/modLogs', function(req, res, next){
+  var game = req.game;
+  P.fromCallback(function(callback){
+    utils.get(game.ip, game.port, 'get-mod-logs', req.query, callback);
+  }).then(function(data){
+    res.render('manager/modLogs', {data:data});
+  }).catch(function(e){
+    next(e);
+  })
+});
+

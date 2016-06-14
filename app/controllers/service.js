@@ -5,6 +5,7 @@
 var express = require('express');
 var _ = require('underscore');
 var mongoose = require('mongoose');
+var P = require('bluebird');
 
 var auth = require('../../middlewares/authorization');
 var consts = require('../../config/consts');
@@ -287,139 +288,131 @@ router.get('/player/search', function(req, res){
   });
 });
 
-router.get('/player/ban-and-unban', function(req, res){
-  var type = req.query.type;
-  var value = req.query.value;
+router.get('/ban/list', function(req, res){
   var game = req.game;
+  P.fromCallback(function(callback){
+    utils.get(game.ip, game.port, 'player/get-baned-list', {}, callback);
+  }).then(function(data){
+    res.render('service/ban/list', {data:data});
+  }).catch(function(e){
+    next(e);
+  })
+});
 
-  if(_.isUndefined(type) && _.isUndefined(value)){
-    return res.render('service/player/search', {action:'/service/player/ban-and-unban'})
-  }
+router.get('/ban/create', function(req, res){
+  res.render('service/ban/create');
+});
 
-  if(type !== 'id' && type !== 'name'){
-    return res.render('service/player/search', {
-      action:'/service/player/ban-and-unban',
-      errors:['查询类型不合法'],
-      type:type,
-      value:value
+router.post('/ban/create', function(req, res){
+  var game = req.game;
+  var baned = {
+    playerId:req.body.playerId,
+    minutes:Number(req.body.minutes),
+    reason:req.body.reason
+  };
+  if(!_.isString(baned.playerId) || baned.playerId.trim().length === 0){
+    return res.render('service/ban/create', {
+      errors:['玩家ID不合法'],
+      baned:baned
     });
   }
-
-  if(!_.isString(value) || value.trim().length == 0){
-    return res.render('service/player/search', {
-      action:'/service/player/ban-and-unban',
-      errors:['关键字不能为空'],
-      type:type,
-      value:value
+  if(!_.isString(baned.reason) || baned.reason.trim().length === 0){
+    return res.render('service/ban/create', {
+      errors:['禁止登陆理由不能为空'],
+      baned:baned
     });
   }
-
-  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
-  var params = type === 'id' ? {playerId:value} : {playerName:value};
-  utils.get(game.ip, game.port, url, params, function(e, data){
-    if(!!e){
-      return res.render('service/player/search', {
-        action:'/service/player/ban-and-unban',
-        errors:[e.message],
-        type:type,
-        value:value
-      });
-    }
-    return res.render('service/player/ban-and-unban', {
-      player:data,
-      playerString:JSON.stringify(data)
+  if(baned.minutes <= 0){
+    return res.render('service/ban/create', {
+      errors:['请选择禁止登陆时间'],
+      baned:baned
+    });
+  }
+  P.fromCallback(function(callback){
+    utils.post(game.ip, game.port, 'player/ban', baned, callback);
+  }).then(function(){
+    res.redirect('/service/ban/list');
+  }).catch(function(e){
+    return res.render('service/ban/create', {
+      errors:[e.message],
+      baned:baned
     });
   });
 });
 
-router.post('/player/ban', function(req, res, next){
+router.delete('/ban/delete/:playerId', function(req, res, next){
   var game = req.game;
-  var playerId = req.body.playerId;
-  var serverId = req.body.serverId;
-  var time = Number(req.body.time);
-
-  if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
-  if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
-  if(_.isNaN(time) || time < 0) return next(new Error('时间不合法'));
-  time = time * 60 * 1000;
-
   var postData = {
-    serverId:serverId,
-    playerId:playerId,
-    time:time
+    playerId:req.params.playerId
   };
-  utils.post(game.ip, game.port, 'player/ban', postData, function(e){
+  utils.post(game.ip, game.port, 'player/unBan', postData, function(e){
     if(!!e) return next(e);
     req.flash('success', '操作成功');
-    return res.redirect('/service/player/ban-and-unban');
+    return res.redirect('/service/ban/list');
   });
 });
 
-router.get('/player/mute-and-unmute', function(req, res){
-  var type = req.query.type;
-  var value = req.query.value;
+router.get('/mute/list', function(req, res){
   var game = req.game;
-
-  if(_.isUndefined(type) && _.isUndefined(value)){
-    return res.render('service/player/search', {action:'/service/player/mute-and-unmute'})
-  }
-
-  if(type !== 'id' && type !== 'name'){
-    return res.render('service/player/search', {
-      action:'/service/player/mute-and-unmute',
-      errors:['查询类型不合法'],
-      type:type,
-      value:value
-    });
-  }
-
-  if(!_.isString(value) || value.trim().length == 0){
-    return res.render('service/player/search', {
-      action:'/service/player/mute-and-unmute',
-      errors:['关键字不能为空'],
-      type:type,
-      value:value
-    });
-  }
-
-  var url = type === 'id' ? 'player/find-by-id' : 'player/find-by-name';
-  var params = type === 'id' ? {playerId:value} : {playerName:value};
-  utils.get(game.ip, game.port, url, params, function(e, data){
-    if(!!e){
-      return res.render('service/player/search', {
-        action:'/service/player/mute-and-unmute',
-        errors:[e.message],
-        type:type,
-        value:value
-      });
-    }
-    return res.render('service/player/mute-and-unmute', {
-      player:data,
-      playerString:JSON.stringify(data)
-    });
-  });
+  P.fromCallback(function(callback){
+    utils.get(game.ip, game.port, 'player/get-muted-list', {}, callback);
+  }).then(function(data){
+    res.render('service/mute/list', {data:data});
+  }).catch(function(e){
+    next(e);
+  })
 });
 
-router.post('/player/mute', function(req, res, next){
+router.get('/mute/create', function(req, res){
+  res.render('service/mute/create');
+});
+
+router.post('/mute/create', function(req, res){
   var game = req.game;
-  var playerId = req.body.playerId;
-  var serverId = req.body.serverId;
-  var time = Number(req.body.time);
-
-  if(!_.isString(playerId) || playerId.trim().length == 0) return next(new Error('playerId 不合法'));
-  if(!_.isString(serverId) || serverId.trim().length == 0) return next(new Error('serverId 不合法'));
-  if(_.isNaN(time) || time < 0) return next(new Error('时间不合法'));
-  time = time * 60 * 1000;
-
-  var postData = {
-    serverId:serverId,
-    playerId:playerId,
-    time:time
+  var muted = {
+    playerId:req.body.playerId,
+    minutes:Number(req.body.minutes),
+    reason:req.body.reason
   };
-  utils.post(game.ip, game.port, 'player/mute', postData, function(e){
+  if(!_.isString(muted.playerId) || muted.playerId.trim().length === 0){
+    return res.render('service/mute/create', {
+      errors:['玩家ID不合法'],
+      muted:muted
+    });
+  }
+  if(!_.isString(muted.reason) || muted.reason.trim().length === 0){
+    return res.render('service/mute/create', {
+      errors:['禁言理由不能为空'],
+      muted:muted
+    });
+  }
+  if(muted.minutes <= 0){
+    return res.render('service/mute/create', {
+      errors:['请选择禁言时间'],
+      muted:muted
+    });
+  }
+  P.fromCallback(function(callback){
+    utils.post(game.ip, game.port, 'player/mute', muted, callback);
+  }).then(function(){
+    res.redirect('/service/mute/list');
+  }).catch(function(e){
+    return res.render('service/mute/create', {
+      errors:[e.message],
+      muted:muted
+    });
+  });
+});
+
+router.delete('/mute/delete/:playerId', function(req, res, next){
+  var game = req.game;
+  var postData = {
+    playerId:req.params.playerId
+  };
+  utils.post(game.ip, game.port, 'player/unMute', postData, function(e){
     if(!!e) return next(e);
     req.flash('success', '操作成功');
-    return res.redirect('/service/player/mute-and-unmute');
+    return res.redirect('/service/mute/list');
   });
 });
 
