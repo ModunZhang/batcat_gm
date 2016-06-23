@@ -48,7 +48,7 @@
     $(function(){
         var chat_body_1 = $('#chat_body_1');
         var lastChatTime = 0;
-        var getGlobalChats = function(){
+        (function getGlobalChats(){
             $.get('/service/player/get-gm-chats-ajax', {
                 time:lastChatTime,
                 playerId:'{{player._id}}',
@@ -75,10 +75,9 @@
                         chat_body_1.scrollTop(chat_body_1[0].scrollHeight);
                     }
                 }
+                setTimeout(getGlobalChats, 2000);
             })
-        };
-        getGlobalChats();
-        setInterval(getGlobalChats, 2000);
+        })();
 
         $('#send_gm_chat').ajaxForm(function(resp){
             if(resp.code === 500){
