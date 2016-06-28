@@ -92,8 +92,10 @@
                     for(var i = 0; i < chats.length; i++){
                         var chat = chats[i];
                         var content = null;
-                        if(chat.name === 'System'){
+                        if(chat.icon === 0){
                             content = chatMineTemplate.replace('^Name^', chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
+                        }else if(chat.icon === -1){
+                            content = chatOthersTemplate.replace('^Name^', "[MOD]" + chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
                         }else{
                             content = chatOthersTemplate.replace('^Name^', chat.allianceTag.length > 0 ? "[" + chat.allianceTag + "]" + chat.name : chat.name).replace('^Server^', chat.serverId).replace('^Time^', $.format.prettyDate(chat.time)).replace('^Content^', chat.text);
                         }
