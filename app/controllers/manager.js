@@ -64,6 +64,7 @@ router.get('/revenue/:cacheServerId', function(req, res, next){
   var cacheServerId = req.params.cacheServerId;
   var game = req.game;
   var playerId = req.query.playerId;
+  var transactionId = req.query.transactionId;
   var dateFrom = req.query.dateFrom;
   var dateTo = req.query.dateTo;
   var skip = req.query.skip;
@@ -71,6 +72,7 @@ router.get('/revenue/:cacheServerId', function(req, res, next){
   utils.get(game.ip, game.port, 'get-revenue-data', {
     serverId:cacheServerId,
     playerId:playerId,
+    transactionId:transactionId,
     dateFrom:dateFrom,
     dateTo:dateTo,
     skip:skip
