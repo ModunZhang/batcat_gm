@@ -1,0 +1,53 @@
+{% extends '../../layouts/manager.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/manager/game-info">服务器列表</a></li>
+    <li class="active">编辑状态</li>
+</ol>
+<form action="/manager/game-info/{{req.params.cacheServerId}}" method="post" role="form" class="form-horizontal">
+    <input type="hidden" name="_csrf" value="{{csrf_token}}">
+    <input type="hidden" name="_method" value="PUT">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">促销活动状态</label>
+
+        <div class="col-sm-9">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="promotionProductEnabled" id="promotionProductEnabled1" value="true" {%if data.promotionProductEnabled%}checked{%endif%}>
+                    开启
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="promotionProductEnabled" id="promotionProductEnabled2" value="false" {%if !data.promotionProductEnabled%}checked{%endif%}>
+                    关闭
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">墨子申请状态</label>
+
+        <div class="col-sm-9">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="modApplyEnabled" id="modApplyEnabled1" value="true" {%if data.modApplyEnabled%}checked{%endif%}>
+                    开启
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="modApplyEnabled" id="modApplyEnabled2" value="false" {%if !data.modApplyEnabled%}checked{%endif%}>
+                    关闭
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button class="btn btn-primary" type="submit">编辑</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

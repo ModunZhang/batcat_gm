@@ -458,3 +458,47 @@ router.get('/modLogs', function(req, res, next){
   })
 });
 
+
+router.get('/game-info', function(req, res){
+  res.render('manager/game-info/server-list');
+});
+
+router.get('/game-info/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  P.fromCallback(function(callback){
+    utils.get(game.ip, game.port, 'game-info', {
+      serverId:cacheServerId
+    }, function(e, data){
+      if(!!e) return callback(e);
+      callback(null, data);
+    });
+  }).then(function(data){
+    res.render('manager/game-info/game-info', {data:data});
+  }).catch(function(e){
+    next(e);
+  })
+});
+
+router.put('/game-info/:cacheServerId', function(req, res){
+  var game = req.game;
+  var serverId = req.params.cacheServerId;
+  var promotionProductEnabled = req.body.promotionProductEnabled;
+  var modApplyEnabled = req.body.modApplyEnabled;
+
+  var postData = {
+    serverId:serverId,
+    gameInfo:{
+      promotionProductEnabled:promotionProductEnabled,
+      modApplyEnabled:modApplyEnabled
+    }
+  };
+  utils.post(game.ip, game.port, 'game-info', postData, function(e){
+    if(!!e){
+      req.flash('error', e.message);
+      return res.redirect('/manager/game-info/' + postData.serverId)
+    }
+    req.flash('success', '编辑成功');
+    return res.redirect('/manager/game-info/' + postData.serverId)
+  });
+});
