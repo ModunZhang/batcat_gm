@@ -1,0 +1,32 @@
+{% extends '../../layouts/service.html' %}
+
+{% block content %}
+
+<h4 style="text-align: center">礼包补发</h4>
+
+<form action="/service/player/add-shop-product" method="post" role="form" class="form-horizontal">
+    <input type="hidden" name="_csrf" value="{{csrf_token}}">
+
+    <div class="form-group">
+        <label for="playerId" class="col-sm-2 control-label">玩家ID</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="playerId" placeholder="玩家ID" value="{{product.playerId}}" id="playerId"
+                   class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="productId" class="col-sm-2 control-label">礼包ID</label>
+
+        <div class="col-sm-9">
+            <input type="text" name="productId" placeholder="礼包ID" value="{{product.productId}}" id="productId"
+                   class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button class="btn btn-primary" type="submit">补发</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
