@@ -508,6 +508,41 @@ router.post('/player/send-gm-chat', function(req, res){
   });
 });
 
+router.get('/player/add-shop-product', function(req, res){
+  res.render('service/player/add-shop-product');
+});
+
+router.post('/player/add-shop-product', function(req, res){
+  var game = req.game;
+  var product = {
+    playerId:req.body.playerId,
+    productId:req.body.productId
+  };
+  if(!_.isString(product.playerId) || product.playerId.trim().length === 0){
+    return res.render('service/player/add-shop-product', {
+      errors:['玩家ID不合法'],
+      product:product
+    });
+  }
+  if(!_.isString(product.productId) || product.productId.trim().length === 0){
+    return res.render('service/player/add-shop-product', {
+      errors:['商品ID不合法'],
+      product:product
+    });
+  }
+  P.fromCallback(function(callback){
+    utils.post(game.ip, game.port, 'player/add-shop-product', product, callback);
+  }).then(function(){
+    req.flash('success', '补发成功');
+    res.redirect('/service/player/add-shop-product');
+  }).catch(function(e){
+    return res.render('service/player/add-shop-product', {
+      errors:[e.message],
+      product:product
+    });
+  });
+});
+
 router.get('/get-gemchange-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;
