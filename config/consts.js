@@ -12,5 +12,19 @@ module.exports = {
   NoticeType:{
     Info:'info',
     Warning:'warning'
+  },
+  PlayerLanguage:{
+    All:"all",
+    Cn:"cn",
+    Tw:"tw",
+    En:"en",
+    Fr:"fr",
+    De:"de",
+    Ko:"ko",
+    Ja:"ja",
+    Ru:"ru",
+    Es:"es",
+    Pt:"pt",
+    It:"it"
   }
 };

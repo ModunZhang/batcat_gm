@@ -6,6 +6,8 @@ var shortid = require('shortid');
 var mongoose = require('mongoose');
 var _ = require('underscore');
 
+var consts = require('../../config/consts');
+
 var Schema = mongoose.Schema;
 
 
@@ -13,7 +15,7 @@ var Schema = mongoose.Schema;
  * Setters
  */
 
-var setServers = function (servers) {
+var setServers = function(servers){
   if(!servers || servers.trim().length == 0) return [];
   return servers.split(',');
 };
@@ -23,9 +25,10 @@ var setServers = function (servers) {
  */
 var GameSchema = new Schema({
   _id:{type:String, required:true, default:shortid.generate},
-  name:{type:String, required:'Name cannot be blank', unique:true},
-  ip:{type:String, required:'Ip cannot be blank'},
-  port:{type:Number, required:'Port cannot be blank'},
+  name:{type:String, required:'名称不能为空', unique:true},
+  ip:{type:String, required:'Ip地址不能为空'},
+  port:{type:Number, required:'端口号不能为空'},
+  languages:[String],
   servers:{type:[String], set:setServers},
   createdAt:{type:Number, default:Date.now}
 });
@@ -46,11 +49,21 @@ GameSchema.path('name').validate(function(name, fn){
       fn(!err && games.length === 0);
     });
   }else fn(true);
-}, 'Name already exists');
+}, '名称已存在');
 
-GameSchema.path('servers').validate(function(servers, fn){
-  fn(servers.length > 0);
-}, 'Servers cannot be empty');
+GameSchema.path('servers').validate(function(servers){
+  return servers.length > 0;
+}, '服务器组不能为空');
+
+GameSchema.path('languages').validate(function(languages){
+  return languages.length > 0;
+}, '语言不能为空');
+
+GameSchema.path('languages').validate(function(languages){
+  return !_.some(languages, function(language){
+    return !_.contains(consts.PlayerLanguage, language)
+  })
+}, '语言不合法');
 
 /**
  * Middleware

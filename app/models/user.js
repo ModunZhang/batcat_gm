@@ -16,8 +16,8 @@ var Schema = mongoose.Schema;
  */
 var UserSchema = new Schema({
   _id:{type:String, required:true, default:shortid.generate},
-  email:{type:String, required:'Email cannot be blank', unique:true},
-  password:{type:String, required:'Password cannot be blank'},
+  email:{type:String, required:'邮件地址不能为空', unique:true},
+  password:{type:String, required:'密码不能为空'},
   defaultGame:{type:String, required:true, default:'none'},
   roles:[String],
   games:[String],
@@ -41,17 +41,17 @@ UserSchema.path('email').validate(function(email, fn){
       fn(!err && users.length === 0);
     });
   }else fn(true);
-}, 'Email already exists');
+}, '邮件地址已存在');
 
 UserSchema.path('roles').validate(function(roles){
   return _.isArray(roles) && roles.length > 0
-}, 'Roles can not be empty');
+}, '角色不能为空');
 
 UserSchema.path('roles').validate(function(roles){
   return !_.some(roles, function(role){
     return !_.contains(consts.UserRoles, role)
   })
-}, 'Roles not legal');
+}, '角色不合法');
 
 /**
  * Middleware
