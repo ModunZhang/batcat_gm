@@ -12,6 +12,7 @@
             <th>Ip</th>
             <th>Port</th>
             <th>服务器组</th>
+            <th>语言</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -22,6 +23,7 @@
             <td>{{game.ip}}</td>
             <td>{{game.port}}</td>
             <td>{{game.servers}}</td>
+            <td>{{game.languages}}</td>
             <td>
                 <form action="/admin/games/delete/{{game._id}}" method="post"
                       onsubmit="return confirm('你确定吗?')">

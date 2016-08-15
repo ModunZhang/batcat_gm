@@ -16,8 +16,16 @@
     <tbody>
     {% for index, notice in data%}
     <tr>
-        <td>{{notice.title}}</td>
-        <td>{{notice.content}}</td>
+        <td>
+            {% for lan, title in notice.title %}
+            ({{lan}}){{title}}<br/>
+            {%endfor%}
+        </td>
+        <td>
+            {% for lan, content in notice.content %}
+            ({{lan}}){{content}}<br/>
+            {%endfor%}
+        </td>
         <td>{{notice.time|date('Y-m-d H:i:s')}}</td>
         <td>
             <form action="/service/server-notice/{{req.params.cacheServerId}}/{{notice.id}}" method="post"

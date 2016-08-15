@@ -43,24 +43,27 @@ router.all('*', function(req, res, next){
 });
 
 router.get('/notice-and-mail', function(req, res){
-  res.render('service/notice-and-mail', {games:req.games, types:consts.NoticeType});
+  res.render('service/notice-and-mail', {types:consts.NoticeType});
 });
 
 router.post('/send-global-notice', function(req, res){
   var notice = req.body;
   var servers = notice.servers;
   var game = req.game;
-
   if(!_.isArray(servers) || servers.length == 0) return res.json({code:500, data:['服务器未选择']});
   for(var i = 0; i < servers.length; i++){
     var server = servers[i];
     if(!_.contains(game.servers, server)) return res.json({code:500, data:['服务器未选择']});
   }
   if(!_.contains(_.values(consts.NoticeType), notice.type)) return res.json({code:500, data:['类型未选择.']});
-  if(!_.isString(notice.content) || notice.content.trim().length == 0) return res.json({
-    code:500,
-    data:['内容不能为空']
-  });
+
+  for(var i = 0; i < req.game.languages.length; i++){
+    var content = notice.content[req.game.languages[i]];
+    if(!_.isString(content) || content.trim().length == 0) return res.json({
+      code:500,
+      data:[req.game.languages[i] + '内容不能为空']
+    });
+  }
 
   var postData = {
     servers:notice.servers,
@@ -84,14 +87,19 @@ router.post('/send-global-mail', function(req, res){
     var server = servers[i];
     if(!_.contains(game.servers, server))  return res.json({code:500, data:['服务器未选择']});
   }
-  if(!_.isString(mail.title) || mail.title.trim().length == 0) return res.json({
-    code:500,
-    data:['标题不能为空']
-  });
-  if(!_.isString(mail.content) || mail.content.trim().length == 0) return res.json({
-    code:500,
-    data:['内容不能为空']
-  });
+  for(var i = 0; i < req.game.languages.length; i++){
+    var language = req.game.languages[i];
+    var title = mail.title[language];
+    var content = mail.content[language];
+    if(!_.isString(title) || title.trim().length == 0) return res.json({
+      code:500,
+      data:[language + '标题不能为空']
+    });
+    if(!_.isString(content) || content.trim().length == 0) return res.json({
+      code:500,
+      data:[language + '内容不能为空']
+    });
+  }
 
   var postData = {
     servers:mail.servers,
@@ -593,6 +601,7 @@ router.post('/server-notice/create', function(req, res){
   var notice = req.body;
   var servers = notice.servers;
   var game = req.game;
+  console.log(notice);
   if(!_.isArray(servers) || servers.length == 0){
     return res.render('service/server-notice/notice-create', {
       errors:['服务器未选择'],
@@ -608,18 +617,24 @@ router.post('/server-notice/create', function(req, res){
       });
     }
   }
-  if(!_.isString(notice.title) || notice.title.trim().length == 0){
-    return res.render('service/server-notice/notice-create', {
-      errors:['标题不能为空'],
-      notice:notice
-    });
+  for(var i = 0; i < req.game.languages.length; i++){
+    var language = req.game.languages[i];
+    var title = notice.title[language];
+    var content = notice.content[language];
+    if(!_.isString(title) || title.trim().length == 0){
+      return res.render('service/server-notice/notice-create', {
+        errors:[language + '标题不能为空'],
+        notice:notice
+      });
+    }
+    if(!_.isString(content) || content.trim().length == 0){
+      return res.render('service/server-notice/notice-create', {
+        errors:[language + '内容不能为空'],
+        notice:notice
+      });
+    }
   }
-  if(!_.isString(notice.content) || notice.content.trim().length == 0){
-    return res.render('service/server-notice/notice-create', {
-      errors:['内容不能为空'],
-      notice:notice
-    });
-  }
+
 
   var postData = {
     servers:notice.servers,

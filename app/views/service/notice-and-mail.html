@@ -29,13 +29,15 @@
             </select>
         </div>
     </div>
+    {% for language in req.game.languages %}
     <div class="form-group">
-        <label for="content_1" class="col-sm-2 control-label">内容</label>
+        <label for="content_1" class="col-sm-2 control-label">内容({{language}})</label>
 
         <div class="col-sm-9">
-            <input type="text" name="content" placeholder="内容" id="content_1" class="form-control">
+            <input type="text" name="content[{{language}}]" placeholder="内容{{language}}" id="content_1" class="form-control">
         </div>
     </div>
+    {% endfor %}
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
             <button class="btn btn-primary" type="submit">发送</button>
@@ -61,20 +63,22 @@
             {% endfor %}
         </div>
     </div>
+    {% for language in req.game.languages %}
     <div class="form-group">
-        <label for="title_2" class="col-sm-2 control-label">标题</label>
+        <label for="title_{{language}}_2" class="col-sm-2 control-label">标题({{language}})</label>
 
         <div class="col-sm-9">
-            <input type="text" name="title" placeholder="标题" id="title_2" class="form-control">
+            <input type="text" name="title[{{language}}]" placeholder="标题({{language}})" id="title_{{language}}_2" class="form-control">
         </div>
     </div>
     <div class="form-group">
-        <label for="content_2" class="col-sm-2 control-label">内容</label>
+        <label for="content_{{language}}_2" class="col-sm-2 control-label">内容({{language}})</label>
 
         <div class="col-sm-9">
-            <textarea rows="5" name="content" placeholder="内容" id="content_2" class="form-control"></textarea>
+            <textarea rows="5" name="content[{{language}}]" placeholder="内容{{language}}" id="content_{{language}}_2" class="form-control"></textarea>
         </div>
     </div>
+    {% endfor %}
     <div class="form-group">
         <label for="rewards_2" class="col-sm-2 control-label">奖励</label>
 

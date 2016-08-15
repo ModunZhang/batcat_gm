@@ -14,7 +14,6 @@ module.exports = {
     Warning:'warning'
   },
   PlayerLanguage:{
-    All:"all",
     Cn:"cn",
     Tw:"tw",
     En:"en",

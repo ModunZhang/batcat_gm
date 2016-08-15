@@ -157,7 +157,7 @@ router.param('gameId', function(req, res, next, gameId){
 });
 
 router.get('/games/list', function(req, res, next){
-  Game.find({}, 'name ip port servers').then(function(games){
+  Game.find({}).then(function(games){
     res.render('admin/games/list', {games:games});
   }, function(e){
     next(e);
@@ -165,7 +165,7 @@ router.get('/games/list', function(req, res, next){
 });
 
 router.get('/games/create', function(req, res){
-  res.render('admin/games/create');
+  res.render('admin/games/create', {languages:consts.PlayerLanguage});
 });
 
 router.post('/games/create', function(req, res){
@@ -175,13 +175,14 @@ router.post('/games/create', function(req, res){
   }, function(e){
     res.render('admin/games/create', {
       errors:utils.mongooseError(e),
-      game:game
+      game:game,
+      languages:consts.PlayerLanguage
     });
   });
 });
 
 router.get('/games/edit/:gameId', function(req, res){
-  res.render('admin/games/edit', {game:req.game});
+  res.render('admin/games/edit', {game:req.game, languages:consts.PlayerLanguage});
 });
 
 router.put('/games/edit/:gameId', function(req, res){
@@ -193,7 +194,8 @@ router.put('/games/edit/:gameId', function(req, res){
   }, function(e){
     res.render('admin/games/edit', {
       errors:utils.mongooseError(e),
-      game:game
+      game:game,
+      languages:consts.PlayerLanguage
     });
   });
 });

@@ -45,6 +45,19 @@
         </div>
     </div>
     <div class="form-group">
+        <label class="col-sm-2 control-label">支持的游戏语言</label>
+
+        <div class="col-sm-9">
+            {% for key, value in languages %}
+            <label class="checkbox-inline">
+                <input type="checkbox" id="languages_{{key}}" name="languages[]" value="{{value}}"
+                       {%if contains(game.languages, value) %}checked{% endif %}>
+                {{value}}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
             <button class="btn btn-primary" type="submit">编辑</button>
             &nbsp; or &nbsp;
