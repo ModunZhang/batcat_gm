@@ -485,12 +485,14 @@ router.put('/game-info/:cacheServerId', function(req, res){
   var serverId = req.params.cacheServerId;
   var promotionProductEnabled = req.body.promotionProductEnabled;
   var modApplyEnabled = req.body.modApplyEnabled;
+  var iapGemEventEnabled = req.body.iapGemEventEnabled;
 
   var postData = {
     serverId:serverId,
     gameInfo:{
       promotionProductEnabled:promotionProductEnabled,
-      modApplyEnabled:modApplyEnabled
+      modApplyEnabled:modApplyEnabled,
+      iapGemEventEnabled:iapGemEventEnabled
     }
   };
   utils.post(game.ip, game.port, 'game-info', postData, function(e){
