@@ -28,6 +28,7 @@
     "swig": "1.4.2",
     "morgan": "1.6.0",
     "serve-favicon": "2.3.0",
-    "request":"2.61.0"
+    "request":"2.61.0",
+    "fast-csv":"2.1.0"
   }
 }

@@ -6,6 +6,7 @@ var express = require('express');
 var _ = require('underscore');
 var mongoose = require('mongoose');
 var P = require('bluebird');
+var csv = require("fast-csv");
 
 var auth = require('../../middlewares/authorization');
 var consts = require('../../config/consts');
@@ -82,6 +83,48 @@ router.get('/revenue/:cacheServerId', function(req, res, next){
   });
 });
 
+router.get('/revenue/:cacheServerId/csv', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  var playerId = req.query.playerId;
+  var transactionId = req.query.transactionId;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+
+  utils.get(game.ip, game.port, 'get-revenue-data-csv', {
+    serverId:cacheServerId,
+    playerId:playerId,
+    transactionId:transactionId,
+    dateFrom:dateFrom,
+    dateTo:dateTo
+  }, function(e, data){
+    if(!!e) return next(e);
+    (function(){
+      var filename = encodeURIComponent('收入(' + req.params.cacheServerId + ').csv');
+      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+      res.setHeader('content-type', 'text/csv; charset=utf-8');
+      var csvStream = csv
+        .createWriteStream({headers:true})
+        .transform(function(data){
+          var date = new Date(data.time);
+          return {
+            '玩家ID':data.playerId,
+            '玩家名称':data.playerName,
+            '流水号':data.transactionId,
+            '产品ID':data.productId,
+            '收入':data.price * data.quantity,
+            '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
+          };
+        });
+      csvStream.pipe(res);
+      _.each(data.datas, function(data){
+        csvStream.write(data);
+      });
+      csvStream.end();
+    })();
+  });
+});
+
 router.get('/analyse', function(req, res){
   res.render('manager/analyse/server-list');
 });
@@ -101,6 +144,117 @@ router.get('/analyse/:cacheServerId', function(req, res, next){
   }, function(e, data){
     if(!!e) return next(e);
     res.render('manager/analyse/analyse-list', {data:data});
+  });
+});
+
+router.get('/analyse/:cacheServerId/csv', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+
+  utils.get(game.ip, game.port, 'get-analyse-data-csv', {
+    serverId:cacheServerId,
+    dateFrom:dateFrom,
+    dateTo:dateTo
+  }, function(e, data){
+    if(!!e) return next(e);
+    (function(){
+      var filename = encodeURIComponent('数据统计(' + req.params.cacheServerId + ').csv');
+      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+      res.setHeader('content-type', 'text/csv; charset=utf-8');
+      var csvStream = csv
+        .createWriteStream({headers:true})
+        .transform(function(data){
+          var date = new Date(data.dateTime);
+          return {
+            '日期':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate(),
+            'DAU':data.dau,
+            'DNU':data.dnu,
+            'EDAU':data.dau - data.dnu,
+            '次日留存':(function(){
+              if(data.day1 === -1){
+                return '暂无';
+              }else if(data.day1 === 0 || data.dnu === 0){
+                return '0%';
+              }else{
+                return Number(data.day1 / data.dnu * 100).toFixed(2) + '%';
+              }
+            })(),
+            '3日留存':(function(){
+              if(data.day3 === -1){
+                return '暂无';
+              }else if(data.day3 === 0 || data.dnu === 0){
+                return '0%';
+              }else{
+                return Number(data.day3 / data.dnu * 100).toFixed(2) + '%';
+              }
+            })(),
+            '7日留存':(function(){
+              if(data.day7 === -1){
+                return '暂无';
+              }else if(data.day7 === 0 || data.dnu === 0){
+                return '0%';
+              }else{
+                return Number(data.day7 / data.dnu * 100).toFixed(2) + '%';
+              }
+            })(),
+            '15日留存':(function(){
+              if(data.day15 === -1){
+                return '暂无';
+              }else if(data.day15 === 0 || data.dnu === 0){
+                return '0%';
+              }else{
+                return Number(data.day15 / data.dnu * 100).toFixed(2) + '%';
+              }
+            })(),
+            '30日留存':(function(){
+              if(data.day15 === -1){
+                return '暂无';
+              }else if(data.day15 === 0 || data.dnu === 0){
+                return '0%';
+              }else{
+                return Number(data.day15 / data.dnu * 100).toFixed(2) + '%';
+              }
+            })(),
+            '收入':(function(){
+              if(data.revenue > 0){
+                return '$' + Number(data.revenue).toFixed(2);
+              }else{
+                return '$0';
+              }
+            })(),
+            'ARPU':(function(){
+              if(data.revenue > 0){
+                return '$' + Number(data.revenue).toFixed(2);
+              }else{
+                return '$0';
+              }
+            })(),
+            'ARPPU':(function(){
+              if(data.dau > 0 && data.revenue > 0){
+                return '$' + Number(data.revenue / data.dau).toFixed(3);
+              }else{
+                return '$0';
+              }
+            })(),
+            '付费人数':data.payCount,
+            '付费次数':data.payTimes,
+            '付费率':(function(){
+              if(data.payCount > 0){
+                return Number(data.payCount / data.dau * 100).toFixed(2);
+              }else{
+                return '0'
+              }
+            })()
+          };
+        });
+      csvStream.pipe(res);
+      _.each(data.datas, function(data){
+        csvStream.write(data);
+      });
+      csvStream.end();
+    })();
   });
 });
 

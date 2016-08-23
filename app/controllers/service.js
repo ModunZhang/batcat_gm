@@ -6,6 +6,7 @@ var express = require('express');
 var _ = require('underscore');
 var mongoose = require('mongoose');
 var P = require('bluebird');
+var csv = require("fast-csv");
 
 var auth = require('../../middlewares/authorization');
 var consts = require('../../config/consts');
@@ -569,6 +570,45 @@ router.get('/get-gemchange-data', function(req, res, next){
   });
 });
 
+router.get('/get-gemchange-data-csv', function(req, res, next){
+  var game = req.game;
+  var playerId = req.query.playerId;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+
+  utils.get(game.ip, game.port, 'get-gemchange-data-csv', {
+    playerId:playerId,
+    dateFrom:dateFrom,
+    dateTo:dateTo
+  }, function(e, data){
+    if(!!e) return next(e);
+    (function(){
+      var filename = encodeURIComponent('宝石变动.csv');
+      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+      res.setHeader('content-type', 'text/csv; charset=utf-8');
+      var csvStream = csv
+        .createWriteStream({headers:true})
+        .transform(function(data){
+          var date = new Date(data.time);
+          return {
+            '玩家ID':data.playerId,
+            '玩家名称':data.playerName,
+            '变动':data.changed,
+            '剩余':data.left,
+            'API':data.api,
+            'API参数':JSON.stringify(data.params),
+            '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
+          };
+        });
+      csvStream.pipe(res);
+      _.each(data.datas, function(data){
+        csvStream.write(data);
+      });
+      csvStream.end();
+    })();
+  });
+});
+
 router.get('/get-gemadd-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;
@@ -673,6 +713,7 @@ router.get('/server-notice/:cacheServerId', function(req, res, next){
 });
 
 router.delete('/server-notice/:cacheServerId/:noticeId', function(req, res){
+  res.download()
   var game = req.game;
   var postData = {
     serverId:req.params.cacheServerId,
