@@ -113,7 +113,7 @@ router.get('/revenue/:cacheServerId/csv', function(req, res, next){
               '玩家名称':data.playerName,
               '流水号':data.transactionId,
               '产品ID':data.productId,
-              '收入':data.price * data.quantity,
+              '收入':'$' + data.price * data.quantity,
               '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
             });
           });
