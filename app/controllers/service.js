@@ -588,17 +588,19 @@ router.get('/get-gemchange-data-csv', function(req, res, next){
       res.setHeader('content-type', 'text/csv; charset=utf-8');
       var csvStream = csv
         .createWriteStream({headers:true})
-        .transform(function(data){
-          var date = new Date(data.time);
-          return {
-            '玩家ID':data.playerId,
-            '玩家名称':data.playerName,
-            '变动':data.changed,
-            '剩余':data.left,
-            'API':data.api,
-            'API参数':JSON.stringify(data.params),
-            '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
-          };
+        .transform(function(data, next){
+          setImmediate(function(){
+            var date = new Date(data.time);
+            next(null, {
+              '玩家ID':data.playerId,
+              '玩家名称':data.playerName,
+              '变动':data.changed,
+              '剩余':data.left,
+              'API':data.api,
+              'API参数':JSON.stringify(data.params),
+              '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
+            })
+          });
         });
       csvStream.pipe(res);
       _.each(data.datas, function(data){
