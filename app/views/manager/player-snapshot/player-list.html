@@ -4,7 +4,10 @@
     <li><a href="/manager/player-snapshot">服务器列表</a></li>
     <li class="active">{{req.params.cacheServerId}}</li>
 </ol>
-<h4 style="text-align: right"><a href="/manager/player-snapshot/{{req.params.cacheServerId}}/csv">导出为CSV</a></h4>
+<h4 style="text-align: right">共{{data.totalCount}}条记录
+    &nbsp;&nbsp;
+    <a href="/manager/player-snapshot/{{req.params.cacheServerId}}/csv">导出为CSV</a>
+</h4>
 <table class="table table-striped table-bordered table-hover">
     <thead>
     <tr>
