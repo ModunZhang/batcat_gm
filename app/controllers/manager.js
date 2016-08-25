@@ -662,3 +662,107 @@ router.put('/game-info/:cacheServerId', function(req, res){
     return res.redirect('/manager/game-info/' + postData.serverId)
   });
 });
+
+router.get('/get-loginlog-data', function(req, res, next){
+  var game = req.game;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'get-loginlog-data', {
+    dateFrom:dateFrom,
+    dateTo:dateTo,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('manager/get-loginlog-data', {game:game, data:data});
+  });
+});
+
+router.get('/get-loginlog-data-csv', function(req, res, next){
+  var game = req.game;
+  var dateFrom = req.query.dateFrom;
+  var dateTo = req.query.dateTo;
+
+  utils.get(game.ip, game.port, 'get-loginlog-data-csv', {
+    dateFrom:dateFrom,
+    dateTo:dateTo
+  }, function(e, data){
+    if(!!e) return next(e);
+    (function(){
+      var filename = encodeURIComponent('登录日志.csv');
+      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+      res.setHeader('content-type', 'text/csv; charset=utf-8');
+      var csvStream = csv
+        .createWriteStream({headers:true})
+        .transform(function(data, next){
+          setImmediate(function(){
+            var date = new Date(data.loginTime);
+            next(null, {
+              '玩家ID':data.playerId,
+              'IP':data.ip,
+              'ServerId':data.serverId,
+              '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
+            })
+          });
+        });
+      csvStream.pipe(res);
+      _.each(data.datas, function(data){
+        csvStream.write(data);
+      });
+      csvStream.end();
+    })();
+  });
+});
+
+router.get('/player-snapshot', function(req, res){
+  res.render('manager/player-snapshot/server-list');
+});
+
+router.get('/player-snapshot/:cacheServerId', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+  var skip = req.query.skip;
+
+  utils.get(game.ip, game.port, 'get-player-snapshot-data', {
+    serverId:cacheServerId,
+    skip:skip
+  }, function(e, data){
+    if(!!e) return next(e);
+    res.render('manager/player-snapshot/player-list', {data:data});
+  });
+});
+
+router.get('/player-snapshot/:cacheServerId/csv', function(req, res, next){
+  var cacheServerId = req.params.cacheServerId;
+  var game = req.game;
+
+  utils.get(game.ip, game.port, 'get-player-snapshot-data-csv', {
+    serverId:cacheServerId
+  }, function(e, data){
+    if(!!e) return next(e);
+    (function(){
+      var filename = encodeURIComponent('玩家快照(' + req.params.cacheServerId + ').csv');
+      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+      res.setHeader('content-type', 'text/csv; charset=utf-8');
+      var csvStream = csv
+        .createWriteStream({headers:true})
+        .transform(function(data, next){
+          setImmediate(function(){
+            var date = new Date(data.countInfo.lastLogoutTime);
+            next(null, {
+              'ServerId':cacheServerId,
+              '玩家ID':data._id,
+              '宝石数':data.resources.gem,
+              '最后登出时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate()
+            })
+          });
+        });
+      csvStream.pipe(res);
+      _.each(data.datas, function(data){
+        csvStream.write(data);
+      });
+      csvStream.end();
+    })();
+  });
+});

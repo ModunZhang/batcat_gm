@@ -611,58 +611,6 @@ router.get('/get-gemchange-data-csv', function(req, res, next){
   });
 });
 
-router.get('/get-loginlog-data', function(req, res, next){
-  var game = req.game;
-  var dateFrom = req.query.dateFrom;
-  var dateTo = req.query.dateTo;
-  var skip = req.query.skip;
-
-  utils.get(game.ip, game.port, 'get-loginlog-data', {
-    dateFrom:dateFrom,
-    dateTo:dateTo,
-    skip:skip
-  }, function(e, data){
-    if(!!e) return next(e);
-    res.render('service/get-loginlog-data', {game:game, data:data});
-  });
-});
-
-router.get('/get-loginlog-data-csv', function(req, res, next){
-  var game = req.game;
-  var dateFrom = req.query.dateFrom;
-  var dateTo = req.query.dateTo;
-
-  utils.get(game.ip, game.port, 'get-loginlog-data-csv', {
-    dateFrom:dateFrom,
-    dateTo:dateTo
-  }, function(e, data){
-    if(!!e) return next(e);
-    (function(){
-      var filename = encodeURIComponent('登录日志.csv');
-      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
-      res.setHeader('content-type', 'text/csv; charset=utf-8');
-      var csvStream = csv
-        .createWriteStream({headers:true})
-        .transform(function(data, next){
-          setImmediate(function(){
-            var date = new Date(data.loginTime);
-            next(null, {
-              '玩家ID':data.playerId,
-              'IP':data.ip,
-              'ServerId':data.serverId,
-              '时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds()
-            })
-          });
-        });
-      csvStream.pipe(res);
-      _.each(data.datas, function(data){
-        csvStream.write(data);
-      });
-      csvStream.end();
-    })();
-  });
-});
-
 router.get('/get-gemadd-data', function(req, res, next){
   var game = req.game;
   var playerId = req.query.playerId;
