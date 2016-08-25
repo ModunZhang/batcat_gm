@@ -754,6 +754,7 @@ router.get('/player-snapshot/:cacheServerId/csv', function(req, res, next){
               'ServerId':cacheServerId,
               '玩家ID':data._id,
               '宝石数':data.resources.gem,
+              'Power':data.basicInfo.power,
               '最后登出时间':date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate()
             })
           });

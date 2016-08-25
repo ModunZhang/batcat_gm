@@ -10,6 +10,7 @@
     <tr>
         <th>玩家ID</th>
         <th>宝石数</th>
+        <th>Power</th>
         <th>最后登出时间</th>
     </tr>
     </thead>
@@ -18,6 +19,7 @@
     <tr>
         <td>{{data._id}}</td>
         <td>{{data.resources.gem}}</td>
+        <td>{{data.basicInfo.power}}</td>
         <td>{{data.countInfo.lastLogoutTime|date('Y-m-d H:i:s')}}</td>
     </tr>
     {% endfor %}
