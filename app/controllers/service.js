@@ -715,7 +715,6 @@ router.get('/server-notice/:cacheServerId', function(req, res, next){
 });
 
 router.delete('/server-notice/:cacheServerId/:noticeId', function(req, res){
-  res.download()
   var game = req.game;
   var postData = {
     serverId:req.params.cacheServerId,
