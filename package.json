@@ -17,7 +17,7 @@
     "passport": "0.2.2",
     "passport-local": "1.0.0",
     "view-helpers": "0.1.5",
-    "bcrypt": "0.8.5",
+    "bcrypt": "1.0.1",
     "mongoose": "4.4.19",
     "mongoose-validator":"1.2.0",
     "bluebird": "3.4.0",

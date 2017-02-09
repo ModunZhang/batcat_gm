@@ -7,9 +7,9 @@
       "autorestart": true,
       "env": {
         "NODE_ENV": "production",
-        "HOST": "114.55.62.44",
-        "PORT": "80",
-        "DEBUG": "batcatGm:*"
+        "HOST": "47.88.78.114",
+        "PORT": "82",
+        "DEBUG": "BatcatGm"
       }
     }
   ]
